@@ -1,0 +1,233 @@
+// Copyright (c) 2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+= The OpenVX^(TM)^ S16 Extension
+:regtitle: pass:q,r[^®^]
+The Khronos{regtitle} OpenVX Working Group; Editors: Frank Brill, Erik Rainey, Jesse Villarreal, Radhakrishna Giduthuri
+:title-logo-image: images/Khronos_RGB.svg
+:data-uri:
+:icons: font
+:toc2:
+:toclevels: 3
+:max-width: 100
+:numbered:
+:imagewidth: 800
+:fullimagewidth: width="800"
+:halfimagewidth: width="400"
+:source-highlighter: coderay
+// Various special / math symbols. This is easier to edit with than Unicode.
+include::config/attribs.txt[]
+
+// Paths to code examples and headers
+:examples: examples
+:headers: examples
+
+image::images/OpenVX_RGB.svg[align="center",{halfimagewidth}]
+include::copyright-spec.txt[]
+
+Contributors::
+
+ * Erik Rainey, Amazon
+ * Frank Brill, Cadence
+ * Jesse Villarrea, Texas Instruments
+
+<<<<
+
+// Table of contents is inserted here
+toc::[]
+
+:leveloffset: 1
+
+
+[[sec_overview]]
+= Extension Specification
+
+This extension is intended to define the subset of behaviors and data types
+of the signed 16-bit support for OpenVX^(TM)^.
+
+
+[[sec_changes]]
+== Changes to the OpenVX 1.1 Specification
+
+The S16 extension enhances the input and output types per each kernel
+defined in the OpenVX 1.1 standard.
+The table below indicates the changes to each kernel for input and output.
+
+Input and output argument types should be the same (e.g. input S16 and
+output S16) unless stated otherwise in the function description.
+In cases where having S16 inputs could lead to the overflow of S16 outputs,
+the behavior is analogous to what is currently in the standard for when the
+inputs are U8.
+
+In the main standard, where the input is U8 and the output is also U8, then
+the output is converted according to the overflow policy in the function
+definition.
+Analogously, for this extension, where the inputs and outputs are both S16,
+the output is converted as necessary according to the overflow policy in the
+function definition.
+
+In the main standard, where the input can be U8 and the output S16, the
+zero-extended answer is just written into the output.
+Analogously, for this extension, where the input can be S16 and the output
+S32, the sign-bit-extended result is written to the output.
+
+
+[[sec_s16_inputs]]
+== Inputs
+
+[options="header"]
+|====
+| Vision Function      |  U8 | U16 | S16 | U32 | S32 | F32 | color
+| AbsDiff              | 1.0 |     |1.0.1|     |     |     |
+| Accumulate           | 1.0 |     | ext |     |     |     |
+| AccumulateSquared    | 1.0 |     | ext |     |     |     |
+| AccumulateWeighted   | 1.0 |     | ext |     |     |     |
+| Add                  | 1.0 |     | 1.0 |     |     |     |
+| And                  | 1.0 |     | ext |     |     |     |
+| Box3x3               | 1.0 |     | ext |     |     |     |
+| CannyEdgeDetector    | 1.0 |     | ext |     |     |     |
+| ChannelCombine       | 1.0 |     |     |     |     |     |
+| ChannelExtract       |     |     |     |     |     |     | 1.0
+| ColorConvert         |     |     |     |     |     |     | 1.0
+| ConvertDepth         | 1.0 | ext | 1.0 | ext | ext |     |
+| Convolve             | 1.0 |     | ext |     |     |     |
+| Dilate3x3            | 1.0 |     |     |     |     |     |
+| EqualizeHistogram    | 1.0 |     | ext |     |     |     |
+| Erode3x3             | 1.0 |     |     |     |     |     |
+| FastCorners          | 1.0 |     | ext |     |     |     |
+| Gaussian3x3          | 1.0 |     | ext |     |     |     |
+| HarrisCorners        | 1.0 |     | ext |     |     |     |
+| HalfScaleGaussian    | 1.0 |     | ext |     |     |     |
+| Histogram            | 1.0 |     | ext |     |     |     |
+| IntegralImage        | 1.0 |     |     |     |     |     |
+| TableLookup          | 1.0 |     | 1.1 |     |     |     |
+| LaplacianPyramid     | 1.1 |     |     |     |     |     |
+| LaplacianReconstruct |     |     | 1.1 |     |     |     |
+| Magnitude            |     |     | 1.0 |     |     |     |
+| MeanStdDev           | 1.0 |     | ext |     |     |     |
+| Median3x3            | 1.0 |     | ext |     |     |     |
+| MinMaxLoc            | 1.0 |     | 1.0 |     |     |     |
+| Multiply             | 1.0 |     | 1.0 |     |     |     |
+| NonLinearFilter      | 1.1 |     |     |     |     |     |
+| Not                  | 1.0 |     | ext |     |     |     |
+| OpticalFlowPyrLK     | 1.0 |     | ext |     |     |     |
+| Or                   | 1.0 |     | ext |     |     |     |
+| Phase                |     |     | 1.0 |     |     |     |
+| GaussianPyramid      | 1.0 |     | ext |     |     |     |
+| Remap                | 1.0 |     | ext |     |     |     |
+| ScaleImage           | 1.0 |     | ext |     |     |     |
+| Sobel3x3             | 1.0 |     | ext |     |     |     |
+| Subtract             | 1.0 |     | 1.0 |     |     |     |
+| Threshold            | 1.0 |     | ext |     |     |     |
+| WarpAffine           | 1.0 |     | ext |     |     |     |
+| WarpPerspective      | 1.0 |     | ext |     |     |     |
+| Xor                  | 1.0 |     | ext |     |     |     |
+|====
+
+
+[[sec_s16_outputs]]
+== Outputs
+
+[options="header"]
+|====
+| Vision Function      |  U8 | U16 | S16 | U32 | S32 | F32 | color
+| AbsDiff              | 1.0 | ext |1.0.1|     |     |     |
+| Accumulate           |     |     | 1.0 |     | ext |     |
+| AccumulateSquared    |     |     | 1.0 |     | ext |     |
+| AccumulateWeighted   | 1.0 |     |     |     | ext |     |
+| Add                  | 1.0 |     | 1.0 |     | ext |     |
+| And                  | 1.0 |     | ext |     |     |     |
+| Box3x3               | 1.0 |     | ext |     |     |     |
+| CannyEdgeDetector    | 1.0 |     | ext |     |     |     |
+| ChannelCombine       |     |     |     |     |     |     | 1.0
+| ChannelExtract       | 1.0 |     |     |     |     |     |
+| ColorConvert         |     |     |     |     |     |     | 1.0
+| ConvertDepth         | 1.0 | ext | 1.0 | ext | ext |     |
+| Convolve             | 1.0 |     | 1.0 |     | ext |     |
+| Dilate3x3            | 1.0 |     |     |     |     |     |
+| EqualizeHistogram    | 1.0 |     | ext |     |     |     |
+| Erode3x3             | 1.0 |     |     |     |     |     |
+| FastCorners          | 1.0 |     |     |     |     |     |
+| Gaussian3x3          | 1.0 |     | ext |     |     |     |
+| HarrisCorners        | 1.0 |     |     |     |     |     |
+| HalfScaleGaussian    | 1.0 |     | ext |     |     |     |
+| Histogram            |     |     |     | 1.0 |     |     |
+| IntegralImage        |     |     |     | 1.0 |     |     |
+| TableLookup          | 1.0 |     | 1.1 |     |     |     |
+| LaplacianPyramid     |     |     | 1.1 |     |     |     |
+| LaplacianReconstruct | 1.1 |     |     |     |     |     |
+| Magnitude            |     |     | 1.0 |     |     |     |
+| MeanStdDev           |     |     |     |     |     | 1.0 |
+| Median3x3            | 1.0 |     | ext |     |     |     |
+| MinMaxLoc            | 1.0 |     | 1.0 | 1.0 |     |     |
+| Multiply             | 1.0 |     | 1.0 |     | ext |     |
+| NonLinearFilter      | 1.1 |     |     |     |     |     |
+| Not                  | 1.0 |     | ext |     |     |     |
+| OpticalFlowPyrLK     |     |     |     |     |     |     |
+| Or                   | 1.0 |     | ext |     |     |     |
+| Phase                | 1.0 |     |     |     |     |     |
+| GaussianPyramid      | 1.0 |     | ext |     |     |     |
+| Remap                | 1.0 |     | ext |     |     |     |
+| ScaleImage           | 1.0 |     | ext |     |     |     |
+| Sobel3x3             |     |     | 1.0 |     | ext |     |
+| Subtract             | 1.0 |     | 1.0 |     | ext |     |
+| Threshold            | 1.0 |     | ext |     |     |     |
+| WarpAffine           | 1.0 |     | ext |     |     |     |
+| WarpPerspective      | 1.0 |     | ext |     |     |     |
+| Xor                  | 1.0 |     | ext |     |     |     |
+|====
+
+
+[[sec_s16_kernels]]
+== Vision Functions
+
+The following sections describe additional changes and clarifications to
+existing kernel definitions beyond those already described in sections
+<<sec_s16_inputs>> and <<sec_s16_outputs>>.
+
+
+[[sec_s16_bitwise]]
+=== Bitwise Operations
+
+Referring to: AND, EXCLUSIVE OR, INCLUSIVE OR, and NOT.
+
+All bit-wise operations on signed operands are executed in twos-complement
+representation of the values.
+
+
+[[sec_s16_convolve]]
+=== Custom Convolution
+
+The current spec says if the input type is U8 and the output type is S16,
+then the output is simply the sum/scale.
+However, if the output type is U8, then the output saturates on both ends: 0
+if sum/scale < 0, and 255 if sum/scale > 255.
+Analogously, S16 outputs should saturate to -32768 if sum/scale < -32768,
+and 32767 if sum/scale > 32767, and just sum/scale otherwise.
+
+For `VX_DF_IMAGE_S16` output, an additional step is taken:
+[latexmath]
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+output(x,y) =
+    \begin{cases}
+        -32768      & \text{if } sum / scale < -32768 \\
+        32767       & \text{if } sum / scale > 32767 \\
+        sum / scale & \text{otherwise}
+    \end{cases}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+For `VX_DF_IMAGE_S32` output, the summation is simply set to the output
+
+  :: [eq]#output(x,y) = sum / scale#
+
+
+[[sec_s16_fast]]
+=== Fast Corners
+
+When the input image is of type `VX_DF_IMAGE_S16`, the value of the
+intensity difference threshold _strength_thresh_.
+of type `VX_TYPE_FLOAT32` must be within:
+
+  :: [eq]#`UINT16_MIN` < t < `UINT16_MAX`#
+

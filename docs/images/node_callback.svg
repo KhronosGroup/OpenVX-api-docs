@@ -1,0 +1,144 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+ width="600px" height="471px"
+ viewBox="0 0 600 471"
+ xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"
+ stroke-width="1" text-rendering="geometricPrecision">
+<polygon fill="white" points="133,7 165,7 165,16 133,16"/>
+<text x="150" y="16" textLength="31" font-family="Helvetica" font-size="12" fill="black" text-anchor="middle">
+
+Client
+</text>
+<polygon fill="white" points="426,7 472,7 472,16 426,16"/>
+<text x="450" y="16" textLength="45" font-family="Helvetica" font-size="12" fill="black" text-anchor="middle">
+
+OpenVX
+</text>
+<line x1="150" y1="22" x2="150" y2="39" stroke="black"/>
+<line x1="450" y1="22" x2="450" y2="39" stroke="black"/>
+<line x1="150" y1="39" x2="150" y2="67" stroke="black"/>
+<line x1="450" y1="39" x2="450" y2="67" stroke="black"/>
+<polygon fill="white" points="8,39 592,39 592,61 8,61"/>
+<line x1="8" y1="39" x2="592" y2="39" stroke="black"/>
+<line x1="8" y1="61" x2="592" y2="61" stroke="black"/>
+<line x1="8" y1="39" x2="8" y2="61" stroke="black"/>
+<line x1="592" y1="39" x2="592" y2="61" stroke="black"/>
+<polygon fill="white" points="264,46 334,46 334,55 264,55"/>
+<text x="265" y="55" textLength="68" font-family="Helvetica" font-size="12" fill="black">
+Graph Setup
+</text>
+<line x1="150" y1="67" x2="150" y2="95" stroke="black"/>
+<line x1="450" y1="67" x2="450" y2="95" stroke="black"/>
+<line x1="150" y1="78" x2="450" y2="78" stroke="black"/>
+<polygon fill="black" points="450,78 440,84 440,72"/>
+<polygon fill="white" points="191,68 407,68 407,77 191,77"/>
+<text x="192" y="77" textLength="214" font-family="Helvetica" font-size="12" fill="blue">
+vxAssignNodeCallback(node, &amp;myfunc);
+</text>
+<line x1="150" y1="95" x2="150" y2="123" stroke="black"/>
+<line x1="450" y1="95" x2="450" y2="123" stroke="black"/>
+<line x1="450" y1="106" x2="150" y2="106" stroke="black" stroke-dasharray="2,2"/>
+<polygon fill="black" points="150,106 160,112 160,100"/>
+<polygon fill="white" points="273,96 326,96 326,105 273,105"/>
+<text x="274" y="105" textLength="51" font-family="Helvetica" font-size="12" fill="blue">
+vx_status
+</text>
+<line x1="150" y1="123" x2="150" y2="151" stroke="black"/>
+<line x1="450" y1="123" x2="450" y2="151" stroke="black"/>
+<line x1="150" y1="134" x2="450" y2="134" stroke="black"/>
+<polygon fill="black" points="450,134 440,140 440,128"/>
+<polygon fill="white" points="239,124 359,124 359,133 239,133"/>
+<text x="240" y="133" textLength="118" font-family="Helvetica" font-size="12" fill="blue">
+vxVerifyGraph(graph);
+</text>
+<line x1="150" y1="151" x2="150" y2="179" stroke="black"/>
+<line x1="450" y1="151" x2="450" y2="179" stroke="black"/>
+<line x1="450" y1="162" x2="150" y2="162" stroke="black" stroke-dasharray="2,2"/>
+<polygon fill="black" points="150,162 160,168 160,156"/>
+<polygon fill="white" points="273,152 326,152 326,161 273,161"/>
+<text x="274" y="161" textLength="51" font-family="Helvetica" font-size="12" fill="blue">
+vx_status
+</text>
+<line x1="150" y1="179" x2="150" y2="207" stroke="black"/>
+<line x1="450" y1="179" x2="450" y2="207" stroke="black"/>
+<line x1="150" y1="190" x2="450" y2="190" stroke="black"/>
+<polygon fill="black" points="450,190 440,196 440,184"/>
+<polygon fill="white" points="233,180 366,180 366,189 233,189"/>
+<text x="234" y="189" textLength="131" font-family="Helvetica" font-size="12" fill="blue">
+vxProcessGraph(graph);
+</text>
+<line x1="150" y1="207" x2="150" y2="224" stroke="black"/>
+<line x1="450" y1="207" x2="450" y2="224" stroke="black"/>
+<line x1="150" y1="224" x2="150" y2="252" stroke="black"/>
+<line x1="450" y1="224" x2="450" y2="252" stroke="black"/>
+<polygon fill="white" points="308,224 592,224 592,246 308,246"/>
+<line x1="308" y1="224" x2="592" y2="224" stroke="black"/>
+<line x1="308" y1="246" x2="592" y2="246" stroke="black"/>
+<line x1="308" y1="224" x2="308" y2="246" stroke="black"/>
+<line x1="592" y1="224" x2="592" y2="246" stroke="black"/>
+<polygon fill="white" points="409,231 489,231 489,240 409,240"/>
+<text x="410" y="240" textLength="78" font-family="Helvetica" font-size="12" fill="black">
+node executes
+</text>
+<line x1="150" y1="252" x2="150" y2="269" stroke="black"/>
+<line x1="450" y1="252" x2="450" y2="269" stroke="black"/>
+<line x1="150" y1="269" x2="150" y2="297" stroke="black"/>
+<line x1="450" y1="269" x2="450" y2="297" stroke="black"/>
+<line x1="450" y1="280" x2="150" y2="280" stroke="black"/>
+<line x1="150" y1="280" x2="160" y2="286" stroke="black"/>
+<line x1="150" y1="280" x2="160" y2="274" stroke="black"/>
+<polygon fill="white" points="250,270 349,270 349,279 250,279"/>
+<text x="251" y="279" textLength="97" font-family="Helvetica" font-size="12" fill="blue">
+myfunc(node, ....);
+</text>
+<line x1="150" y1="297" x2="150" y2="325" stroke="black"/>
+<line x1="450" y1="297" x2="450" y2="325" stroke="black"/>
+<line x1="150" y1="308" x2="450" y2="308" stroke="black" stroke-dasharray="2,2"/>
+<polygon fill="black" points="450,308 440,314 440,302"/>
+<polygon fill="white" points="273,298 326,298 326,307 273,307"/>
+<text x="274" y="307" textLength="51" font-family="Helvetica" font-size="12" fill="blue">
+vx_action
+</text>
+<line x1="150" y1="325" x2="150" y2="353" stroke="black"/>
+<line x1="450" y1="325" x2="450" y2="353" stroke="black"/>
+<polygon fill="white" points="308,325 592,325 592,347 308,347"/>
+<line x1="308" y1="325" x2="592" y2="325" stroke="black"/>
+<line x1="308" y1="347" x2="592" y2="347" stroke="black"/>
+<line x1="308" y1="325" x2="308" y2="347" stroke="black"/>
+<line x1="592" y1="325" x2="592" y2="347" stroke="black"/>
+<polygon fill="white" points="416,332 483,332 483,341 416,341"/>
+<text x="417" y="341" textLength="65" font-family="Helvetica" font-size="12" fill="black">
+action taken
+</text>
+<line x1="150" y1="353" x2="150" y2="370" stroke="black"/>
+<line x1="450" y1="353" x2="450" y2="370" stroke="black"/>
+<line x1="150" y1="370" x2="150" y2="398" stroke="black"/>
+<line x1="450" y1="370" x2="450" y2="398" stroke="black"/>
+<line x1="450" y1="381" x2="150" y2="381" stroke="black" stroke-dasharray="2,2"/>
+<polygon fill="black" points="150,381 160,387 160,375"/>
+<polygon fill="white" points="273,371 326,371 326,380 273,380"/>
+<text x="274" y="380" textLength="51" font-family="Helvetica" font-size="12" fill="blue">
+vx_status
+</text>
+<line x1="150" y1="398" x2="150" y2="415" stroke="black" stroke-dasharray="2,2"/>
+<line x1="450" y1="398" x2="450" y2="415" stroke="black" stroke-dasharray="2,2"/>
+<line x1="150" y1="415" x2="150" y2="443" stroke="black"/>
+<line x1="450" y1="415" x2="450" y2="443" stroke="black"/>
+<line x1="150" y1="426" x2="450" y2="426" stroke="black"/>
+<polygon fill="black" points="450,426 440,432 440,420"/>
+<polygon fill="white" points="233,416 366,416 366,425 233,425"/>
+<text x="234" y="425" textLength="131" font-family="Helvetica" font-size="12" fill="blue">
+vxRetrieveNodeCallback
+</text>
+<line x1="150" y1="443" x2="150" y2="471" stroke="black"/>
+<line x1="450" y1="443" x2="450" y2="471" stroke="black"/>
+<line x1="450" y1="454" x2="150" y2="454" stroke="black" stroke-dasharray="2,2"/>
+<polygon fill="black" points="150,454 160,460 160,448"/>
+<polygon fill="white" points="223,444 376,444 376,453 223,453"/>
+<text x="224" y="453" textLength="151" font-family="Helvetica" font-size="12" fill="blue">
+(vx_nodecomplete_f)myfunc
+</text>
+<line x1="150" y1="465" x2="150" y2="471" stroke="black"/>
+<line x1="450" y1="465" x2="450" y2="471" stroke="black"/>
+</svg>

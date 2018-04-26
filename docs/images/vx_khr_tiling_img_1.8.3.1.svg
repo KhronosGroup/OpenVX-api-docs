@@ -1,0 +1,44 @@
+
+<svg width="192" height="192" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g>
+
+  <rect width="32" height="32" x="0" y="0" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="32" y="0" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="64" y="0" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="96" y="0" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="128" y="0" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="160" y="0" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="0" y="32" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="32" y="32" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="64" y="32" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="96" y="32" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="128" y="32" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="160" y="32" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="0" y="64" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="32" y="64" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="64" y="64" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="96" y="64" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="128" y="64" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="160" y="64" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="0" y="96" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="32" y="96" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="64" y="96" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="96" y="96" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="128" y="96" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="160" y="96" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="0" y="128" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="32" y="128" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="64" y="128" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="96" y="128" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="128" y="128" stroke="black" fill="blue"/>
+  <rect width="32" height="32" x="160" y="128" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="0" y="160" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="32" y="160" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="64" y="160" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="96" y="160" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="128" y="160" stroke="black" fill="cyan"/>
+  <rect width="32" height="32" x="160" y="160" stroke="black" fill="cyan"/>
+
+ </g>
+</svg>
+

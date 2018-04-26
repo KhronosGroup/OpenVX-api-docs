@@ -1,0 +1,54 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+ width="600px" height="157px"
+ viewBox="0 0 600 157"
+ xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"
+ stroke-width="1" text-rendering="geometricPrecision">
+<polygon fill="white" points="133,7 165,7 165,16 133,16"/>
+<text x="150" y="16" textLength="31" font-family="Helvetica" font-size="12" fill="black" text-anchor="middle">
+
+Client
+</text>
+<polygon fill="white" points="426,7 472,7 472,16 426,16"/>
+<text x="450" y="16" textLength="45" font-family="Helvetica" font-size="12" fill="black" text-anchor="middle">
+
+OpenVX
+</text>
+<line x1="150" y1="22" x2="150" y2="50" stroke="black"/>
+<line x1="450" y1="22" x2="450" y2="50" stroke="black"/>
+<line x1="150" y1="33" x2="450" y2="33" stroke="black"/>
+<polygon fill="black" points="450,33 440,39 440,27"/>
+<polygon fill="white" points="250,23 349,23 349,32 250,32"/>
+<text x="251" y="32" textLength="97" font-family="Helvetica" font-size="12" fill="blue">
+vxCreateContext()
+</text>
+<line x1="150" y1="50" x2="150" y2="78" stroke="black"/>
+<line x1="450" y1="50" x2="450" y2="78" stroke="black"/>
+<line x1="450" y1="61" x2="150" y2="61" stroke="black" stroke-dasharray="2,2"/>
+<polygon fill="black" points="150,61 160,67 160,55"/>
+<polygon fill="white" points="270,51 329,51 329,60 270,60"/>
+<text x="271" y="60" textLength="57" font-family="Helvetica" font-size="12" fill="blue">
+vx_context
+</text>
+<line x1="150" y1="78" x2="150" y2="95" stroke="black" stroke-dasharray="2,2"/>
+<line x1="450" y1="78" x2="450" y2="95" stroke="black" stroke-dasharray="2,2"/>
+<line x1="150" y1="95" x2="150" y2="112" stroke="black" stroke-dasharray="2,2"/>
+<line x1="450" y1="95" x2="450" y2="112" stroke="black" stroke-dasharray="2,2"/>
+<polygon fill="white" points="248,96 351,96 351,105 248,105"/>
+<text x="249" y="105" textLength="101" font-family="Helvetica" font-size="12" fill="black">
+all calls to OpenVX
+</text>
+<line x1="150" y1="112" x2="150" y2="129" stroke="black" stroke-dasharray="2,2"/>
+<line x1="450" y1="112" x2="450" y2="129" stroke="black" stroke-dasharray="2,2"/>
+<line x1="150" y1="129" x2="150" y2="157" stroke="black"/>
+<line x1="450" y1="129" x2="450" y2="157" stroke="black"/>
+<line x1="150" y1="140" x2="450" y2="140" stroke="black"/>
+<polygon fill="black" points="450,140 440,146 440,134"/>
+<polygon fill="white" points="222,130 376,130 376,139 222,139"/>
+<text x="223" y="139" textLength="152" font-family="Helvetica" font-size="12" fill="blue">
+vxReleaseContext(&amp;context)
+</text>
+<line x1="150" y1="151" x2="150" y2="157" stroke="black"/>
+<line x1="450" y1="151" x2="450" y2="157" stroke="black"/>
+</svg>

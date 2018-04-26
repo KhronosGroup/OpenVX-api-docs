@@ -1,0 +1,5 @@
+api/
+out/
+xml/__pycache__/
+.asciidoctor/
+.DS_Store

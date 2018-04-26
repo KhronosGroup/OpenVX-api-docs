@@ -1,0 +1,171 @@
+= The OpenVX(TM) Kernel Import Extension
+:regtitle: pass:q,r[^®^]
+Editor: Radhakrishna Giduthuri; The Khronos{regtitle} OpenVX Working Group V 1.0 (Provisional), 8th March 2018
+:doctype: book
+:data-uri:
+:title-logo-image: images/Khronos_RGB.svg
+:source-highlighter: highlight.js
+:encoding: utf-8
+:lang: en
+:toc: left
+:toclevels: 3
+:numbered:
+:icons: font
+:autofit-option:
+:halfimagewidth: width="200"
+:ubar: _
+:star: *
+:chapter-label:
+
+image:images/OpenVX_500px_June16.png[align="center",{halfimagewidth}]
+
+include::copyright-spec.txt[]
+
+<<<
+
+Technical Contributors::
+ - Radhakrishna Giduthuri, AMD
+ - Niclas Danielsson, Axis Communications AB
+ - Frank Brill, Cadence
+ - Thierry Lepley, Cadence
+ - Adam Herr, Intel
+ - Jesse Villarreal, Texas Instruments
+
+== Purpose
+[[vx_parameter,vx_parameter]] [[VX_REFERENCE_NAME,VX_REFERENCE_NAME]] [[vxQueryParameter,vxQueryParameter]] [[VX_CONTEXT_EXTENSIONS,VX_CONTEXT_EXTENSIONS]] [[vx_kernel_initialize_f,vx_kernel_initialize_f]] [[vx_kernel_f,vx_kernel_f]] [[vx_memory_type_e,vx_memory_type_e]] [[vxCopyImagePatch,vxCopyImagePatch]] [[vxMapImagePatch,vxMapImagePatch]] [[vxCreateContext,vxCreateContext]] [[VX_TYPE_INVALID,VX_TYPE_INVALID]] [[VX_SUCCESS,VX_SUCCESS]] [[VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE]] [[VX_ERROR_INVALID_FORMAT,VX_ERROR_INVALID_FORMAT]] [[VX_ERROR_INVALID_GRAPH,VX_ERROR_INVALID_GRAPH]] [[VX_ERROR_INVALID_NODE,VX_ERROR_INVALID_NODE]] [[VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS]] [[VX_ERROR_INVALID_SCOPE,VX_ERROR_INVALID_SCOPE]] [[VX_ERROR_INVALID_TYPE,VX_ERROR_INVALID_TYPE]] [[VX_ERROR_INVALID_VALUE,VX_ERROR_INVALID_VALUE]] [[VX_ERROR_NO_MEMORY,VX_ERROR_NO_MEMORY]] [[VX_ERROR_NO_RESOURCES,VX_ERROR_NO_RESOURCES]] [[VX_ERROR_NOT_COMPATIBLE,VX_ERROR_NOT_COMPATIBLE]] [[VX_ERROR_NOT_ALLOCATED,VX_ERROR_NOT_ALLOCATED]] [[VX_ERROR_NOT_IMPLEMENTED,VX_ERROR_NOT_IMPLEMENTED]] [[VX_ERROR_NOT_SUFFICIENT,VX_ERROR_NOT_SUFFICIENT]] [[VX_ERROR_NOT_SUPPORTED,VX_ERROR_NOT_SUPPORTED]] [[VX_ERROR_OPTIMIZED_AWAY,VX_ERROR_OPTIMIZED_AWAY]] [[VX_ERROR_INVALID_DIMENSION,VX_ERROR_INVALID_DIMENSION]] [[vx_node,vx_node]] [[vx_int32,vx_int32]] [[vxHarrisCornersNode,vxHarrisCornersNode]] [[vxVerifyGraph,vxVerifyGraph]] [[vxQueryReference,vxQueryReference]] [[vx_uint8,vx_uint8]] [[vx_size,vx_size]] [[vxCreateGenericNode,vxCreateGenericNode]] [[vx_enum,vx_enum]] [[vx_char,vx_char]] [[vx_reference,vx_reference]] [[vxReleaseReference,vxReleaseReference]] [[vxCreateImageFromHandle,vxCreateImageFromHandle]] [[vxSetNodeTarget,vxSetNodeTarget]] [[vxHint,vxHint]] [[vxSetGraphParameterByIndex,vxSetGraphParameterByIndex]] [[vxGetStatus,vxGetStatus]] [[vxSetParameterByIndex,vxSetParameterByIndex]] [[vx_image,vx_image]] [[vx_lut,vx_lut]] [[vx_convolution,vx_convolution]] [[vx_delay,vx_delay]] [[vx_distribution,vx_distribution]] [[vx_pyramid,vx_pyramid]] [[vx_threshold,vx_threshold]] [[vx_array,vx_array]] [[vx_object_array,vx_object_array]] [[vx_remap,vx_remap]] [[vx_tensor,vx_tensor]] [[vx_matrix,vx_matrix]] [[vx_scalar,vx_scalar]] [[vxSetReferenceName,vxSetReferenceName]] [[vxSwapImageHandle,vxSwapImageHandle]] [[vx_kernel,vx_kernel]] [[vx_graph,vx_graph]] [[vx_status,vx_status]] [[vx_context,vx_context]] [[vxProcessGraph,vxProcessGraph]] [[vxScheduleGraph,vxScheduleGraph]] [[vxWaitGraph,vxWaitGraph]] [[VX_TYPE_OBJECT_ARRAY,VX_TYPE_OBJECT_ARRAY]] [[vx_uint32,vx_uint32]] [[VX_ERROR_GRAPH_ABANDONED,VX_ERROR_GRAPH_ABANDONED]] This document details an extension to OpenVX 1.2, and references some APIs and symbols that may be found in that API, at https://www.khronos.org/registry/OpenVX/specs/1.2/html/index.html.
+
+[[kernel_import,Kernel Import Extension]] Provide a way of importing an OpenVX kernel from a vendor binary specified by URL.
+
+[ditaa, target="vx_khr_import_kernel"]
+....
+   +-------------------------------------+
+   |                                     |
+   |     +-------------------------+     |
+   |     | cYEL                    |     |
+   |     | vendor binary container |<-------+
+   |     |                         |     |  |   +-----------------------------+
+   |     +------------+------------+     |  |   | Functional description of a |
+   |                  |                  |  |   | kernel. For example, neural |
+   |                  |                  |  |   | network model containers,   |
+   |                  |                  |  |   | such as, NNEF, ONNX, etc.{d}|
+   |                  V                  |  |   +--------------+--------------+
+   |   /--------------+--------------\   |  |                  |
+   |   | c1FF                        |   |  |                  |
+   |   | [Application] import vendor |   |  |                  V
+   |   | binary as an OpenVX kernel  |   |  |   /--------------+--------------\
+   |   | and use it in a graph.      |   |  |   | Vendor or third party tools |
+   |   |                             |   |  +---+ to compile and create binary|
+   |   | Example of imported kernels |   |      | container in vendor format  |
+   |   | include precompiled neural  |   |      | (optional)                  |
+   |   | network models.             |   |      \-----------------------------/
+   |   |                             |   |
+   |   \-----------------------------/   |
+   |                                     |
+   |       scope of this extension       |
+   +-------------------------------------+
+....
+
+The name of this extension is *vx_khr_import_kernel*.
+
+=== Example: AlexNet graph
+In order to use a neural network in OpenVX graph, one may to use the process outlined below:
+
+ - Import a pre-trained neural network kernel into the context from a vendor binary specified by URL. Use the `<<vxImportKernelFromURL>>` API to import the neural network kernel.
+ - Create an OpenVX graph that will use the imported neural network kernel.
+ - Create tensor objects for all neural network parameters (i.e., both input and output)
+ - Instantiate a neural network node into the graph using the `<<vxCreateGenericNode>>` and `<<vxSetParameterByIndex>>` APIs.
+ - Use the `<<vxVerifyGraph>>` API to verify and optimize the graph.
+ - Run the OpenVX graph in a loop
+
+[source,cpp]
+----
+#include <VX/vx_khr_import_kernel.h>
+
+void AlexNet( vx_size batchSize )
+{
+    // create OpenVX context
+    vx_context context = vxCreateContext();
+
+    // import neural network kernel
+    const char * type = "vx_xyz_folder"; // XYZ's kernel binary container
+    const char * url = "/assets/alexnet/"; // folder with AlexNet binary
+    vx_kernel nn_kernel = vxImportKernelFromURL(context, type, url);
+
+    // create input and output tensor objects
+    vx_size input_sizes[] = { 224, 224, 3, batchSize };
+    vx_size output_sizes[] = { 1, 1, 1000, batchSize };
+    vx_tensor input = vxCreateTensor(context, 4, input_sizes, VX_TYPE_UINT8, 0);
+    vx_tensor output = vxCreateTensor(context, 4, output_sizes, VX_TYPE_INT16, 8);
+
+    // create OpenVX graph
+    vx_graph graph = vxCreateGraph(context);
+
+    // add neural network instance as a node in the OpenVX graph
+    vx_node node = vxCreateGenericNode(graph, nn_kernel);
+    vxSetParameterByIndex(node, 0, input);
+    vxSetParameterByIndex(node, 1, output);
+    vxReleaseNode(&node);
+
+    // verify graph
+    vxVerifyGraph(graph);
+
+    // process graph with one batch at a time
+    while( userGetNextJobInput(input) == VX_SUCCESS )
+    {
+        // execute the graph to run AlexNet
+        vxProcessGraph(graph);
+
+        // consume the output from AlexNet
+        userConsumeOutput(output);
+    }
+
+    vxReleaseGraph(&graph);
+    vxReleaseTensor(&input);
+    vxReleaseTensor(&output);
+    vxReleaseContext(&context);
+}
+----
+
+== The Kernel Import API functions
+
+indexterm:[Kernel Import API, vxImportKernelFromURL]
+
+=== vxImportKernelFromURL
+
+Import a kernel from binary specified by URL.
+****
+[verse]
+.Declaration in VX/vx_khr_import_kernel.h
+    <<vx_kernel>> vxImportKernelFromURL(
+            <<vx_context>> __context__,
+            const <<vx_char>> {star} __type__,
+            const <<vx_char>> {star} __url__
+        );
+****
+[horizontal]
+.Parameters
+context:: [in] OpenVX context
+type:: [in] Vendor-specific identifier that indicates to the implementation how to interpret the *url*. For example, if an implementation can interpret the *url* as a __file__, a __folder__ a __symbolic label__, or a __pointer__, then a vendor may choose to use `"vx_<vendor>_file"`, `"vx_<vendor>_folder"`, `"vx_<vendor>_label"`, and `"vx_<vendor>_pointer"`, respectively for this field.  Container types starting with `"vx_khr_"` are reserved.  Refer to vendor documentation for list of container types supported.
+url:: [in] URL to binary container.
+
+[circle]
+.Return Value
+ - On success, a valid `<<vx_kernel>>` object. Calling `<<vxGetStatus>>` with the return value as a parameter will return VX_SUCCESS if the function was successful.
+
+****
+An implementation may provide several different error codes to give useful diagnostic information in the event of failure to create the context.
+****
+
+.Description
+This function imports a kernel object from a URL.
+
+The name of kernel parameters can be queried using the `<<vxQueryReference>>` API with `<<vx_parameter>>` as *ref* and `<<VX_REFERENCE_NAME>>` as *attribute*.
+
+ifdef::backend-pdf[]
+[index]
+== Index
+////////////////////////////////////////////////////////////////
+The index is normally left completely empty, it's contents being
+generated automatically by the DocBook toolchain.
+////////////////////////////////////////////////////////////////
+endif::[]

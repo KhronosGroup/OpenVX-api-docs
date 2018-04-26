@@ -1,0 +1,17 @@
+    <!--
+// vxCreateContext has no parameters!
+// <a[A-Za-z0-9_]+(\[[A-Za-z_]*\]|)>a,
+// <avx_[a-z0-9A-Z_]+>a
+// Stripped VX_API_ENTRY and VX_API_CALL from prototypes
+// Added NOAPI to commands not having VX_API_ENTRY / VX_API_CALL
+    These defines have #ifndef <name> surrounding them:
+#define VX_MAX_LOG_NUM_ENTRIES              (1024)
+#define VX_SCALE_UNITY                      (1024)
+    -->
+
+Validation errors:
+    Doesn't yet support [<enum>length</enum>] in <param> tags for function
+    parameters.
+
+    Doesn't have any syntax for varadic functions, e.g. <param>...</param>
+    doesn't validate and isn't understood.

@@ -1,0 +1,318 @@
+// Copyright (c) 2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+= The OpenVX^(TM)^ Classifier Extension
+:regtitle: pass:q,r[^®^]
+The Khronos{regtitle} OpenVX Working Group; Editors: Tomer Schwartz, Radhakrishna Giduthuri
+:title-logo-image: images/Khronos_RGB.svg
+:data-uri:
+:icons: font
+:toc2:
+:toclevels: 3
+:max-width: 100
+:numbered:
+:imagewidth: 800
+:fullimagewidth: width="800"
+:halfimagewidth: width="400"
+:source-highlighter: coderay
+// Various special / math symbols. This is easier to edit with than Unicode.
+include::config/attribs.txt[]
+
+// Paths to code examples and headers
+:examples: examples
+:headers: examples
+
+image::images/OpenVX_RGB.svg[align="center",{halfimagewidth}]
+include::copyright-spec.txt[]
+
+<<<<
+
+// Table of contents is inserted here
+toc::[]
+
+:leveloffset: 1
+
+= Classifiers Extension
+
+
+[[sec_acknowledgements]]
+== Acknowledgements
+
+This specification would not be possible without the contributions from this
+partial list of the following individuals from the Khronos Working Group and
+the companies that they represented at the time:
+
+  * Radhakrishna Giduthuri - AMD
+  * Frank Brill - Cadence Design Systems
+  * Thierry Lepley - Cadence Design Systems
+  * Tomer Schwartz - Intel
+  * Victor Eruhimov - Itseez3D
+  * Jesse Villarreal - Texas Instruments
+  * Xin Wang - Verisilicon
+
+[[sec_background]]
+== Background and Terminology
+Classification in computer vision is the process of categorizing an image
+into a finite set of classes or labels.
+The process normally involves recognition of the dominant content in an
+image scene.
+The dominant content should get the strongest confidence score irrespective
+of the transformation of that content such as scaling, location or rotation.
+
+In this extension we enable the usage of classification methods on an image
+as a specific class detector.
+Possible methods can be cascade, SVM, etc.
+We do not standardize each of these methods, but rather enable their
+deployment in a standard way.
+We add to OpenVX a method to import an abstract model:
+`<<vx_classifier_model>>`.
+The classifier model can be any kind of classifying technology, and the
+import API can import any kind of file format.
+As an example, a vendor can implement in `<<vxImportClassifierModel>>` a
+parser of the OpenCV cascade XML, and create a cascade classification model
+similar to the one used in OpenCV.
+
+
+[[sec_kernel_names]]
+== Kernel Names
+
+When using `vxGetKernelByName` the following are strings specifying the
+Classifier extension kernel names:
+
+  * org.khronos.clasifier_extension.scan_classifier
+
+
+[[module_documentation]]
+= Module Documentation
+
+
+[[group_object_classifier_model]]
+== Group_object_classifier_model
+
+// @ingroup group_basic_objects
+
+// @brief
+An Opaque object that contain a classifier model.
+The model can be cascade model or SVM model or any other machine learning
+model.
+
+// @details
+The Object is created by importing data from a binary format.
+The specification will not define such a format.
+Extensions to the specification will be added in order to define such binary
+formats.
+
+// tag::Group_object_classifier_model:summary[]
+*Typedefs*
+
+  * `<<vx_classifier_model>>`
+
+*Enumerations*
+
+  * `<<vx_classifier_model_format_e>>`
+  * `<<vx_classifier_type_e>>`
+
+*Functions*
+
+  * `<<vxImportClassifierModel>>`
+  * `<<vxReleaseClassifierModel>>`
+
+// end::Group_object_classifier_model:summary[]
+
+// tag::Group_object_classifier_model:details[]
+=== Typedefs
+
+// tag::refpage:vx_classifier_model[]
+// [desc='',type='basetypes']
+==== vx_classifier_model
+
+// Brief text:
+classification model to be used in `<<vxScanClassifierNode>>`.
+The classification models are loadable by undefined binary format see
+`<<vxImportClassifierModel>>`.
+Extensions will be added to the specification, to support a defined binary
+format.
+
+include::api/basetypes/vx_classifier_model.txt[]
+
+// end::refpage:vx_classifier_model[]
+
+=== Enumerations
+
+// tag::refpage:vx_classifier_model_format_e[]
+// [desc='',type='enums']
+==== vx_classifier_model_format_e
+
+// Brief text:
+Classifier model format enums.
+In the main specification only undefined binary format is supported.
+Extensions to the specification will be added in order to support specific
+binary format.
+
+include::api/enums/vx_classifier_model_format_e.txt[]
+
+*Enumerator*
+
+  * [[VX_CLASSIFIER_MODEL_UNDEFINED]] `VX_CLASSIFIER_MODEL_UNDEFINED` -
+    Undefined binary format.
+    Using this enumeration will result in an implementation defined
+    behaviour.
+// end::refpage:vx_classifier_model_format_e[]
+
+// tag::refpage:vx_classifier_type_e[]
+// [desc='',type='enums']
+==== vx_classifier_type_e
+
+// Brief text:
+The type enumeration lists all classifier extension types.
+
+include::api/enums/vx_classifier_type_e.txt[]
+
+*Enumerator*
+
+  * [[VX_TYPE_CLASSIFER_MODEL]] `VX_TYPE_CLASSIFER_MODEL` - A
+    `<<vx_classifier_model>>` type.
+// end::refpage:vx_classifier_type_e[]
+
+=== Functions
+
+// tag::refpage:vxImportClassifierModel[]
+// [desc='',type='protos']
+==== vxImportClassifierModel
+
+// Brief text:
+Creates an opaque reference classifier model This function creates a
+classifier model to be used in `<<vxScanClassifierNode>>`.
+The object classifier object is a read-only constant object.
+It cannot be changed during graph execution.
+
+include::api/protos/vxImportClassifierModel.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _context_ - Reference to the context where to create the
+    ClassifierModel.
+  * `[in]` _format_ - The binary format which contain the classifier model.
+    See `<<vx_classifier_model_format_e>>`.
+    Currently only undefined binary format is supported.
+    Extensions will be added to the specification, to support a
+    classification model defined binary format.
+  * `[in]` _ptr_ - A memory pointer to the binary format.
+  * `[in]` _length_ - size in bytes of binary format data.
+
+*Returns:* A ClassifierModel reference `<<vx_classifier_model>>`.
+Any possible errors preventing a successful creation should be checked using
+`vxGetStatus`.
+// end::refpage:vxImportClassifierModel[]
+
+// tag::refpage:vxReleaseClassifierModel[]
+// [desc='',type='protos']
+==== vxReleaseClassifierModel
+
+// Brief text:
+Releases a reference of an ClassifierModel object.
+The object may not be garbage collected until its total reference and its
+contained objects count is zero.
+After returning from this function the reference is zeroed/cleared.
+
+include::api/protos/vxReleaseClassifierModel.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _model_ - The pointer to the ClassifierModel to release.
+
+*Returns:* A `vx_status_e` enumeration.
+
+*Return Values*
+
+  * <tt> -
+// end::refpage:vxReleaseClassifierModel[]
+
+// end::Group_object_classifier_model:details[]
+
+
+[[group_vision_function_classifier]]
+== Scan Classifier
+
+// @ingroup group_vision_functions
+
+// @brief
+Scans a feature-map (input_feature_map) and do the classification for each
+scan-window.
+
+// @details
+This function scans a feature-map.
+Each window in the feature map is classified by a classification model.
+The classification models are loadable by undefined binary format see
+`<<vxImportClassifierModel>>`.
+Extensions will be added to the specification, to support a defined binary
+format.
+Classification models can be any machine learning classification method.
+Examples are Cascade, SVM, and Neural Networks.
+
+// tag::group_vision_function_classifier:summary[]
+*Functions*
+
+  * `<<vxScanClassifierNode>>`
+
+// end::group_vision_function_classifier:summary[]
+
+// tag::group_vision_function_classifier:details[]
+=== Functions
+
+// tag::refpage:vxScanClassifierNode[]
+// [desc='',type='protos']
+==== vxScanClassifierNode
+
+// Brief text:
+[Graph] Scans a feature-map (input_feature_map) and detect the
+classification for each scan-window.
+
+include::api/protos/vxScanClassifierNode.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _graph_ - The reference to the graph
+  * `[in]` _input_feature_map_ - The Feature-map, example is the output of
+    `vxHOGFeaturesNode`.
+  * `[in]` _model_ - The pre-trained model loaded.
+    Loaded using `<<vxImportClassifierModel>>`
+  * `[in]` _scan_window_width_ - Width of the scan window
+  * `[in]` _scan_window_height_ - Height of the scan window
+  * `[in]` _step_x_ - Horizontal step-size (along x-axis)
+  * `[in]` _step_y_ - Vertical step-size (along y-axis)
+  * `[out]` _object_confidences_ - [Optional] An array of confidences measure,
+    the measure is of type `VX_TYPE_UINT16`.
+    The confidence measure is defined by the extensions which define
+    classification model with defined binary format.
+    This output can be used as class index as well.
+    In case we detect several different classes in single execution.
+    The output will be an array of indexes of the classes.
+  * `[out]` _object_rectangles_ - An array of object positions, in
+    `VX_TYPE_RECTANGLE`
+  * `[out]` _num_objects_ - [optional] The number of object detected in a
+    `VX_SIZE` scalar
+
+[NOTE]
+.Note
+====
+The border mode `VX_NODE_BORDER` value `VX_BORDER_UNDEFINED` is supported.
+====
+
+*Returns:* `vx_node`.
+
+*Return Values*
+
+  * `vx_node` - A node reference.
+    Any possible errors preventing a successful creation should be checked
+    using `vxGetStatus`
+// end::refpage:vxScanClassifierNode[]
+
+// end::group_vision_function_classifier:details[]

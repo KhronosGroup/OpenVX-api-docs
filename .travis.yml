@@ -13,7 +13,9 @@ addons:
         sources:
             - ubuntu-toolchain-r-test
         packages:
-            - lcov wget
+            - lcov wget unzip build-essential python3 git cmake bison flex libffi-dev zip
+            - libgmp-dev libxml2-dev libgdk-pixbuf2.0-dev libcairo2-dev libpango1.0-dev 
+            - ttf-lyx gtk-doc-tools ghostscript ruby-dev default-jre
   
 branches:
   - kg/build-verification
@@ -21,8 +23,6 @@ branches:
 
 before_script:
   - uname -a
-  - apt-get update -qq && apt-get install -y -qq wget unzip build-essential python3 git cmake bison flex libffi-dev zip
-  - apt-get install -y -qq libgmp-dev libxml2-dev libgdk-pixbuf2.0-dev libcairo2-dev libpango1.0-dev ttf-lyx gtk-doc-tools ghostscript ruby-dev default-jre
   - gem install asciidoctor-diagram --pre
   - gem install asciidoctor-pdf --pre
   - gem install asciidoctor-mathematical --pre

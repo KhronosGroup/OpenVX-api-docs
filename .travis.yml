@@ -36,4 +36,4 @@ after_success:
 
 notifications:
   email:
-- kiritigowda@gmail.com
+    - kiritigowda@gmail.com

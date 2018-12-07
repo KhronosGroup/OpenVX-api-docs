@@ -18,7 +18,6 @@ addons:
             - ttf-lyx gtk-doc-tools ghostscript ruby-dev default-jre
   
 branches:
-  - kg/travis-build-verification
   - openvx_1.2
 
 before_script:

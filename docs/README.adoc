@@ -1,3 +1,5 @@
+image:https://travis-ci.com/KhronosGroup/OpenVX-api-docs.svg?branch=openvx_1.2["Build Status", link="https://travis-ci.com/KhronosGroup/OpenVX-api-docs"]
+
 = OpenVX^(TM)^ Specification Build Instructions and Notes
 :toc2:
 :toclevels: 1

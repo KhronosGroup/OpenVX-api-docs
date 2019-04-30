@@ -22,9 +22,9 @@ branches:
 
 before_script:
   - uname -a
-  - gem install asciidoctor-diagram --pre
+  - gem install asciidoctor-diagram -v 1.5.14
   - gem install asciidoctor-pdf --pre
-  - gem install asciidoctor-mathematical --pre
+  - gem install asciidoctor-mathematical -v 0.2.2
   - gem install coderay --pre
   
 script:

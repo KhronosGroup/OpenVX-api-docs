@@ -16,6 +16,9 @@
  */
 #ifndef _OPENVX_IMPORT_H_
 #define _OPENVX_IMPORT_H_
+#ifdef  __cplusplus
+extern "C" {
+#endif
 /*!
  * \file
  * \brief The OpenVX Import API
@@ -180,4 +183,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseImport(vx_import *import);
  */
 VX_API_ENTRY vx_reference VX_API_CALL vxGetImportReferenceByName(vx_import import, const vx_char *name);
 
+#ifdef  __cplusplus
+}
+#endif
 #endif

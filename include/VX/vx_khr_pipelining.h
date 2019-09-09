@@ -34,6 +34,13 @@ extern "C" {
  * PIPELINING API
  */
 
+/*! \brief The Pipelining, Streaming and Batch Processing Extension Library Set
+ *
+ * \ingroup group_pipelining
+ */
+#define VX_LIBRARY_KHR_PIPELINING_EXTENSION (0x1)
+
+
 /*! \brief Extra enums.
  *
  * \ingroup group_pipelining
@@ -250,7 +257,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterEnqueueReadyRef(vx_graph grap
  *
  * \param [in] graph Graph reference
  * \param [in] graph_parameter_index Graph parameter index
- * \param [in] refs Pointer to an array of max elements 'max_refs'
  * \param [out] refs Dequeued references filled in the array
  * \param [in] max_refs Max number of references to dequeue
  * \param [out] num_refs Actual number of references dequeued.
@@ -278,7 +284,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
  *
  * \param [in] graph Graph reference
  * \param [in] graph_parameter_index Graph parameter index
- * \param [out] num_refs Number of references that can be dequeued using
+ * \param [out] num_refs Number of references that can be dequeued using <tt>\ref vxGraphParameterDequeueDoneRef</tt>
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors.
@@ -459,7 +465,7 @@ typedef struct _vx_event {
      * (\ref vxSendUserEvent) in the case of user events. */
 
     vx_event_info_t event_info;
-    /*!< parameter structure associated with a event. Depends on type of the event */
+    /*!< parameter structure associated with an event. Depends on type of the event */
 
 } vx_event_t;
 
@@ -469,7 +475,7 @@ typedef struct _vx_event {
  * <tt> \ref vxWaitEvent </tt> will remain blocked until events are re-enabled using <tt> \ref vxEnableEvents </tt>
  * and a new event is received.
  *
- * If <tt> \ref vxReleaseContext </tt> is called while a application is blocked on <tt> \ref vxWaitEvent </tt>, the
+ * If <tt> \ref vxReleaseContext </tt> is called while an application is blocked on <tt> \ref vxWaitEvent </tt>, the
  * behavior is not defined by OpenVX.
  *
  * If <tt> \ref vxWaitEvent </tt> is called simultaneously from multiple thread/task contexts
@@ -488,6 +494,8 @@ typedef struct _vx_event {
 VX_API_ENTRY vx_status VX_API_CALL vxWaitEvent(vx_context context, vx_event_t *event, vx_bool do_not_block);
 
 /*! \brief Enable event generation
+ * 
+ * Depending on the implementation, events may be either enabled or disabled by default.
  *
  * \param context [in] OpenVX context
  *
@@ -517,10 +525,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxDisableEvents(vx_context context);
 /*! \brief Generate user defined event
  *
  * \param context [in] OpenVX context
- * \param app_value [in] Application-specified value that will be returned to user as part of \ref vx_event_t.app_value.
+ * \param app_value [in] Application-specified value that will be returned to user as part of vx_event_t.app_value
  *                       NOT used by implementation.
  * \param parameter [in] User defined event parameter. NOT used by implementation.
- *                       Returned to user as part \ref vx_event_t.event_info.user_event.user_event_parameter field
+ *                       Returned to user as part vx_event_t.event_info.user_event.user_event_parameter field
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors; any other value indicates failure.
@@ -634,7 +642,7 @@ enum vx_kernel_attribute_streaming_e {
  * triggered.
  *
  * \param graph [in] Reference to the graph to enable streaming mode of execution.
- * \param node  [in][optional] Reference to the node to be used for trigger node of the graph.
+ * \param trigger_node  [in][optional] Reference to the node to be used for trigger node of the graph.
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors; any other value indicates failure.
@@ -646,7 +654,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_nod
 
 /*! \brief Start streaming mode of graph execution
  *
- * In streaming mode of graph execution, once a application starts graph execution
+ * In streaming mode of graph execution, once an application starts graph execution
  * further intervention of the application is not needed to re-schedule a graph;
  * i.e. a graph re-schedules itself and executes continuously until streaming mode of execution is stopped.
  *
@@ -658,9 +666,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_nod
  * The graph MUST be verified via \ref vxVerifyGraph before calling this API.
  * Also user application MUST ensure no previous executions of the graph are scheduled before calling this API.
  *
- * After streaming mode of a graph has been started, the following APIs should \a \b not be used on that graph by an application:
- * <tt>\ref vxScheduleGraph</tt>, <tt>\ref vxWaitScheduleGraphDone</tt>, and
- * <tt>\ref vxIsScheduleGraphAllowed</tt>.
+ * After streaming mode of a graph has been started, a <tt>\ref vxScheduleGraph</tt> should **not** be used on that
+ * graph by an application.
  *
  * <tt>\ref vxWaitGraph</tt> can be used as before to wait for all pending graph executions
  * to complete.

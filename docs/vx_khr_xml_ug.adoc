@@ -1,0 +1,765 @@
+// Copyright (c) 2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+= The OpenVX^(TM)^ XML Schema User Guide
+:regtitle: pass:q,r[^®^]
+The Khronos{regtitle} OpenVX Working Group; Editors: Jesse Villarreal
+:title-logo-image: images/Khronos_RGB.svg
+:data-uri:
+:icons: font
+:toc2:
+:toclevels: 3
+:max-width: 100
+:numbered:
+:imagewidth: 800
+:fullimagewidth: width="800"
+:halfimagewidth: width="400"
+:source-highlighter: coderay
+// Various special / math symbols. This is easier to edit with than Unicode.
+include::config/attribs.txt[]
+
+// Paths to code examples and headers
+:examples: examples
+:headers: examples
+
+image::images/OpenVX_RGB.svg[align="center",{halfimagewidth}]
+include::copyright-spec.txt[]
+
+Contributors::
+
+ * Jesse Villarreal, Texas Instruments
+
+<<<<
+
+// Table of contents is inserted here
+toc::[]
+
+:leveloffset: 1
+
+
+= XML Schema Extension User Guide
+
+
+[[sec_purpose]]
+== Purpose
+
+The purpose of this user guide is to suppliment the OpenVX Schema extension with
+additional schema element descriptions and examples corresponding to a specific
+version of the OpenVX standard.
+
+
+[[sec_schema]]
+== Schema
+
+The XML Schema described in this user guide is available at the following url:
+
+  * https://www.khronos.org/registry/vx/schema/openvx-1-1.xsd
+
+[[sec_details]]
+= XML Description
+
+The XML Schema provides the necessary specification required to validate a
+OpenVX conformant XML file, but it alone is not sufficient to ensure full
+compatibility with OpenVX compliant implementations.
+Therefore, this section is intended supplement the schema by providing more
+details and examples of a conformant xml document.
+
+The rest of this section will discuss each xml element in more detail.
+The examples contained in this section are a sample of a larger example xml
+file which is included in section <<sec_example>> "XML Example"
+
+Each element described in this section will also reference the schema type
+name in order to help cross-reference the schema.
+For all elements which can be references, an optional "name" field can be
+used so that the import program can reference a reference by name.
+
+
+[[header]]
+== OpenVX Element
+
+*Schema type:* openvx.type
+
+The 'openvx' tag encapsulates the entire OpenVX element.
+The 'references' attribute informs the parser as to the the number of OpenVX
+references that are contained in the xml file.
+Each data and graph object that corresponds to an OpenVX object will have a
+unique reference number in the xml file.
+The range of valid reference numbers should be between 0 and
+["references"-1].
+These references may appear in any order.
+Below is an example of the openvx element which indicates that the xml file
+has 124 objects enumerated.
+
+[source,xml]
+--------------------------------------
+<openvx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://www.khronos.org/registry/vx/schema"
+        xsi:schemaLocation="https://www.khronos.org/registry/vx/schema openvx-1-1.xsd"
+        references="127">
+--------------------------------------
+
+
+[[sec_graph_objects]]
+== OpenVX Graph Objects
+
+*Schema type:* graph.type
+
+Graph elements each have their own reference number (and optional name), and
+may have child elements consisting of nodes, graph parameters, and virtual
+objects associated with the graph.
+The following example can be used as a reference for the discussion on graph
+objects.
+
+[source,xml]
+--------------------------------------
+<graph reference="50" name="GRAPH1" >
+    <node reference="62" bordermode="CONSTANT">
+        <kernel>org.khronos.openvx.sobel_3x3</kernel>
+        <parameter index="0" reference="0" />
+        <parameter index="1" reference="51" />
+        <parameter index="2" reference="52" />
+        <borderconst>#00000005</borderconst>
+    </node>
+    <node reference="64">
+        <kernel>org.khronos.openvx.convertdepth</kernel>
+        <parameter index="0" reference="51" />
+        <parameter index="1" reference="1" />
+        <parameter index="2" reference="63" />
+        <parameter index="3" reference="61" />
+    </node>
+    <node reference="66" is_replicated="true">
+        <kernel>org.khronos.openvx.add</kernel>
+        <parameter index="0" reference="36" replicate_flag="true" />
+        <parameter index="1" reference="41" replicate_flag="true" />
+        <parameter index="2" reference="65" replicate_flag="false" />
+        <parameter index="3" reference="46" replicate_flag="true" />
+    </node>
+    <parameter index="0" node="62" parameter="0" />
+    <parameter index="1" node="64" parameter="1" />
+    <image reference="51" width="0" height="0" format="VIRT" />
+    <image reference="52" width="0" height="0" format="S016" />
+    <image reference="53" width="320" height="240" format="VIRT" />
+    <image reference="54" width="640" height="480" format="U008" />
+    <pyramid reference="55" width="0" height="0" format="VIRT" scale="0.500000" levels="4" />
+    <pyramid reference="56" width="640" height="480" format="VIRT" scale="0.500000" levels="4" />
+    <pyramid reference="57" width="640" height="480" format="U008" scale="0.500000" levels="4" />
+    <array reference="58" capacity="0" elemType="VX_TYPE_INVALID" />
+    <array reference="59" capacity="0" elemType="VX_TYPE_KEYPOINT" />
+    <array reference="60" capacity="1000" elemType="VX_TYPE_KEYPOINT" />
+</graph>
+--------------------------------------
+
+
+[[sec_nodes]]
+=== Nodes
+
+*Schema type:* node.type
+
+Each node element of the graph has its own reference number and one child
+element specifying the kernel name.
+The node element has the following optional attributes: name, bordermode,
+and is_replicated.
+Each node element contains "n" number of parameter child elements, where "n"
+is equal to the number of parameters corresponding to the kernel specified.
+The index attribute of each parameter should monotonically increment.
+The reference attribute associated with each parameter should correspond to
+the reference number of the data object which is enumerated either as a
+virtual object reference within the graph, or elsewhere in the xml document.
+The parameter elements have the optional attribute: replicate_flag.
+
+
+[[sec_graphparam]]
+=== Graph Parameters
+
+*Schema type:* graph.parameter.type
+
+Graph parameters do not have a reference number.
+The index attribute of each parameter should monotonically increment.
+The graph parameter identifies which parameter of which node is being
+exported as a graph parameter at the corresponding index.
+
+
+[[sec_virtdataobjects]]
+=== Virtual Data Objects
+
+*Schema type:* virtual.image.type, virtual.array.type, virtual.pyramid.type
+
+Typically, data objects are enumerated outside of the graph element.
+However, virtual data objects (such as virtual arrays, virtual images, and
+virtual pyramids) are always listed as child elements of the graph element
+that they are associated with.
+Since virtual objects may not have accessible memory to the user, the xml
+does not specify the data of virtual objects.
+The format of the virtual data objects will be discussed further in
+<<sec_data_objects>>.
+
+
+[[sec_data_objects]]
+== OpenVX Data Objects
+
+Each of the data objects specified in OpenVX can be represented in xml
+representation.
+For each data object, the minimum information required to create the data
+object in a context is required.
+Optionally, the actual data included in the data object may also be
+represented in child elements of the object element in the xml.
+This way, during xml import into a context, the import utility should create
+all listed data objects, and if data is also specified for any data objects,
+then this data should be initialized within the imported data object.
+During xml export, if a data object has been created but not yet written to,
+then it may not be necessary to export the uninitialized data into the xml
+file for the associated data object.
+
+Since virtual objects (virtual arrays, virtual images, or virtual pyramids)
+may not have accessible memory to the user, the xml does not specify the
+data of virtual objects.
+
+
+[[sec_array]]
+=== Array
+
+*Schema type:* array.type
+
+Each array element below is a valid example of a virtual arrays within a
+graph element:
+
+[source,xml]
+--------------------------------------
+<array reference="48" capacity="0" elemType="VX_TYPE_INVALID" />
+<array reference="49" capacity="0" elemType="VX_TYPE_KEYPOINT" />
+<array reference="50" capacity="1000" elemType="VX_TYPE_KEYPOINT" />
+--------------------------------------
+
+Each array element is a valid example of array objects.
+Please refer to the schema under array.type for all supported data types and
+formats of arrays:
+
+[source,xml]
+--------------------------------------
+<array reference="96" capacity="10" elemType="VX_TYPE_UINT8">
+    <uint8>2 3 4 5 6 7 8 9 10 11 </uint8>
+</array>
+<array reference="97" capacity="20" elemType="VX_TYPE_CHAR">
+    <char>a 13,.;^-</char>
+</array>
+<array reference="98" capacity="4" elemType="VX_TYPE_ENUM">
+    <enum>-1 0 45057 </enum>
+</array>
+<array reference="99" capacity="4" elemType="VX_TYPE_DF_IMAGE">
+    <df_image>RGB2 U008 VIRT </df_image>
+</array>
+<array reference="100" capacity="3" elemType="VX_TYPE_KEYPOINT">
+    <keypoint>
+        <x>0</x>
+        <y>0</y>
+        <strength>2.300000</strength>
+        <scale>6.555550</scale>
+        <orientation>0.905900</orientation>
+        <tracking_status>5</tracking_status>
+        <error>3.545500</error>
+    </keypoint>
+    <keypoint>
+        <x>400</x>
+        <y>235</y>
+        <strength>5.222200</strength>
+        <scale>1.221000</scale>
+        <orientation>0.569500</orientation>
+        <tracking_status>8</tracking_status>
+        <error>462.500000</error>
+    </keypoint>
+</array>
+<array reference="101" capacity="5" elemType="VX_TYPE_RECTANGLE">
+    <rectangle>
+        <start_x>0</start_x>
+        <start_y>0</start_y>
+        <end_x>640</end_x>
+        <end_y>320</end_y>
+    </rectangle>
+    <rectangle>
+        <start_x>65</start_x>
+        <start_y>32</start_y>
+        <end_x>128</end_x>
+        <end_y>362</end_y>
+    </rectangle>
+</array>
+<array reference="102" capacity="6" elemType="VX_TYPE_COORDINATES2D">
+    <coordinates2d>
+        <x>1</x>
+        <y>2</y>
+    </coordinates2d>
+    <coordinates2d>
+        <x>0</x>
+        <y>55</y>
+    </coordinates2d>
+</array>
+<array reference="103" capacity="6" elemType="VX_TYPE_COORDINATES3D">
+    <coordinates3d>
+        <x>1</x>
+        <y>2</y>
+        <z>3</z>
+    </coordinates3d>
+    <coordinates3d>
+        <x>55</x>
+        <y>66</y>
+        <z>77</z>
+    </coordinates3d>
+</array>
+<array reference="104" capacity="8" elemType="VX_TYPE_INT8">
+    <int8>5 0 -3 -8 </int8>
+</array>
+<array reference="105" capacity="6" elemType="VX_TYPE_INT16">
+    <int16>200 100 0 -100 -200 </int16>
+</array>
+<array reference="106" capacity="6" elemType="VX_TYPE_INT32">
+    <int32>200000 100000 0 -100000 -200000 </int32>
+</array>
+<array reference="107" capacity="3" elemType="VX_TYPE_BOOL">
+    <bool>true false true </bool>
+</array>
+<array reference="108" capacity="4" elemType="VX_TYPE_SIZE">
+    <size>8000 24000 </size>
+</array>
+<array reference="109" capacity="2" elemType="VX_TYPE_FLOAT64">
+    <float64>1235.255660 -563.256700 </float64>
+</array>
+<array reference="110" capacity="8" elemType="VX_TYPE_UINT64">
+    <uint64>9000000000 8000000000 7000000000 6000000000 </uint64>
+</array>
+<array reference="111" capacity="6" elemType="VX_TYPE_UINT16">
+    <uint16>290 100 0 100 260 </uint16>
+</array>
+<array reference="112" capacity="6" elemType="VX_TYPE_UINT32">
+    <uint32>200000 100000 0 100000 200000 </uint32>
+</array>
+<array reference="113" capacity="2" elemType="VX_TYPE_FLOAT32">
+    <float32>1235.255615 -563.256714 </float32>
+</array>
+<array reference="114" capacity="8" elemType="VX_TYPE_INT64">
+    <int64>9000000000 8000000000 -7000000000 -6000000000 </int64>
+</array>
+<array reference="120" capacity="4" elemType="USER_STRUCT_0">
+    <user>32 0 0 0 158 127 0 0 154 153 153 153 153 153 9 64 </user>
+    <user>64 0 0 0 158 127 0 0 154 153 153 153 153 153 25 64 </user>
+</array>
+--------------------------------------
+
+
+[[sec_con]]
+=== Convolution
+
+*Schema type:* convolution.type
+
+Below is a valid example of a convolution object:
+
+[source,xml]
+--------------------------------------
+<convolution reference="31" rows="3" columns="3" scale="16">
+    <int16 row="0" column="0">-1</int16>
+    <int16 row="0" column="1">0</int16>
+    <int16 row="0" column="2">1</int16>
+    <int16 row="1" column="0">-2</int16>
+    <int16 row="1" column="1">0</int16>
+    <int16 row="1" column="2">1</int16>
+    <int16 row="2" column="0">-1</int16>
+    <int16 row="2" column="1">0</int16>
+    <int16 row="2" column="2">1</int16>
+</convolution>
+--------------------------------------
+
+
+[[sec_delay]]
+=== Delay
+
+*Schema type:* delay.type
+
+Delay object types can be one of many of the other data types.
+For list of supported delay types, please refer to the schema under
+delay.type.
+Below is a valid example of a delay object:
+
+[source,xml]
+--------------------------------------
+<delay reference="55" count="3">
+    <image reference="56" width="6" height="4" format="U008">
+    </image>
+    <image reference="57" width="6" height="4" format="U008">
+    </image>
+    <image reference="58" width="6" height="4" format="U008">
+    </image>
+</delay>
+--------------------------------------
+
+
+[[sec_dist]]
+=== Distribution
+
+*Schema type:* distribution.type
+
+Below is a valid example of a distribution object:
+
+[source,xml]
+--------------------------------------
+<distribution reference="34" bins="16" offset="0" range="256">
+    <frequency bin="0">0</frequency>
+    <frequency bin="1">1</frequency>
+    <frequency bin="2">2</frequency>
+    <frequency bin="3">3</frequency>
+    <frequency bin="4">4</frequency>
+    <frequency bin="5">5</frequency>
+    <frequency bin="6">6</frequency>
+    <frequency bin="7">7</frequency>
+    <frequency bin="8">8</frequency>
+    <frequency bin="9">7</frequency>
+    <frequency bin="10">6</frequency>
+    <frequency bin="11">5</frequency>
+    <frequency bin="12">4</frequency>
+    <frequency bin="13">3</frequency>
+    <frequency bin="14">2</frequency>
+    <frequency bin="15">1</frequency>
+</distribution>
+--------------------------------------
+
+
+[[sec_image]]
+=== Image
+
+*Schema type:* image.type
+
+Below are valid examples of image objects:
+
+[source,xml]
+--------------------------------------
+<image reference="0" width="6" height="4" format="U008">
+    <roi reference="124" start_x="2" start_y="1" end_x="4" end_y="2">
+        <roi reference="126" start_x="0" start_y="0" end_x="1" end_y="1" />
+    </roi>
+    <roi reference="125" start_x="2" start_y="1" end_x="4" end_y="2" />
+    <rectangle plane="0">
+        <start_x>0</start_x>
+        <start_y>0</start_y>
+        <end_x>6</end_x>
+        <end_y>4</end_y>
+        <pixels>
+            <uint8 x="0" y="0">0</uint8>
+            <uint8 x="1" y="0">1</uint8>
+            <uint8 x="2" y="0">2</uint8>
+            <uint8 x="3" y="0">3</uint8>
+            <uint8 x="4" y="0">4</uint8>
+            <uint8 x="5" y="0">5</uint8>
+            <uint8 x="0" y="1">6</uint8>
+            <uint8 x="1" y="1">7</uint8>
+            <uint8 x="2" y="1">8</uint8>
+            <uint8 x="3" y="1">9</uint8>
+            <uint8 x="4" y="1">10</uint8>
+            <uint8 x="5" y="1">11</uint8>
+            <uint8 x="0" y="2">12</uint8>
+            <uint8 x="1" y="2">13</uint8>
+            <uint8 x="2" y="2">14</uint8>
+            <uint8 x="3" y="2">15</uint8>
+            <uint8 x="4" y="2">16</uint8>
+            <uint8 x="5" y="2">17</uint8>
+            <uint8 x="0" y="3">18</uint8>
+            <uint8 x="1" y="3">19</uint8>
+            <uint8 x="2" y="3">20</uint8>
+            <uint8 x="3" y="3">21</uint8>
+            <uint8 x="4" y="3">22</uint8>
+            <uint8 x="5" y="3">23</uint8>
+        </pixels>
+    </rectangle>
+</image>
+<image reference="1" width="6" height="4" format="U008">
+</image>
+<image reference="2" width="64" height="32" format="RGB2">
+    <uniform>
+        <rgb>#00ff80</rgb>
+    </uniform>
+</image>
+--------------------------------------
+
+
+[[sec_lut]]
+=== LUT
+
+*Schema type:* lut.type
+
+Below is a valid example of a lut object:
+
+[source,xml]
+--------------------------------------
+<lut reference="32" count="256" elemType="VX_TYPE_UINT8">
+    <uint8 index="0">255</uint8>
+    <uint8 index="1">0</uint8>
+    <uint8 index="2">1</uint8>
+    <uint8 index="3">2</uint8>
+    <uint8 index="4">3</uint8>
+    <uint8 index="5">4</uint8>
+    <uint8 index="6">5</uint8>
+    <uint8 index="7">6</uint8>
+    <uint8 index="8">7</uint8>
+
+// skipping indicies 9-253 to save space
+
+    <uint8 index="252">251</uint8>
+    <uint8 index="253">252</uint8>
+    <uint8 index="254">253</uint8>
+    <uint8 index="255">254</uint8>
+</lut>
+--------------------------------------
+
+
+[[sec_matrix]]
+=== Matrix
+
+*Schema type:* matrix.type
+
+Below is a valid example of a matrix object:
+
+[source,xml]
+--------------------------------------
+<matrix reference="14" elemType="VX_TYPE_FLOAT32" rows="3" columns="3">
+    <float32 row="0" column="0">-3.141593</float32>
+    <float32 row="0" column="1">0.000000</float32>
+    <float32 row="0" column="2">3.141593</float32>
+    <float32 row="1" column="0">-6.283185</float32>
+    <float32 row="1" column="1">0.000000</float32>
+    <float32 row="1" column="2">6.283185</float32>
+    <float32 row="2" column="0">-3.141593</float32>
+    <float32 row="2" column="1">0.000000</float32>
+    <float32 row="2" column="2">3.141593</float32>
+</matrix>
+--------------------------------------
+
+
+[[sec_object_array]]
+=== Object Array
+
+*Schema type:* object_array.type
+
+Object Array types can be one of many of the other data types.
+For list of supported object array types, please refer to the schema under
+object_array.type.
+Below is a valid example of an object_array object:
+
+[source,xml]
+--------------------------------------
+<object_array reference="108" count="3">
+    <image reference="109" width="6" height="4" format="U008">
+    </image>
+    <image reference="110" width="6" height="4" format="U008">
+    </image>
+    <image reference="111" width="6" height="4" format="U008">
+    </image>
+</object_array>
+--------------------------------------
+
+
+[[sec_pyramid]]
+=== Pyramid
+
+*Schema type:* pyramid.type
+
+Below is a valid example of a pyramid object:
+
+[source,xml]
+--------------------------------------
+<pyramid reference="35" width="24" height="16" format="U008" scale="0.500000" levels="4">
+    <image reference="36" width="24" height="16" format="U008">
+    </image>
+    <image reference="37" width="12" height="8" format="U008">
+    </image>
+    <image reference="38" width="6" height="4" format="U008">
+    </image>
+    <image reference="39" width="3" height="2" format="U008">
+    </image>
+</pyramid>
+--------------------------------------
+
+
+[[sec_remap]]
+=== Remap
+
+*Schema type:* remap.type
+
+Below is a valid example of a remap object:
+
+[source,xml]
+--------------------------------------
+<remap reference="33" src_width="6" src_height="4" dst_width="6" dst_height="4">
+    <point src_x="0.500000" src_y="0.500000" dst_x="0" dst_y="0" />
+    <point src_x="1.000000" src_y="0.500000" dst_x="1" dst_y="0" />
+    <point src_x="1.500000" src_y="0.500000" dst_x="2" dst_y="0" />
+    <point src_x="2.000000" src_y="0.500000" dst_x="3" dst_y="0" />
+    <point src_x="2.500000" src_y="0.500000" dst_x="4" dst_y="0" />
+    <point src_x="3.000000" src_y="0.500000" dst_x="5" dst_y="0" />
+    <point src_x="0.500000" src_y="1.000000" dst_x="0" dst_y="1" />
+    <point src_x="1.000000" src_y="1.000000" dst_x="1" dst_y="1" />
+    <point src_x="1.500000" src_y="1.000000" dst_x="2" dst_y="1" />
+    <point src_x="2.000000" src_y="1.000000" dst_x="3" dst_y="1" />
+    <point src_x="2.500000" src_y="1.000000" dst_x="4" dst_y="1" />
+    <point src_x="3.000000" src_y="1.000000" dst_x="5" dst_y="1" />
+    <point src_x="0.500000" src_y="1.500000" dst_x="0" dst_y="2" />
+    <point src_x="1.000000" src_y="1.500000" dst_x="1" dst_y="2" />
+    <point src_x="1.500000" src_y="1.500000" dst_x="2" dst_y="2" />
+    <point src_x="2.000000" src_y="1.500000" dst_x="3" dst_y="2" />
+    <point src_x="2.500000" src_y="1.500000" dst_x="4" dst_y="2" />
+    <point src_x="3.000000" src_y="1.500000" dst_x="5" dst_y="2" />
+    <point src_x="0.500000" src_y="2.000000" dst_x="0" dst_y="3" />
+    <point src_x="1.000000" src_y="2.000000" dst_x="1" dst_y="3" />
+    <point src_x="1.500000" src_y="2.000000" dst_x="2" dst_y="3" />
+    <point src_x="2.000000" src_y="2.000000" dst_x="3" dst_y="3" />
+    <point src_x="2.500000" src_y="2.000000" dst_x="4" dst_y="3" />
+    <point src_x="3.000000" src_y="2.000000" dst_x="5" dst_y="3" />
+</remap>
+--------------------------------------
+
+
+[[sec_scalar]]
+=== Scalar
+
+*Schema type:* scalar.type
+
+Below are valid examples of scalar objects:
+
+[source,xml]
+--------------------------------------
+<scalar reference="16" elemType="VX_TYPE_CHAR">
+    <char>z</char>
+</scalar>
+<scalar reference="17" elemType="VX_TYPE_UINT8">
+    <uint8>255</uint8>
+</scalar>
+<scalar reference="18" elemType="VX_TYPE_INT8">
+    <int8>-128</int8>
+</scalar>
+<scalar reference="19" elemType="VX_TYPE_FLOAT32">
+    <float32>3.141593</float32>
+</scalar>
+<scalar reference="20" elemType="VX_TYPE_FLOAT64">
+    <float64>6.283185</float64>
+</scalar>
+<scalar reference="21" elemType="VX_TYPE_DF_IMAGE">
+    <df_image>NV12</df_image>
+</scalar>
+<scalar reference="22" elemType="VX_TYPE_UINT16">
+    <uint16>65535</uint16>
+</scalar>
+<scalar reference="23" elemType="VX_TYPE_INT16">
+    <int16>-32768</int16>
+</scalar>
+<scalar reference="24" elemType="VX_TYPE_UINT64">
+    <uint64>18446744073709551615</uint64>
+</scalar>
+<scalar reference="25" elemType="VX_TYPE_INT64">
+    <int64>-9223372036854775808</int64>
+</scalar>
+<scalar reference="26" elemType="VX_TYPE_UINT32">
+    <uint32>4294967295</uint32>
+</scalar>
+<scalar reference="27" elemType="VX_TYPE_SIZE">
+    <size>100</size>
+</scalar>
+<scalar reference="28" elemType="VX_TYPE_BOOL">
+    <bool>true</bool>
+</scalar>
+--------------------------------------
+
+
+[[sec_threshold]]
+=== Threshold
+
+*Schema type:* threshold.type
+
+Below is are valid examples of a threshold object:
+
+[source,xml]
+--------------------------------------
+<threshold reference="29" elemType="VX_TYPE_UINT8" true_value="0" false_value="0">
+    <binary>240</binary>
+</threshold>
+<threshold reference="30" elemType="VX_TYPE_UINT8" true_value="0" false_value="0">
+    <range lower="10" upper="240" />
+</threshold>
+--------------------------------------
+
+
+[[opt_objects]]
+== User Defined Elements
+
+The OpenVX XML Schema extension contains two additional optional elements
+which are intended to aid in portability of an OpenVX graph which is
+dependent on additional libraries or user structs.
+
+
+[[libraries]]
+=== Library
+
+The 'library' element is simply a string type.
+If the OpenVX context is dependent on user kernels which may be defined in a
+separate library, then the name of this library can be listed here.
+This way, if the OpenVX implementation importing this XML file also has the
+library in the system, then it may know that it needs to load or link
+against the named library before parsing and loading the rest of the xml
+file.
+Because of this dependency, all library names should be listed in the xml
+file before any objects, as per the sequence constraint in the openvx.type
+of the schema.
+See an example below:
+
+[source,xml]
+--------------------------------------
+<library>openvx-debug</library>
+--------------------------------------
+
+
+[[user_structs]]
+=== Struct
+
+The 'struct' element is intended to communicate to the parser that there is
+a user struct defined in the context.
+If there are array objects which have a user struct as an element type, then
+the array object of this type can not be created without knowing the size of
+the user struct.
+Therefore, this size needs to be communicated as part of the xml file as the
+"size" attribute in the struct element before any other objects are defined,
+as per the sequence constraint in the openvx.type of the schema.
+See an example below:
+
+[source,xml]
+--------------------------------------
+<struct size="16">USER_STRUCT_0</struct>
+--------------------------------------
+
+The schema expects the label used for user structs to always be
+"USER_STRUCT_*", where the wildcard can be any number.
+This way, multiple user structs can be exported/imported using unique suffix
+numbers.
+Now that this is defined at the top of the xml file, an array can reference
+the same label in the implementation:
+
+[source,xml]
+--------------------------------------
+<array reference="120" capacity="4" elemType="USER_STRUCT_0">
+    <user>32 0 0 0 158 127 0 0 154 153 153 153 153 153 9 64 </user>
+    <user>64 0 0 0 158 127 0 0 154 153 153 153 153 153 25 64 </user>
+</array>
+--------------------------------------
+
+
+[[sec_example]]
+= XML Example
+
+
+[[example]]
+== example.xml
+
+The following is an OpenVX XML Schema compatible example xml file.
+It contains at least one example of each object type that the schema
+supports, and can be used as a reference to for programming compatible
+import and export utilities.
+
+[source,xml]
+----
+include::example.xml[]
+----
+

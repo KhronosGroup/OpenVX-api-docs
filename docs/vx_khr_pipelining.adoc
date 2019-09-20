@@ -1,8 +1,8 @@
-// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Copyright (c) 2017-2019 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
-= The OpenVX^(TM)^ Graph Pipelining, Streaming, and Batch Processing Extension to OpenVX 1.1 and 1.2
+= The OpenVX^(TM)^ Graph Pipelining, Streaming, and Batch Processing Extension
 :regtitle: pass:q,r[^®^]
 The Khronos{regtitle} OpenVX Working Group; Editors: Kedar Chitnis, Jesse Villareal, Radhakrishna Giduthuri, and Frank Brill
 :title-logo-image: images/Khronos_RGB.svg
@@ -54,8 +54,8 @@ partial list of the following individuals from the Khronos Working Group and
 the companies that they represented at the time:
 
   * Kedar Chitnis - Texas Instruments, Inc.
-  * Jesse Villareal - Texas Instruments, Inc.
-  * Radhakrishna Giduthuri - AMD
+  * Jesse Villarreal - Texas Instruments, Inc.
+  * Radhakrishna Giduthuri - Intel
   * Tomer Schwartz - Intel
   * Frank Brill - Cadence Design Systems
   * Thierry Lepley - Cadence Design Systems
@@ -390,7 +390,7 @@ outlined below need to be followed by an application:
   ** Dequeue the processed data references using
      `<<vxGraphParameterDequeueDoneRef>>`.
 
-The following code offers a example of the process outlined above using
+The following code offers an example of the process outlined above using
 `<<VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL,VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL>>`
 scheduling mode.
 
@@ -404,12 +404,13 @@ include::{examples}/vx_khr_pipelining_sample.c[tag=graph_batch_processing]
 == Streaming
 
 OpenVX APIs allow a user to construct a graph with source nodes and sink
-nodes. A source node is a node which takes no input and only outputs data to
-one or more data references. A sink node is a node which takes one or more
-data references as input but produces no output. For such a graph, graph
+nodes. A source node is a node which internally sources and outputs data to
+one or more data references.  A camera capture node is an example of a
+source node. A sink node is a node which takes one or more
+data references as input but has no output data references. A display
+node is an example of a sink node.  For such a graph, graph
 execution can be started in streaming mode, wherein, user intervention is
 not needed to re-schedule the graph each time.
-
 
 [[sec_sourcesink]]
 === Source/sink user nodes
@@ -437,6 +438,60 @@ In both these examples, the user node "`swaps`" the reference provided by the
 implementation with another "`compatible`" reference. This allows user nodes
 to implement zero-copy capture and display functions.
 
+[[sec_source_pipeup]]
+=== Kernel Pipeup
+
+In the previous section, the source and sink nodes were responsible for creating
+"`compatible`" references for "`swapping`" to implement zero-copy functions.
+In this section, we introduce an alternative method wherein the framework
+creates the required reference copies, and passes them to the user nodes.
+
+This can be done with the addition of the following new attributes:
+
+  * `<<VX_KERNEL_PIPEUP_OUTPUT_DEPTH,VX_KERNEL_PIPEUP_OUTPUT_DEPTH>>`, `<<VX_KERNEL_PIPEUP_INPUT_DEPTH,VX_KERNEL_PIPEUP_INPUT_DEPTH>>`: These attributes
+    may be set when registering the kernel (between the call to vxAddUserKernel and vxFinalizeKernel) using the vxSetKernelAttribute function.  It is used to
+    notify the framework what the pipeup depth is for this kernel.  `<<VX_KERNEL_PIPEUP_OUTPUT_DEPTH,VX_KERNEL_PIPEUP_OUTPUT_DEPTH>>` is used for source
+    nodes and `<<VX_KERNEL_PIPEUP_INPUT_DEPTH,VX_KERNEL_PIPEUP_INPUT_DEPTH>>` is used for sink nodes.
+  * `<<VX_NODE_STATE, VX_NODE_STATE>>`: This attribute may be queried by the execution function of the kernel to determine
+    which state the node is in.  The options are: `<<VX_NODE_STATE_STEADY,VX_NODE_STATE_STEADY>>` and `<<VX_NODE_STATE_PIPEUP,VX_NODE_STATE_PIPEUP>>`.
+    If the `<<VX_KERNEL_PIPEUP_OUTPUT_DEPTH,VX_KERNEL_PIPEUP_OUTPUT_DEPTH>>` or `<<VX_KERNEL_PIPEUP_INPUT_DEPTH,VX_KERNEL_PIPEUP_INPUT_DEPTH>>`
+    attribute has been set to a value greater than 1, then node state
+    will start in the `<<VX_NODE_STATE_PIPEUP,VX_NODE_STATE_PIPEUP>>` state the first time the graph is executed after vxVerifyGraph is called.
+    ** In the case of `<<VX_KERNEL_PIPEUP_OUTPUT_DEPTH,VX_KERNEL_PIPEUP_OUTPUT_DEPTH>>` (source nodes):
+    *** `<<VX_NODE_STATE_PIPEUP,VX_NODE_STATE_PIPEUP>>` : In this state, the during the first execution of the graph, the framework calls the
+       execution callback of the node associated with this kernel
+       (pipeup_depth - 1) times before it 'expects' a valid output and calls nodes dependent on the output.
+       During this state, the framework provides the same set of input parameters for each call, but provides
+       different set of output parameters for each call.
+    *** `<<VX_NODE_STATE_STEADY,VX_NODE_STATE_STEADY>>` : After the kernel has been called (pipeup_depth - 1) times, it transitions to
+       `<<VX_NODE_STATE_STEADY,VX_NODE_STATE_STEADY>>` state.  Kernels which don't set the `<<VX_KERNEL_PIPEUP_OUTPUT_DEPTH,VX_KERNEL_PIPEUP_OUTPUT_DEPTH>>` attribute, or set it
+       to 1, will start in this state. During this state, output parameters returned from the execution callback will be passed to dependent nodes.  If the
+       kernel had primed its output buffers using the `<<VX_KERNEL_PIPEUP_OUTPUT_DEPTH,VX_KERNEL_PIPEUP_OUTPUT_DEPTH>>` attribute, the kernel may return
+       a set of output parameters that was given during a previous execution of the callback instead of the ones given
+       during the current execution.
+    ** In the case of `<<VX_KERNEL_PIPEUP_INPUT_DEPTH,VX_KERNEL_PIPEUP_INPUT_DEPTH>>` (sink nodes):
+    *** `<<VX_NODE_STATE_PIPEUP,VX_NODE_STATE_PIPEUP>>` : In this state, the framework executes the graph
+       (pipeup_depth - 1) times before it 'expects' any consumed inputs from this node to be returned to the framework.
+    *** `<<VX_NODE_STATE_STEADY,VX_NODE_STATE_STEADY>>` : After the graph has been called (pipeup_depth - 1) times, it transitions to
+       `<<VX_NODE_STATE_STEADY,VX_NODE_STATE_STEADY>>` state.  Kernels which don't set the `<<VX_KERNEL_PIPEUP_INPUT_DEPTH,VX_KERNEL_PIPEUP_INPUT_DEPTH>>` attribute, or set it
+       to 1, will start in this state. During this state, input parameters returned from the execution callback will be recycled and filled by upstream nodes.  If the
+       kernel had retained its input buffers using the `<<VX_KERNEL_PIPEUP_INPUT_DEPTH,VX_KERNEL_PIPEUP_INPUT_DEPTH>>` attribute, the kernel may return
+       a set of input parameters that was given during a previous execution of the callback instead of the ones given
+       during the current execution.
+
+The following is an example of a streaming user source node which uses these attributes:
+
+[source,c,indent=0]
+----
+include::{examples}/vx_khr_streaming_sample.c[tag=streaming_source_pipeup_node]
+----
+
+Likewise, the following is an example of streaming user sink node which uses these attributes:
+
+[source,c,indent=0]
+----
+include::{examples}/vx_khr_streaming_sample.c[tag=streaming_sink_pipeup_node]
+----
 
 [[sec_triggering]]
 === Graph streaming application
@@ -449,20 +504,29 @@ by an application:
     specific to the graph. A data reference can be made specific to a graph
     by either creating it as virtual or by exporting and re-importing the
     graph using the import/export extension.
+  * Enable the streaming mode of graph execution using
+    `<<vxEnableGraphStreaming>>`, optionally setting the trigger node. This
+    must be called prior to verifying the graph.
   * Verify the graph using `vxVerifyGraph`
   * Start the streaming mode of graph execution using
     `<<vxStartGraphStreaming>>`
-  * Now the graph gets re-scheduled continuously.
+  * Now the graph gets re-scheduled continuously until the user application
+    calls vxStopGraphStreaming.
   ** The implementation automatically decides the re-schedule trigger
      condition.
-  * Sometimes a user node may want to stop the continuous graph execution due
-    to end of stream or error condition detected within its node execution. In
-    this case the user node should return an error status. When a error status
-    is returned by the user node, the continuous graph execution is stopped.
-  * Application can use `vxWaitGraph` to wait for streaming graph
-    execution to stop on its own.
-  * Alternatively, user application can explicitly stop the streaming mode of
-    execution using `<<vxStopGraphStreaming>>`.
+  * A user application may need to stop streaming from external control, or
+    internal feedback.
+  ** External control can be the end user changing modes or states, which
+     prompts the application to call vxStopGraphStreaming.
+  ** Internal feedback can be due to end of stream or an error condition
+     detected within its node execution.
+  *** In the case of an error condition detected, the user node should
+      return an appropriate error status. When any error status is detected
+      by the framework, the framework should trigger the VX_EVENT_NODE_ERROR
+      event to signal that the node execution has experienced an error.
+      The application can choose to monitor such an event and take appropriate
+      action, which may include stopping the continuous graph execution by
+      calling vxStopGraphStreaming.
   * In all cases, the continuous mode of graph execution is stopped at an
     implementation-defined logical boundary (e.g. after all previous graph
     executions have completed).
@@ -698,7 +762,7 @@ When graph schedule mode is `<<VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,VX_GRAPH_SCHEDU
     implementation could trigger the next graph schedule.
   * Here, not all graph parameters need to have enqueued references for a
     graph schedule to begin. An implementation is expected to execute the
-    graph as much as possible until a enqueued reference is not available at
+    graph as much as possible until an enqueued reference is not available at
     which time it will stall the graph until the reference becomes
     available. This allows application to schedule a graph even when all
     parameters references are not yet available, i.e do a "`late`" enqueue.
@@ -915,8 +979,16 @@ See also `<<vxGraphParameterDequeueDoneRef>>`.
 == Streaming
 
 // tag::group_streaming:summary[]
+*Enumerations*
+
+  * `<<vx_node_state_enum_e>>`
+  * `<<vx_node_state_e>>`
+  * `<<vx_node_attribute_streaming_e>>`
+  * `<<vx_kernel_attribute_streaming_e>>`
+
 *Functions*
 
+  * `<<vxEnableGraphStreaming>>`
   * `<<vxStartGraphStreaming>>`
   * `<<vxStopGraphStreaming>>`
 
@@ -926,8 +998,162 @@ See also `<<vxGraphParameterDequeueDoneRef>>`.
 // @brief
 This section lists the APIs required for graph streaming.
 
+=== Enumerations
+
+// tag::refpage:vx_node_state_enum_e[]
+// [desc='',type='enums']
+==== vx_node_state_enum_e
+
+// Brief text:
+Extra enums.
+
+include::api/enums/vx_node_state_enum_e.txt[]
+
+*Enumerator*
+
+  * [[VX_ENUM_NODE_STATE_TYPE]]
+    `VX_ENUM_NODE_STATE_TYPE` - Node state type enumeration.
+// end::refpage:vx_node_state_enum_e[]
+
+// tag::refpage:vx_node_state_e[]
+// [desc='',type='enums']
+==== vx_node_state_e
+
+// Brief text:
+Node state
+
+include::api/enums/vx_node_state_e.txt[]
+
+// Detailed text:
+
+
+*Enumerator*
+
+  * [[VX_NODE_STATE_STEADY]]
+    `VX_NODE_STATE_STEADY` - Node is in steady state (output expected for each invocation).
+  * [[VX_NODE_STATE_PIPEUP]]
+    `VX_NODE_STATE_PIPEUP` - Node is in pipeup state (output not expected for each invocation).
+
+// end::refpage:vx_node_state_e[]
+
+// tag::refpage:vx_node_attribute_streaming_e[]
+// [desc='',type='enums']
+==== vx_node_attribute_streaming_e
+
+// Brief text:
+The node attributes added by this extension.
+
+include::api/enums/vx_node_attribute_streaming_e.txt[]
+
+*Enumerator*
+
+  * [[VX_NODE_STATE]]
+    `VX_NODE_STATE` - Queries the state of the node.
+    Read-only. Use a `vx_enum` parameter. See
+    `<<vx_node_state_e>>` enum.
+
+// end::refpage:vx_node_attribute_streaming_e[]
+
+// tag::refpage:vx_kernel_attribute_streaming_e[]
+// [desc='',type='enums']
+==== vx_kernel_attribute_streaming_e
+
+// Brief text:
+The kernel attributes added by this extension.
+
+include::api/enums/vx_kernel_attribute_streaming_e.txt[]
+
+*Enumerator*
+
+  * [[VX_KERNEL_PIPEUP_OUTPUT_DEPTH]]
+    `VX_KERNEL_PIPEUP_OUTPUT_DEPTH` - The pipeup depth required by the kernel.
+     This is called by kernels that need to be primed with multiple output buffers before it can
+     begin to return them.  A typical use case for this is a source node which needs to provide and
+     retain multiple empty buffers to a camera driver to fill.  The first time the graph is executed
+     after vxVerifyGraph is called, the framework calls the node associated with this kernel
+     (pipeup_output_depth - 1) times before 'expecting' a valid output and calling downstream nodes.
+     During this PIPEUP state, the framework provides the same set of input parameters for each
+     call, but provides different set of output parameters for each call.  During the STEADY state,
+     the kernel may return a different set of output parameters than was given during the execution callback.
+     Read-write. Can be written only before user-kernel finalization.
+     Use a `vx_uint32` parameter.
+
+[NOTE]
+.Note
+====
+If not set, it will default to 1.
+====
+[NOTE]
+.Note
+====
+Setting a value less than 1 shall return VX_ERROR_INVALID_PARAMETERS
+====
+
+  * [[VX_KERNEL_PIPEUP_INPUT_DEPTH]]
+    `VX_KERNEL_PIPEUP_INPUT_DEPTH` - The pipeup depth required by the kernel.
+     This is called by kernels that need to retain one or more input buffers before it can
+     begin to return them.  A typical use case for this is a sink node which needs to provide and
+     retain one ore more filled buffers to a display driver to display.  The first (pipeup_input_depth - 1)
+     times the graph is executed after vxVerifyGraph is called, the framework calls the node associated with this kernel
+     without 'expecting' an input to have been consumed and returned by the node.
+     During this PIPEUP state, the framework does not reuse any of the input bufers it had given to this node.
+     During the STEADY state, the kernel may return a different set of input parameters than was given during
+     the execution callback.
+     Read-write. Can be written only before user-kernel finalization.
+     Use a `vx_uint32` parameter.
+
+[NOTE]
+.Note
+====
+If not set, it will default to 1.
+====
+[NOTE]
+.Note
+====
+Setting a value less than 1 shall return VX_ERROR_INVALID_PARAMETERS
+====
+
+// end::refpage:vx_kernel_attribute_streaming_e[]
+
 // tag::group_streaming:details[]
 === Functions
+
+// tag::refpage:vxEnableGraphStreaming[]
+// [desc='',type='protos']
+==== vxEnableGraphStreaming
+
+// Brief text:
+Enable streaming mode of graph execution.
+
+include::api/protos/vxEnableGraphStreaming.txt[]
+
+
+// Detailed text:
+This API enables streaming mode of graph execution on the given graph. This
+function must be called before vxVerifyGraph.  The trigger_node parameter
+indicates which node should be used as the trigger node in the case that the
+graph is pipelined by the implementation.  A trigger node is defined as the
+node whose completion causes a new execution of the graph to be triggered. If
+the graph is not pipelined by the implementation, then the trigger_node
+parameter is ignored and the graph will be re-triggered upon each graph
+completion. The trigger_node parameter is optional, so if it is set to NULL,
+then the trigger node is implementation dependent.
+
+*Parameters*
+
+  * `[in]` _graph_ - Reference to the graph to start streaming mode of
+    execution.
+  * `[in][optional]` _trigger_node_ - Reference to the node to be used as trigger
+    node of the graph.
+
+*Returns:* A `vx_status_e` enumeration.
+
+*Return Values*
+
+  * `VX_SUCCESS` - No errors; any other value indicates failure.
+  * `VX_ERROR_INVALID_REFERENCE` - _graph_ is not a valid `vx_graph`
+    reference
+// end::refpage:vxEnableGraphStreaming[]
 
 // tag::refpage:vxStartGraphStreaming[]
 // [desc='',type='protos']
@@ -940,7 +1166,7 @@ include::api/protos/vxStartGraphStreaming.txt[]
 
 
 // Detailed text:
-In streaming mode of graph execution, once a application starts graph
+In streaming mode of graph execution, once an application starts graph
 execution further intervention of the application is not needed to
 re-schedule a graph; i.e. a graph re-schedules itself and executes
 continuously until streaming mode of execution is stopped.
@@ -954,9 +1180,8 @@ The graph MUST be verified via `vxVerifyGraph` before calling this API. Also
 user application MUST ensure no previous executions of the graph are
 scheduled before calling this API.
 
-After streaming mode of a graph has been started, the following APIs should
-_*not* be_ used on that graph by an application: `vxScheduleGraph`,
-`vxWaitScheduleGraphDone`, and `vxIsScheduleGraphAllowed`.
+After streaming mode of a graph has been started, a `vxScheduleGraph` should
+_*not* be_ used on that graph by an application.
 
 `vxWaitGraph` can be used as before to wait for all pending graph executions
 to complete.
@@ -1015,6 +1240,7 @@ executions are completed.
   * `<<vx_event_graph_parameter_consumed>>`
   * `<<vx_event_graph_completed>>`
   * `<<vx_event_node_completed>>`
+  * `<<vx_event_node_error>>`
   * `<<vx_event_user_event>>`
   * `<<vx_event_t>>`
   * `<<vx_event_info_t>>`
@@ -1091,6 +1317,24 @@ include::api/structs/vx_event_node_completed.txt[]
 
 // end::refpage:vx_event_node_completed[]
 
+// tag::refpage:vx_event_node_error[]
+// [desc='',type='structs']
+[[_vx_event_node_error]]
+==== vx_event_node_error
+
+// Brief text:
+Parameter structure returned with event of type
+`<<VX_EVENT_NODE_ERROR,VX_EVENT_NODE_ERROR>>`.
+
+include::api/structs/vx_event_node_error.txt[]
+
+// Detailed text:
+  * _graph_ -   graph which generated this event
+  * _node_ -   node which generated this event
+  * _status_ -   status of failed node
+
+// end::refpage:vx_event_node_error[]
+
 // tag::refpage:vx_event_user_event[]
 // [desc='',type='structs']
 [[_vx_event_user_event]]
@@ -1103,7 +1347,6 @@ Parameter structure returned with event of type
 include::api/structs/vx_event_user_event.txt[]
 
 // Detailed text:
-  * _user_event_id_ -   user event ID associated with this event
   * _user_event_parameter_ -   User defined parameter value. This is used to pass additional user defined parameters with a user event.
 
 // end::refpage:vx_event_user_event[]
@@ -1114,7 +1357,7 @@ include::api/structs/vx_event_user_event.txt[]
 ==== vx_event_info_t
 
 // Brief text:
-Parameter structure associated with a event. Depends on type of the event.
+Parameter structure associated with an event. Depends on type of the event.
 
 include::api/structs/vx_event_info_t.txt[]
 
@@ -1122,6 +1365,7 @@ include::api/structs/vx_event_info_t.txt[]
   * _graph_parameter_consumed_ - event information for type `<<VX_EVENT_GRAPH_PARAMETER_CONSUMED,VX_EVENT_GRAPH_PARAMETER_CONSUMED>>`
   * _graph_completed_ - event information for type `<<VX_EVENT_GRAPH_COMPLETED,VX_EVENT_GRAPH_COMPLETED>>`
   * _node_completed_ - event information for type `<<VX_EVENT_NODE_COMPLETED,VX_EVENT_NODE_COMPLETED>>`
+  * _node_error_ - event information for type `<<VX_EVENT_NODE_ERROR,VX_EVENT_NODE_ERROR>>`
   * _user_event_ - event information for type `<<VX_EVENT_USER,VX_EVENT_USER>>`
 
 // end::refpage:vx_event_info_t[]
@@ -1138,7 +1382,9 @@ include::api/structs/vx_event_t.txt[]
 // Detailed text:
   * _type_ -   see event type `<<vx_event_type_e>>`
   * _timestamp_ -  time at which this event was generated, in units of nano-secs
-  * _event_info_ -  parameter structure associated with a event. Depends on _type_ of the event
+  * _app_value_ -  value given to event by application during event registration (`<<vxRegisterEvent>>`) or
+                   `<<vxSendUserEvent>>` in the case of user events.
+  * _event_info_ -  parameter structure associated with an event. Depends on _type_ of the event
 
 // end::refpage:vx_event_t[]
 
@@ -1203,6 +1449,13 @@ abandoned execution of a graph.
 // Detailed text
 This event is generated every time a node within a graph completes execution.
 --
+  * [[VX_EVENT_NODE_ERROR]]
+    `VX_EVENT_NODE_ERROR` - Node error event.
++
+--
+// Detailed text
+This event is generated every time a node within a graph returns a run-time error.
+--
   * [[VX_EVENT_USER]] `VX_EVENT_USER` - User defined event.
 +
 --
@@ -1211,6 +1464,13 @@ This event is generated by user application outside of OpenVX framework
 using the `<<vxSendUserEvent>>` API. User events allow application to have
 single centralized "`wait-for`" loop to handle both framework generated events
 as well as user generated events.
+
+[NOTE]
+.Note
+====
+Since the application initiates user events and not the framework, the application
+does *NOT* register user events using `<<vxRegisterEvent>>`.
+====
 --
 // end::refpage:vx_event_type_e[]
 
@@ -1231,7 +1491,7 @@ After `<<vxDisableEvents>>` is called, if `<<vxWaitEvent>>(.., ..,
 vx_false_e)` is called, `<<vxWaitEvent>>` will remain blocked until events
 are re-enabled using `<<vxEnableEvents>>` and a new event is received.
 
-If `vxReleaseContext` is called while a application is blocked on
+If `vxReleaseContext` is called while an application is blocked on
 `<<vxWaitEvent>>`, the behavior is not defined by OpenVX.
 
 If `<<vxWaitEvent>>` is called simultaneously from multiple thread/task
@@ -1265,6 +1525,9 @@ include::api/protos/vxEnableEvents.txt[]
 
 
 // Detailed text:
+Depending on the implementation, events may be either enabled or disabled
+by default.
+
 *Parameters*
 
   * `[in]` _context_ - OpenVX context
@@ -1316,10 +1579,11 @@ include::api/protos/vxSendUserEvent.txt[]
 *Parameters*
 
   * `[in]` _context_ - OpenVX context
-  * `[in]` _user_event_id_ - User defined event ID
-  * `[in]` _user_event_parameter_ - User defined event parameter. NOT used
+  * `[in]` _app_value_ - User defined value. NOT used by implementation.
+    Returned to user as part of `<<vx_event_t>>.app_value` field.
+  * `[in]` _parameter_ - User defined event parameter. NOT used
     by implementation. Returned to user as part
-    `<<vx_event_t>>.user_event_parameter` field
+    `<<vx_event_t>>.event_info.user_event.user_event_parameter` field
 
 *Returns:* A `vx_status_e` enumeration.
 
@@ -1343,7 +1607,7 @@ Generation of event may need additional resources and overheads for an
 implementation. Hence events should be registered for references only when
 really required by an application.
 
-This API can be called on graph, node or graph parameter. This API MUST be
+This API can be called on graph, node, or graph parameter. This API MUST be
 called before doing `vxVerifyGraph` for that graph.
 
 *Parameters*
@@ -1352,6 +1616,8 @@ called before doing `vxVerifyGraph` for that graph.
   * `[in]` _type_ - Type or condition on which the event is generated
   * `[in]` _param_ - Specifies the graph parameter index when _type_ is
     `<<VX_EVENT_GRAPH_PARAMETER_CONSUMED,VX_EVENT_GRAPH_PARAMETER_CONSUMED>>`
+  * `[in]` _app_value_ - Application-specified value that will be returned
+    to user as part of `<<vx_event_t>>.app_value` field. NOT used by implementation.
 
 *Returns:* A `vx_status_e` enumeration.
 
@@ -1366,3 +1632,22 @@ called before doing `vxVerifyGraph` for that graph.
 
 // end::group_event:details[]
 
+= Conformance
+
+For the purposes of claiming conformance for features introduced in this
+extension, Khronos has split the conformance tests into two parts. This
+way, an implementation may choose to claim conformance to one part, or cover
+the entire extension by passing the conformance test for both parts.  This section
+identifies these two conformance profiles:
+
+== Pipelining, Batch Processing, Event Handling
+
+By enabling the *OPENVX_USE_PIPELINING* compile option in the conformance
+tests, the implementation will be tested on all APIs mentioned in both sections
+<<group_pipelining>> and <<group_event>>.
+
+== Streaming
+
+By enabling the *OPENVX_USE_STREAMING* compile option in the conformance
+tests, the implementation will be tested on all APIs mentioned in section
+<<group_streaming>>.

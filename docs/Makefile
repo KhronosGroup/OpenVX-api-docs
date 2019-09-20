@@ -51,20 +51,24 @@ APITITLE =
 #  manhtmlpages - HTML5 separate per-feature reference pages
 
 default:
-	make SPECBASE=OpenVX_Specification html $(TARGET) SPECREVISION='1.2.1' SPECSUFFIX=1_2_1
+	make SPECBASE=OpenVX_Specification html $(TARGET) SPECREVISION='1.3' SPECSUFFIX=1_3
 
 all:
 	make
-	make SPECBASE=vx_khr_import_kernel html $(TARGET) SPECREVISION='1.0 (provisional)' SPECSUFFIX=1_0
+	make SPECBASE=vx_khr_import_kernel html $(TARGET) SPECREVISION='1.3 (provisional)' SPECSUFFIX=1_3
 	make SPECBASE=vx_khr_opencl_interop html $(TARGET) SPECREVISION='1.0 (provisional)' SPECSUFFIX=1_0
 	make SPECBASE=vx_khr_class html $(TARGET) SPECREVISION='1.2.1 (provisional)' SPECSUFFIX=1_2_1
 	make SPECBASE=vx_khr_export_and_import html $(TARGET) SPECREVISION='1.1.1' SPECSUFFIX=1_1_1
 	make SPECBASE=vx_khr_icd html $(TARGET) SPECREVISION='1.0.1 (provisional)' SPECSUFFIX=1_0_1
-	make SPECBASE=vx_khr_nn html $(TARGET) SPECREVISION='1.2.1' SPECSUFFIX=1_2_1
-	make SPECBASE=vx_khr_pipelining html $(TARGET) SPECREVISION='1.0.1 (provisional)' SPECSUFFIX=1_0_1
+	make SPECBASE=vx_khr_nn html $(TARGET) SPECREVISION='1.3' SPECSUFFIX=1_3
+	make SPECBASE=vx_khr_pipelining html $(TARGET) SPECREVISION='1.1.0' SPECSUFFIX=1_1_0
 	make SPECBASE=vx_khr_s16 html $(TARGET) SPECREVISION='1.1.1 (provisional)' SPECSUFFIX=1_1_1
 	make SPECBASE=vx_khr_tiling html $(TARGET) SPECREVISION='1.0.1 (provisional)' SPECSUFFIX=1_0_1
 	make SPECBASE=vx_khr_xml html $(TARGET) SPECREVISION='1.1 (provisional)' SPECSUFFIX=1_1
+	make SPECBASE=vx_khr_xml_ug html $(TARGET) SPECREVISION='1.1 (provisional)' SPECSUFFIX=1_1
+	make SPECBASE=vx_khr_feature_sets html $(TARGET) SPECREVISION='1.0' SPECSUFFIX=1_0
+	make SPECBASE=vx_khr_buffer_aliasing html $(TARGET) SPECREVISION='1.0 (provisional)' SPECSUFFIX=1_0
+	make SPECBASE=vx_khr_user_data_object html $(TARGET) SPECREVISION='1.0 (provisional)' SPECSUFFIX=1_0
 
 ## alldocs: allspecs allman
 alldocs: allspecs
@@ -153,6 +157,7 @@ ADOCHTMLOPTS = $(ADOCHTMLEXTS) -a stylesheet=khronos.css \
 
 ADOCPDFEXTS  = -r asciidoctor-pdf -r asciidoctor-mathematical -r $(CURDIR)/config/asciidoctor-mathematical-ext.rb
 ADOCPDFOPTS  = $(ADOCPDFEXTS) -a mathematical-format=svg \
+	       -a pdf-stylesdir=config/themes -a pdf-style=pdf \
 	       -a imagesoutdir=$(PDFMATHDIR)
 
 .PHONY: directories

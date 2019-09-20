@@ -4,7 +4,7 @@
 
 = The OpenVX^(TM)^ Neural Network Extension
 :regtitle: pass:q,r[^®^]
-The Khronos{regtitle} OpenVX Working Group; Editors: Tomer Schwartz, Mostafa Hagog, Radhakrishna Giduthuri
+The Khronos{regtitle} OpenVX Working Group; Editors: Radhakrishna Giduthuri, Tomer Schwartz, Mostafa Hagog
 :title-logo-image: images/Khronos_RGB.svg
 :data-uri:
 :icons: font
@@ -43,7 +43,7 @@ This specification would not be possible without the contributions from this
 partial list of the following individuals from the Khronos Working Group and
 the companies that they represented at the time:
 
-  * Radhakrishna Giduthuri - AMD
+  * Radhakrishna Giduthuri - Intel
   * Frank Brill - Cadence Design Systems
   * Thierry Lepley - Cadence Design Systems
   * Kari Pulli - Intel
@@ -217,7 +217,7 @@ Neural Networks extension kernel names:
   * org.khronos.nn_extension.fully_connected_layer
   * org.khronos.nn_extension.pooling_layer
   * org.khronos.nn_extension.softmax_layer
-  * org.khronos.nn_extension.normalization_layer
+  * org.khronos.nn_extension.local_response_normalization_layer
   * org.khronos.nn_extension.activation_layer
   * org.khronos.nn_extension.roi_pooling_layer
   * org.khronos.nn_extension.deconvolution_layer
@@ -284,7 +284,7 @@ Convolutional Network Nodes
   * `<<vxConvolutionLayer>>`
   * `<<vxDeconvolutionLayer>>`
   * `<<vxFullyConnectedLayer>>`
-  * `<<vxNormalizationLayer>>`
+  * `<<vxLocalResponseNormalizationLayer>>`
   * `<<vxPoolingLayer>>`
   * `<<vxROIPoolingLayer>>`
   * `<<vxSoftmaxLayer>>`
@@ -410,8 +410,8 @@ include::api/enums/vx_kernel_nn_ext_e.txt[]
 // Detailed text
 *See also:* <<Extension: Deep Convolutional Networks API>>
 --
-  * [[VX_KERNEL_NORMALIZATION_LAYER]] `VX_KERNEL_NORMALIZATION_LAYER` - The
-    Neural Network Extension normalization Kernel.
+  * [[VX_KERNEL_LOCAL_RESPONSE_NORMALIZATION_LAYER]] `VX_KERNEL_LOCAL_RESPONSE_NORMALIZATION_LAYER` - The
+    Neural Network Extension Local Response Normalization Kernel.
 +
 --
 // Detailed text
@@ -904,23 +904,23 @@ Any possible errors preventing a successful creation should be checked using
 `vxGetStatus`.
 // end::refpage:vxFullyConnectedLayer[]
 
-// tag::refpage:vxNormalizationLayer[]
+// tag::refpage:vxLocalResponseNormalizationLayer[]
 // [desc='',type='protos']
-==== vxNormalizationLayer
+==== vxLocalResponseNormalizationLayer
 
 // Brief text:
-[Graph] Creates a Convolutional Network Normalization Layer Node.
+[Graph] Creates a Convolutional Network Local Response Normalization Layer Node.
 This function is optional for 8-bit extension with the extension string
 `"KHR_NN_8"`.
 
-include::api/protos/vxNormalizationLayer.txt[]
+include::api/protos/vxLocalResponseNormalizationLayer.txt[]
 
 
 // Detailed text:
-Normalizing over local input regions.
+Local Response Normalizing over local input regions.
 Each input value is divided by
 
-latexmath:[(1 + \frac{\alpha}{n} \sum_i x^2_i)^\beta]
+latexmath:[(bias + \frac{\alpha}{n} \sum_i x^2_i)^\beta]
 
 where [eq]#n# is the number of elements to normalize across.
 and the sum is taken over a rectangle region centred at that value (zero
@@ -942,9 +942,11 @@ padding is added where necessary).
   * `[in]` _normalization_size_ - [static] Number of elements to normalize
     across.
     Must be a positive odd number with maximum size of 7 and minimum of 3.
-  * `[in]` _alpha_ - [static] Alpha parameter in the normalization equation.
+  * `[in]` _alpha_ - [static] Alpha parameter in the local response normalization equation.
     must be positive.
-  * `[in]` _beta_ - [static] Beta parameter in the normalization equation.
+  * `[in]` _beta_ - [static] Beta parameter in the local response normalization equation.
+    must be positive.
+  * `[in]` _bias_ - [static] Bias parameter in the local response normalization equation.
     must be positive.
   * `[out]` _outputs_ - The output tensor data.
     Output will have the same number of dimensions as input.
@@ -952,7 +954,7 @@ padding is added where necessary).
 *Returns:* A node reference `vx_node`.
 Any possible errors preventing a successful creation should be checked using
 `vxGetStatus`.
-// end::refpage:vxNormalizationLayer[]
+// end::refpage:vxLocalResponseNormalizationLayer[]
 
 // tag::refpage:vxPoolingLayer[]
 // [desc='',type='protos']

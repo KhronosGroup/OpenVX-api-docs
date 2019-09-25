@@ -156,6 +156,55 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference reference);
 VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_size size);
 
 /*!
+ * \brief Registers user-defined structures to the context, and associates a name to it.
+ * \param [in] context     The reference to the implementation context.
+ * \param [in] size        The size of user struct in bytes.
+ * \param [in] *type_name  Pointer to the '\0' terminated string that identifies the
+ *                         user struct type. The string is copied by the function so
+ *                         that it stays the property of the caller. NULL means that
+ *                         the user struct is not named. The length of the string
+ *                         shall be lower than VX_MAX_REFERENCE_NAME bytes.
+ * \return A <tt>\ref vx_enum</tt> value that is a type given to the User
+ * to refer to their custom structure when declaring a <tt>\ref vx_array</tt>
+ * of that structure.
+ * \retval VX_TYPE_INVALID If the namespace of types has been exhausted.
+ * \note This call should only be used once within the lifetime of a context for
+ * a specific structure.
+ * \ingroup group_adv_array
+ */
+VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStructWithName(vx_context context, vx_size size,  const vx_char* type_name);
+
+/*!
+ * \brief Returns the name of the user-defined structure associated with the enumeration given.
+ * \param [in] context     The reference to the implementation context.
+ * \param [in] type_name   The enumeration value of the user struct
+ * \param [out] name_size  Name of the user struct
+ * \param [in] name_size   The size of allocated buffer pointed to by type_name
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS user_struct_type was valid, and name was found and returned
+ * \retval VX_ERROR_INVALID_PARAMETERS user_struct_type was not a valid user struct enumeration.
+ * \retval VX_ERROR_NO_MEMORY name_size is too small to hold the name of the user struct type.
+ * \retval VX_FAILURE user_struct_type does not have an associated type name.
+ * \pre <tt>\ref vxRegisterUserStructWithName</tt> should be called for this user struct.
+ * \ingroup group_adv_array
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxGetUserStructNameByEnum(vx_context context, vx_enum user_struct_type, vx_char* type_name, vx_size name_size);
+
+/*!
+ * \brief Returns the enum of the user-defined structure associated with the name given
+ * \param [in] context           The reference to the implementation context.
+ * \param [in] type_name         Pointer to the '\0' terminated string that identifies the user
+ *                               struct type. The length of the string shall be lower than VX_MAX_REFERENCE_NAME bytes.
+ * \param [out] user_struct_type The enumeration value of the user struct
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS type_name was valid, and enumeration was found and returned
+ * \retval VX_FAILURE type_name does not match any user struct enumeration.
+* \pre <tt>\ref vxRegisterUserStructWithName</tt> should be called for this user struct.
+ * \ingroup group_adv_array
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxGetUserStructEnumByName(vx_context context, const vx_char* type_name, vx_enum *user_struct_type);
+
+/*!
  * \brief Allocates and registers user-defined kernel enumeration to a context.
  * The allocated enumeration is from available pool of 4096 enumerations reserved
  * for dynamic allocation from VX_KERNEL_BASE(VX_ID_USER,0).
@@ -3186,7 +3235,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateVirtualTensor(vx_graph graph, vx_size
  *
  * \ingroup group_object_tensor
  */
-VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromHandle(vx_context context, vx_size number_of_dims, const vx_size *dims, vx_enum data_type, vx_int8 fixed_point_position, size_t stride[], void * ptr, vx_enum memory_type);
+VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensorFromHandle(vx_context context, vx_size number_of_dims, const vx_size *dims, vx_enum data_type, vx_int8 fixed_point_position, const vx_size * stride, void * ptr, vx_enum memory_type);
 
 /*! \brief Swaps the tensor handle of an tensor previously created from handle.
  *
@@ -3311,7 +3360,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapTensorPatch(vx_tensor tensor, vx_size nu
  * \ingroup group_tensor
  * \pre <tt>\ref vxMapTensorPatch</tt> returning the same map_id value
  */
-VX_API_ENTRY vx_status VX_API_CALL vxUnmapTensorPatch(vx_tensor tensor, vx_map_id map_id);
+VX_API_ENTRY vx_status VX_API_CALL vxUnmapTensorPatch(vx_tensor tensor, const vx_map_id map_id);
 
 /*! \brief Retrieves various attributes of a tensor data.
  * \param [in] tensor The reference to the tensor data to query.

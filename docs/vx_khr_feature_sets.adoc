@@ -480,7 +480,7 @@ enumerations described in their respective sections in the main OpenVX specifica
 | BilateralFilter | Copy | HOGCells
 | HOGFeatures | HoughLinesP | LBP
 | MatchTemplate | Max | Min
-| NonMaxSuppression | TensorAdd | TensorColorDepth
+| NonMaxSuppression | TensorAdd | TensorConvertDepth
 | TensorMatrixMultiply | TensorMultiply | TensorSubtract
 | TensorTableLookup | TensorTranspose | ScalarOperation
 | Select | |

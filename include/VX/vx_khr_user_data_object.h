@@ -130,7 +130,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseUserDataObject(vx_user_data_object *
  *
  * \ingroup group_user_data_object
  */
-VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (vx_user_data_object user_data_object, vx_enum attribute, void *ptr, vx_size size);
+VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject(vx_user_data_object user_data_object, vx_enum attribute, void *ptr, vx_size size);
 
 /*! \brief Allows the application to copy a subset from/into a user data object.
  * \param [in] user_data_object   The reference to the user data object that is the source or the

@@ -1,4 +1,4 @@
-Copyright 2013-2018 The Khronos Group Inc.
+Copyright 2013-2019 The Khronos Group Inc.
 
 This specification is protected by copyright laws and contains material
 proprietary to Khronos.

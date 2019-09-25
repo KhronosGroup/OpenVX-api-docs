@@ -1,5 +1,3 @@
-image:https://travis-ci.com/KhronosGroup/OpenVX-api-docs.svg?branch=openvx_1.2["Build Status", link="https://travis-ci.com/KhronosGroup/OpenVX-api-docs"]
-
 = OpenVX^(TM)^ Specification Build Instructions and Notes
 :toc2:
 :toclevels: 1
@@ -68,6 +66,22 @@ targets, or they can individually be found as follows:
 //
 // may significantly speed up building multiple targets.
 
+
+[[building-tags]]
+== Update Tag IDs in Specification
+
+To insert a tag into specification use below text pattern. Don't forget to add space before the tag.
+This marks a tag without numeric ID. The `config/spec-tags.py` will help to add unique numeric IDs to tags.
+```
+ `[*REQ*]`
+```
+
+To automatically insert unique numeric IDs into new tags, use the following script:
+```
+% python config/spec-tags.py update OpenVX_Specification.adoc
+```
+
+For further details, use `% python config/spec-tags.py -help`.
 
 [[building-extensions]]
 == Building Extensions

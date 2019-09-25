@@ -328,6 +328,9 @@ void vx_khr_pipelining()
 // end::graph_pipeline[]
 
 // tag::graph_events[]
+#define INPUT_CONSUMED  1
+#define OUTPUT_FILLED   2
+
 /* Utility API to clear any pending events */
 static void clear_pending_events(vx_context context)
 {
@@ -374,9 +377,9 @@ void vx_khr_pipelining_with_events()
 
     /* register events for input consumed and output consumed */
     vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED,
-                    GRAPH_PARAMETER_IN);
+                    GRAPH_PARAMETER_IN, INPUT_CONSUMED);
     vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED,
-                    GRAPH_PARAMETER_OUT);
+                    GRAPH_PARAMETER_OUT, OUTPUT_FILLED);
 
     vxVerifyGraph(graph);
 
@@ -405,11 +408,7 @@ void vx_khr_pipelining_with_events()
         vxWaitEvent(context, &event, vx_false_e);
 
         /* event for input data ready for recycling, i.e early input release */
-        if(event.type == VX_EVENT_GRAPH_PARAMETER_CONSUMED
-            && event.event_info.graph_parameter_consumed.graph == graph
-            && event.event_info.graph_parameter_consumed.graph_parameter_index
-                    == GRAPH_PARAMETER_IN
-            )
+        if(event.app_value == INPUT_CONSUMED )
         {
             /* dequeue consumed input, fill new data and re-enqueue */
             dequeue_input(graph, &in_img);
@@ -417,11 +416,7 @@ void vx_khr_pipelining_with_events()
         }
         else
         /* event for output data ready for recycling, i.e output release */
-        if(event.type == VX_EVENT_GRAPH_PARAMETER_CONSUMED
-            && event.event_info.graph_parameter_consumed.graph == graph
-            && event.event_info.graph_parameter_consumed.graph_parameter_index
-                    == GRAPH_PARAMETER_OUT
-            )
+        if(event.app_value == OUTPUT_FILLED )
         {
             /* dequeue output reference, consume generated data and
              * re-enqueue output reference

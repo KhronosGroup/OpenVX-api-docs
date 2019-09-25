@@ -1,0 +1,613 @@
+// Copyright (c) 2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+= The OpenVX(TM) User Data Object Extension
+:regtitle: pass:q,r[^®^]
+The Khronos{regtitle} OpenVX Working Group; Editor: Jesse Villarreal
+:title-logo-image: images/Khronos_RGB.svg
+:data-uri:
+:icons: font
+:toc2:
+:toclevels: 4
+:max-width: 100
+:numbered:
+:imagewidth: 800
+:fullimagewidth: width="800"
+:halfimagewidth: width="400"
+:source-highlighter: coderay
+// Various special / math symbols. This is easier to edit with than Unicode.
+include::config/attribs.txt[]
+
+// Paths to code examples and headers
+:examples: examples
+:headers: examples
+
+image::images/OpenVX_RGB.svg[align="center",{halfimagewidth}]
+include::copyright-spec.txt[]
+
+<<<<
+
+// Table of contents is inserted here
+toc::[]
+
+:leveloffset: 1
+= Introduction
+
+
+[[sec_purpose]]
+== Purpose
+[[vx_size,vx_size]] [[vx_char,vx_char]] [[vx_image,vx_image]] [[vx_array,vx_array]] [[vx_scalar,vx_scalar]] [[vx_keypoints_t,vx_keypoints_t]] [[vx_coordinates_t,vx_coordinates_t]] [[vx_enum,vx_enum]] [[vx_map_id,vx_map_id]] [[vxRegisterUserStruct,vxRegisterUserStruct]] [[vxGetStatus,vxGetStatus]] [[VX_MAX_REFERENCE_NAME,VX_MAX_REFERENCE_NAME]] [[vx_status_e,vx_status_e]] [[vx_accessor_e,vx_accessor_e]] [[vx_memory_type_e,vx_memory_type_e]] [[vx_map_flag_e,vx_map_flag_e]] [[VX_SUCCESS,VX_SUCCESS]] [[VX_FAILURE,VX_FAILURE]] [[VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE]] [[VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS]]This document details an extension to OpenVX 1.2.1, and references some APIs and symbols that may be found in that API, at https://www.khronos.org/registry/OpenVX/specs/1.2.1/OpenVX_Specification_1_2_1.html.
+
+[[user_data_object,User Data Object Extension]] This extension is intended to define the new User Data Object support for OpenVX. 
+This data object is intended to offer a standard mechanism
+to enable user kernels with a data object parameter which is not natively supported by existing data objects in the OpenVX spec.
+
+[[sec_background]]
+== Background
+To set the stage for the describing the problem that
+user data objects solve, the following is a brief list of relevant points from the current specification:
+
+.*Data Objects*
+- OpenVX contains several, specific, built-in data objects (`<<vx_image>>`, `<<vx_array>>`, etc),
+  but no explicit means for user to extend to use their own custom data types as data objects used for node parameters.
+
+.*User structs*
+- User structs were originally created to handle the use of additional fixed-size data structure types needed by `<<vx_array>>` for user kernels.
+- The model for such structures were taken from existing data structures like `<<vx_keypoints_t>>` or `<<vx_coordinates_t>>`,
+  which are simple, fixed-sized, data structures which could appear as a list contained in a `<<vx_array>>`.
+- In OpenVX 1.2, the scope of user structs was expanded to `<<vx_scalar>>`, which was meant to handle a single instance of a data structure as opposed to an array of them.
+- The function `<<vxRegisterUserStruct>>` simply informed the framework that it needed a `<<vx_enum>>` which would be associated with a fixed buffer size to house the user struct.
+  This enum was needed as a backward-compatible way to create an array or scalar using this type, as the create functions require passing a type enum as an argument in order to
+  properly allocate enough memory for each element in the array. 
+- The user kernel has no way to know which specific data structure this enum is assigned to since it is assigned at run-time.  The most it can determine is the size of the structure.
+  This can be indirectly used to determine which user structure was passed to the user kernel assuming all user structures are different sizes.  However, if two or more different 
+  user structs have the same size, then the user structure can't be sure which one was passed.
+
+[[sec_problem]]
+=== Limitations in Existing Specification
+If a user kernel wants to use a new, custom, data object that is not already included in OpenVX, there is currently no mechanism to extend OpenVX framework to do this.
+The closest mechanism available within the existing specification is "user structs" which can be used with `<<vx_array>>` or `<<vx_scalar>>`. However, there are at least 3 limitations
+of user structs that make it less than ideal for use as a custom user kernel node parameter data object:
+
+.*Static Size*
+ - The existing mechanism for user struct assumes a fixed size, and does not directly support a variable size. The data structure of a particular
+   type of custom object may have a variable size, similar to an `<<vx_image>>` type.  The image size changes depending on the width and height parameters.
+ - There are two possible workarounds for this:
+   . Call `<<vxRegisterUserStruct>>` for each instance of the data structure which has a different size.
+     *** This can result in a prohibitively high number of user structs which need to be registered and maintained, even though many of them are different sizes of the same type
+   . Call `<<vxRegisterUserStruct>>` using the worst-case memory requirement
+     *** This can result in a prohibitively large waste of memory, which is further limited in embedded applications.
+
+.*Memory Access Performance*
+ - If using `<<vx_scalar>>`, there is no Map/Unmap, only Copy
+   * For large data objects, a copy may reduce performance each time the application needs to access data.
+ - If using `<<vx_array>>`, there is at least Map/Unmap, but the whole data object needs to be mapped/unmapped as there is no granularity of a range within a user struct.
+   * If the application only needs to access a small part of the object, mapping the entire object may also reduce performance.
+
+.*Misnomer*
+  - Using `<<vx_scalar>>` to contain a custom object represented by a complex data structure is a misnomer and a bit confusing.
+
+[[page_design]]
+= Design Overview
+The new APIs added in this extension for supporting user data objects follow the same pattern as existing Data Object APIs in OpenVX (i.e. create, release, query, copy, map, and unmap).
+
+[[sec_code]]
+== Example Code
+This section demonstrates the usage of the new APIs in example code.
+
+[[sec_create]]
+=== Create and Release
+The following example shows how the User Data Object create and release APIs could be used to connect two custom user kernels together in a graph. The example also defines
+a data structure used within the user data object: user_custom_data_t.
+
+[source,cpp]
+----
+/*
+ * The custom data object structure for a user custom kernel which contains 
+ * a custom object of 2 images with embedded metadata (as an example).
+ */
+typedef struct {
+    uint16_t  mode;            /*!< Indicates the contents of this buffer
+                                    (so kernel knows how to parse) */
+    uint16_t  source_data;     /*!< Indicates the source data corresponding
+                                    to this data (for algorithm usage) */
+    uint16_t  byte_size[2];    /*!< Number of bytes per pixel of each image
+                                    in payload */
+    uint16_t  width[2];        /*!< Widths of each image in payload */
+    uint16_t  heights[2];      /*!< Heights of each image in payload */
+    uint16_t  meta_size[2];    /*!< Number of bytes of meta information for
+                                    each image in payload */
+    uint8_t   payload[];       /*!< Payload of the custom data */
+} user_custom_data_t;
+
+/*
+ * Utility API used to create the graph below using user data object in between two
+ * user defined nodes:
+ *
+ * The following graph is created,
+ * IMG1 -> vxCustomPreprocessCombineImagesNode -> TMP_USER_DATA_OBJECT 
+ * IMG2 ->                                          '-> vxCustomClassifier -> CLASS
+ * 
+ */
+static vx_graph create_graph(vx_context context,
+                             vx_uint32 byte_size[],
+                             vx_uint32 width[],
+                             vx_uint32 height[],
+                             vx_uint32 meta_size[])
+{
+    vx_graph graph;
+    vx_node n0, n1;
+    vx_image img1, img2;
+    vx_user_data_object tmp_user_obj;
+    vx_uint32 payload_size;
+    vx_int32 class;
+    vx_scalar s0;
+
+    graph = vxCreateGraph(context);
+
+    /* create input images */
+    img1 = vxCreateImage(context, width[0], height[0], getDataFormat(byte_size[0]));
+    img2 = vxCreateImage(context, width[1], height[1], getDataFormat(byte_size[1]));
+
+    /* calculate payload size of custom object */
+    payload_size = calculate_payload(byte_size, width, height, meta_size);
+
+    /* create intermediate custom object */
+	tmp_user_obj = vxCreateUserDataObject(context,
+	                                  "user_custom_data_t",
+	                                  sizeof(user_custom_data_t) + payload_size,
+	                                  NULL);
+
+    /* create first node: input is 2 images and source string, output is combined
+     * images data object with mode, source information, and meta information added
+     * in custom format for downstream processing on second node */
+    n0 = vxCustomPreprocessCombineImagesNode(graph, img1, img2, "survellance",
+                                             tmp_user_obj);
+
+    /* create a scalar object required for second node */
+    class = 0;
+    s0 = vxCreateScalar(context, VX_TYPE_INT32, &class);
+
+    /* create second node: input is output of first node, output is classification
+     * scalar */
+    n1 = vxCustomClassifier(graph, tmp_user_obj, s0);
+
+    vxReleaseScalar(&s0);
+    vxReleaseNode(&n0);
+    vxReleaseNode(&n1);
+    vxReleaseImage(&img1);
+    vxReleaseImage(&img2);
+    vxReleaseUserDataObject(&tmp_user_obj);
+
+    return graph;
+}
+----
+
+[[sec_query]]
+=== Query and Map/Unmap or Copy
+The following code shows an example of how the query API and map/unmap or copy functions could be used to read a field from the user data object.
+
+[source,cpp]
+----
+/*
+ * Utility API used to read the source data from vx_user_data_object
+ * of type user_custom_data_t
+ * - Uses map API
+ * - Uses query API
+ */
+static vx_status get_source_data_using_map(vx_user_data_object usr_obj,
+                                           uint16_t *source_data)
+{
+	vx_status status = VX_FAILURE;
+	uint16_t *pSourceData = NULL;
+    vx_map_id map_id;
+
+	vx_char obj_name[VX_MAX_REFERENCE_NAME];
+	
+	vxQueryUserDataObject(usr_obj, VX_USER_DATA_OBJECT_NAME, &obj_name,
+	                      sizeof(obj_name));
+	
+	if(strncmp(obj_name, "user_custom_data_t", VX_MAX_REFERENCE_NAME) == 0)
+	{
+		vx_size offset = offsetof(user_custom_data_t, source_data);
+		vx_size size   = sizeof(((user_custom_data_t *)0)->source_data;
+		
+		status = vxMapUserDataObject(usr_obj, offset, size, &map_id,
+		                             (void **)&pSourceData, VX_READ_ONLY,
+		                             VX_MEMORY_TYPE_HOST, 0);
+		if( VX_SUCCESS == status )
+		{
+			*source_data = *pSourceData;
+			status = vxUnmapUserDataObject(map_id);
+		}
+	}
+	
+	return status;
+}
+
+/*
+ * Utility API used to read the source data from vx_user_data_object of
+ * type user_custom_data_t
+ * - Uses copy API
+ * - Uses query API
+ */
+static vx_status get_source_data_using_copy(vx_user_data_object usr_obj, 
+                                            uint16_t *source_data)
+{
+	vx_status status = VX_FAILURE;
+	uint16_t *pSourceData = NULL;
+    vx_map_id map_id;
+
+	vx_char obj_name[VX_MAX_REFERENCE_NAME];
+	
+	vxQueryUserDataObject(usr_obj, VX_USER_DATA_OBJECT_NAME, &obj_name,
+	                      sizeof(obj_name));
+	
+	if(strncmp(obj_name, "user_custom_data_t", VX_MAX_REFERENCE_NAME) == 0)
+	{
+		vx_size offset = offsetof(user_custom_data_t, source_data);
+		vx_size size   = sizeof(((user_custom_data_t *)0)->source_data;
+		
+		status = vxCopyUserDataObject(usr_obj, offset, size, source_data, 
+		                         VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+	}
+	
+	return status;
+}
+----
+
+[[sec_changes]]
+== Changes to the OpenVX Specification
+`<<VX_TYPE_USER_DATA_OBJECT>>` should be added to the list of supported delay objects
+and supported object arrays.
+
+<<<
+[[module_documentation]]
+= Module Documentation
+
+// tag::group_user_data_object:summary[]
+*Macros*
+
+  * `<<VX_TYPE_USER_DATA_OBJECT>>`
+
+*Typedefs*
+
+  * `<<vx_user_data_object>>`
+
+*Enumerations*
+
+  * `<<vx_user_data_object_attribute_e>>`
+
+*Functions*
+
+  * `<<vxCreateUserDataObject>>`
+  * `<<vxCreateVirtualUserDataObject>>`
+  * `<<vxReleaseUserDataObject>>`
+  * `<<vxQueryUserDataObject>>`
+  * `<<vxCopyUserDataObject>>`
+  * `<<vxMapUserDataObject>>`
+  * `<<vxUnmapUserDataObject>>`
+
+// end::group_user_data_object:summary[]
+
+// tag::group_user_data_object:details[]
+== Macros
+
+// tag::refpage:VX_TYPE_USER_DATA_OBJECT[]
+// [desc='',type='defines']
+=== VX_TYPE_USER_DATA_OBJECT
+indexterm:[User Data Object API, VX_TYPE_USER_DATA_OBJECT]
+// Brief text:
+The object type enumeration for user data object.
+
+include::api/defines/VX_TYPE_USER_DATA_OBJECT.txt[]
+
+// end::refpage:VX_TYPE_USER_DATA_OBJECT[]
+
+== Typedefs
+
+// tag::refpage:vx_user_data_object[]
+// [desc='',type='basetypes']
+=== vx_user_data_object
+indexterm:[User Data Object API, vx_user_data_object]
+// Brief text:
+The User Data Object.
+User Data Object is a strongly-typed container for other data structures
+
+include::api/basetypes/vx_user_data_object.txt[]
+
+// end::refpage:vx_user_data_object[]
+
+== Enumerations
+
+// tag::refpage:vx_user_data_object_attribute_e[]
+// [desc='',type='enums']
+=== vx_user_data_object_attribute_e
+indexterm:[User Data Object API, vx_user_data_object_attribute_e]
+// Brief text:
+The user data object attributes.
+
+include::api/enums/vx_user_data_object_attribute_e.txt[]
+
+*Enumerator*
+
+  * [[VX_USER_DATA_OBJECT_NAME]] `VX_USER_DATA_OBJECT_NAME` - The type name of the user data object.
+    Read-only.
+    Use a `<<vx_char>>`[`<<VX_MAX_REFERENCE_NAME>>`] array.
+  * [[VX_USER_DATA_OBJECT_SIZE]] `VX_USER_DATA_OBJECT_SIZE` - The number of bytes in the user data object.
+    Read-only.
+    Use a `<<vx_size>>` parameter.
+// end::refpage:vx_user_data_object_attribute_e[]
+
+== Functions
+
+// tag::refpage:vxCreateUserDataObject[]
+// [desc='',type='protos']
+=== vxCreateUserDataObject
+indexterm:[User Data Object API, vxCreateUserDataObject]
+// Brief text:
+Creates a reference to a User Data Object.
+
+include::api/protos/vxCreateUserDataObject.txt[]
+
+
+// Detailed text:
+User data objects can be used to pass a user kernel defined data structure or blob of memory as a parameter
+to a user kernel.
+
+*Parameters*
+
+  * `[in]` _context_ - The reference to the overall Context.
+  * `[in]` _type_name_ - Pointer to the '\0' terminated string that identifies the type of object.
+                         The string is copied by the function so that it stays the property of the caller.
+                         The length of the string shall be lower than `<<VX_MAX_REFERENCE_NAME>>` bytes.
+                         The string passed here is what shall be returned when passing the
+                         `<<VX_USER_DATA_OBJECT_NAME,VX_USER_DATA_OBJECT_NAME>>` attribute enum to the `<<vxQueryUserDataObject>>` function.
+                         In the case where NULL is passed to type_name, then the query of the `<<VX_USER_DATA_OBJECT_NAME,VX_USER_DATA_OBJECT_NAME>>`
+                         attribute enum will return a single character '\0' string.
+  * `[in]` _size_ - The number of bytes required to store this instance of the user data object.
+  * `[in]` _ptr_ - The pointer to the initial value of the user data object. If NULL, then entire size bytes of the user data object
+                         is initialized to all 0s, otherwise, _size_ bytes is copied into the object
+                         from ptr to initialize the object
+
+*Returns:* A user data object reference `<<vx_user_data_object>>`.
+Any possible errors preventing a successful creation should be checked using `<<vxGetStatus>>`
+// end::refpage:vxCreateUserDataObject[]
+
+// tag::refpage:vxCreateVirtualUserDataObject[]
+// [desc='',type='protos']
+=== vxCreateVirtualUserDataObject
+indexterm:[User Data Object API, vxCreateVirtualUserDataObject]
+// Brief text:
+Creates an opaque reference to a virtual User Data Object with no direct user access.
+
+include::api/protos/vxCreateVirtualUserDataObject.txt[]
+
+
+// Detailed text:
+Virtual User Data Objects are useful when the User Data Object is used as internal graph edge.
+Virtual User Data Objects are scoped within the parent graph only.
+
+*Parameters*
+
+  * `[in]` _graph_ - The reference to the parent graph.
+  * `[in]` _type_name_ - Pointer to the '\0' terminated string that identifies the type of object.
+                         The string is copied by the function so that it stays the property of the caller.
+                         The length of the string shall be lower than `<<VX_MAX_REFERENCE_NAME>>` bytes.
+                         The string passed here is what shall be returned when passing the
+                         `<<VX_USER_DATA_OBJECT_NAME,VX_USER_DATA_OBJECT_NAME>>` attribute enum to the `<<vxQueryUserDataObject>>` function.
+                         In the case where NULL is passed to type_name, then the query of the `<<VX_USER_DATA_OBJECT_NAME,VX_USER_DATA_OBJECT_NAME>>`
+                         attribute enum will return a single character '\0' string.
+  * `[in]` _size_ - The number of bytes required to store this instance of the user data object.
+
+*Returns:* A user data object reference `<<vx_user_data_object>>`.
+Any possible errors preventing a successful creation should be checked using `<<vxGetStatus>>`
+// end::refpage:vxCreateVirtualUserDataObject[]
+
+// tag::refpage:vxReleaseUserDataObject[]
+// [desc='',type='protos']
+=== vxReleaseUserDataObject
+indexterm:[User Data Object API, vxReleaseUserDataObject]
+// Brief text:
+Releases a reference of a User data object.
+The object may not be garbage collected until its total reference count is
+zero.
+After returning from this function the reference is zeroed.
+
+include::api/protos/vxReleaseUserDataObject.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _user_data_object_ - The pointer to the User Data Object to release.
+
+*Returns:* A `<<vx_status_e>>` enumeration.
+
+*Return Values*
+
+  * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure.
+  * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - _user_data_object_ is not a valid `<<vx_user_data_object>>`
+    reference.
+// end::refpage:vxReleaseUserDataObject[]
+
+// tag::refpage:vxQueryUserDataObject[]
+// [desc='',type='protos']
+=== vxQueryUserDataObject
+indexterm:[User Data Object API, vxQueryUserDataObject]
+// Brief text:
+Queries the User data object for some specific information.
+
+include::api/protos/vxQueryUserDataObject.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _user_data_object_ - The reference to the User data object.
+  * `[in]` _attribute_ - The attribute to query.
+    Use a `<<vx_user_data_object_attribute_e>>`.
+  * `[out]` _ptr_ - The location at which to store the resulting value.
+  * `[in]` _size_ - The size in bytes of the container to which _ptr_
+    points.
+
+*Returns:* A `<<vx_status_e>>` enumeration.
+
+*Return Values*
+
+  * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure.
+  * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - _user_data_object_ is not a valid `<<vx_user_data_object>>`
+    reference.
+  * `<<VX_ERROR_NOT_SUPPORTED,VX_ERROR_NOT_SUPPORTED>>` - If the _attribute_ is not a value
+    supported on this implementation.
+  * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - If any of the other parameters are
+    incorrect.
+// end::refpage:vxQueryUserDataObject[]
+
+// tag::refpage:vxCopyUserDataObject[]
+// [desc='',type='protos']
+=== vxCopyUserDataObject
+indexterm:[User Data Object API, vxCopyUserDataObject]
+// Brief text:
+Allows the application to copy a subset from/into a user data object.
+
+include::api/protos/vxCopyUserDataObject.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _user_data_object_ - The reference to the user data object that is the source or the
+                                destination of the copy.
+  * `[in]` _offset_ - The byte offset into the user data object to copy.
+  * `[in]` _size_ - The number of bytes to copy.  The size must be within the bounds of the user data object:
+                    0 {leq} (_offset_ + _size_) {leq} _size_ of the user data object. If zero, then copy until the end of the object.
+  * `[in]` _user_ptr_ - The address of the memory location where to store the requested data
+                        if the copy was requested in read mode, or from where to get the data to store into the user data object
+                        if the copy was requested in write mode. The accessible memory must be large enough
+                        to contain the specified size.
+  * `[in]` _usage_ - This declares the effect of the copy with regard to the
+    user data object using the `<<vx_accessor_e>>` enumeration.
+    Only `<<VX_READ_ONLY,VX_READ_ONLY>>` and `<<VX_WRITE_ONLY,VX_WRITE_ONLY>>` are supported:
+  ** `<<VX_READ_ONLY,VX_READ_ONLY>>` means that data are copied from the user data object
+     into the user memory.
+  ** `<<VX_WRITE_ONLY,VX_WRITE_ONLY>>` means that data are copied into the user data object
+     from the user memory.
+  * `[in]` _user_mem_type_ - A `<<vx_memory_type_e>>` enumeration that
+    specifies the memory type of the memory referenced by the _user_addr_.
+
+*Returns:* A `<<vx_status_e>>` enumeration.
+
+*Return Values*
+
+  * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure.
+  * `<<VX_ERROR_OPTIMIZED_AWAY,VX_ERROR_OPTIMIZED_AWAY>>` - This is a reference to a virtual user data object
+    that cannot be accessed by the application.
+  * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - _user_data_object_ is not a valid `<<vx_user_data_object>>`
+    reference.
+  * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - An other parameter is incorrect.
+// end::refpage:vxCopyUserDataObject[]
+
+// tag::refpage:vxMapUserDataObject[]
+// [desc='',type='protos']
+=== vxMapUserDataObject
+indexterm:[User Data Object API, vxMapUserDataObject]
+// Brief text:
+Allows the application to get direct access to a subset of the user data object.
+
+include::api/protos/vxMapUserDataObject.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _user_data_object_ - The reference to the user data object that contains the subset to map.
+  * `[in]` _offset_ - The byte offset into the user data object to map.
+  * `[in]` _size_ - The number of bytes to map.  The size must be within the bounds of the user data object:
+    0 {leq} (_offset_ + _size_) {leq} _size_ of the user data object. If zero, then map until the end of the object.
+  * `[out]` _map_id_ - The address of a `<<vx_map_id>>` variable where the
+    function returns a map identifier.
+  ** (*map_id) must eventually be provided as the map_id parameter of a call
+     to `<<vxUnmapUserDataObject>>`.
+  * `[out]` _ptr_ - The address of a pointer that the function sets to the
+    address where the requested data can be accessed.
+    The returned (*_ptr_) address is only valid between the call to the
+    function and the corresponding call to `<<vxUnmapUserDataObject>>`.
+  * `[in]` _usage_ - This declares the access mode for the user data object subset,
+    using the `<<vx_accessor_e>>` enumeration.
+  ** `<<VX_READ_ONLY,VX_READ_ONLY>>`: after the function call, the content of the memory
+     location pointed by (*_ptr_) contains the user data object subset data.
+     Writing into this memory location is forbidden and its behavior is implementation specific.
+  ** `<<VX_READ_AND_WRITE,VX_READ_AND_WRITE>>`: after the function call, the content of the
+     memory location pointed by (*_ptr_) contains the user data object subset data;
+     writing into this memory is allowed only for the location of items and
+     will result in a modification of the affected items in the user data object
+     once the range is unmapped.
+  ** `<<VX_WRITE_ONLY,VX_WRITE_ONLY>>`: after the function call, the memory location pointed by (*_ptr_)
+     contains implementation specific data; writing to all data in the subset is required prior to
+     unmapping. Data values not written by the application before unmap may be defined differently in
+     different implementations after unmap, even if they were well defined before map.
+  * `[in]` _mem_type_ - A `<<vx_memory_type_e>>` enumeration that specifies
+    the type of the memory where the user data object subset is requested to be mapped.
+  * `[in]` _flags_ - An integer that allows passing options to the map
+    operation.
+    Use the `<<vx_map_flag_e>>` enumeration.
+
+*Returns:* A `<<vx_status_e>>` enumeration.
+
+*Return Values*
+
+  * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure.
+  * `<<VX_ERROR_OPTIMIZED_AWAY,VX_ERROR_OPTIMIZED_AWAY>>` - This is a reference to a virtual user data object
+    that cannot be accessed by the application.
+  * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` -  _user_data_object_ is not a valid `<<vx_user_data_object>>`
+    reference.
+  * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - An other parameter is incorrect.
+
+*Postcondition:* `<<vxUnmapUserDataObject>>` with same (*map_id) value.
+// end::refpage:vxMapUserDataObject[]
+
+
+// tag::refpage:vxUnmapUserDataObject[]
+// [desc='',type='protos']
+=== vxUnmapUserDataObject
+indexterm:[User Data Object API, vxUnmapUserDataObject]
+// Brief text:
+Unmap and commit potential changes to a user data object subset that was previously mapped.
+Unmapping a user data object subset invalidates the memory location from which the subset could
+be accessed by the application. Accessing this memory location after the unmap function
+completes is implementation specific.
+
+include::api/protos/vxUnmapUserDataObject.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _user_data_object_ - The reference to the user data object to unmap.
+  * `[out]` _map_id_ - The unique map identifier that was returned when
+    calling `<<vxMapUserDataObject>>`.
+
+*Returns:* A `<<vx_status_e>>` enumeration.
+
+*Return Values*
+
+  * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure.
+  * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - The _user_data_object_ reference is not actually a `<<vx_user_data_object>>`
+    reference.
+  * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - An other parameter is incorrect.
+
+*Precondition:* `<<vxMapUserDataObject>>` returning the same map_id value
+// end::refpage:vxUnmapUserDataObject[]
+
+// end::group_user_data_object:details[]
+
+ifdef::backend-pdf[]
+[index]
+= Index
+////////////////////////////////////////////////////////////////
+The index is normally left completely empty, it's contents being
+generated automatically by the DocBook toolchain.
+////////////////////////////////////////////////////////////////
+endif::[]

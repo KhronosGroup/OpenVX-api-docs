@@ -5,9 +5,9 @@ Build OpenVX API Docs:
    - uname -a
    - apt-get update -qq && apt-get install -y -qq wget unzip build-essential python3 git cmake bison flex libffi-dev zip
    - apt-get install -y -qq libgmp-dev libxml2-dev libgdk-pixbuf2.0-dev libcairo2-dev libpango1.0-dev ttf-lyx gtk-doc-tools ghostscript ruby-dev default-jre
-   - gem install asciidoctor-diagram --pre
+   - gem install asciidoctor-diagram -v 1.5.14
    - gem install asciidoctor-pdf --pre
-   - gem install asciidoctor-mathematical --pre
+   - gem install asciidoctor-mathematical -v 0.2.2
    - gem install coderay --pre
 
   script:

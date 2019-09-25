@@ -959,7 +959,7 @@ See also `<<vxGraphParameterDequeueDoneRef>>`.
 
   * `[in]` _graph_ - Graph reference
   * `[in]` _graph_parameter_index_ - Graph parameter index
-  * `[out]` _num_refs_ - Number of references that can be dequeued using
+  * `[out]` _num_refs_ - Number of references that can be dequeued using `<<vxGraphParameterDequeueDoneRef>>`
 
 *Returns:* A `vx_status_e` enumeration.
 

@@ -94,7 +94,7 @@ enum vx_classifier_type_e {
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  * \ingroup group_object_classifier_model
  */
-VX_API_ENTRY  vx_classifier_model vxImportClassifierModel(vx_context context, vx_enum format, const vx_uint8* ptr, vx_size length);
+VX_API_ENTRY vx_classifier_model VX_API_CALL vxImportClassifierModel(vx_context context, vx_enum format, const vx_uint8* ptr, vx_size length);
 
 /*!
  * \brief Releases a reference of an ClassifierModel object.
@@ -106,7 +106,7 @@ VX_API_ENTRY  vx_classifier_model vxImportClassifierModel(vx_context context, vx
  * \retval * An error occurred. See <tt\ref >vx_status_e</tt>.
  * \ingroup group_object_classifier_model
  */
-VX_API_ENTRY vx_status vxReleaseClassifierModel(vx_classifier_model* model);
+VX_API_ENTRY vx_status VX_API_CALL vxReleaseClassifierModel(vx_classifier_model* model);
 
 /*! \brief [Graph] Scans a feature-map (input_feature_map) and detect the classification for each scan-window.
  * \param [in] graph The reference to the graph
@@ -126,7 +126,7 @@ VX_API_ENTRY vx_status vxReleaseClassifierModel(vx_classifier_model* model);
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
 
-VX_API_ENTRY vx_node vxScanClassifierNode(vx_graph graph,vx_tensor input_feature_map, vx_classifier_model model, vx_int32 scanwindow_width, vx_int32 scanwindow_height, vx_int32 step_x, vx_int32 step_y,
+VX_API_ENTRY vx_node VX_API_CALL vxScanClassifierNode(vx_graph graph,vx_tensor input_feature_map, vx_classifier_model model, vx_int32 scanwindow_width, vx_int32 scanwindow_height, vx_int32 step_x, vx_int32 step_y,
                                      vx_array object_confidences, vx_array object_rectangles, vx_scalar num_objects);
 
 

@@ -765,6 +765,12 @@ gem update
 
 // [[ruby-enum-downgrade]]
 
+[[scripts]]
+=== Scripts
+
+Use `% python config/check-missing-apis.py` to check for missing functions in header files against adoc files.
+Use `% python config/check-missing-apis.py -v` to get additional verbose information.
+
 [[history]]
 == Revision History
 

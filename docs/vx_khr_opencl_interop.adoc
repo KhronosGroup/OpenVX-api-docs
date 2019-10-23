@@ -334,14 +334,9 @@ indexterm:[OpenCL Interop API, vxCreateContextFromCL]
 
 === vxCreateContextFromCL
 Create an OpenVX context with specified OpenCL context and global _coordination command queue_.
-****
-[verse]
-.Declaration in VX/vx_khr_opencl_interop.h
-    <<vx_context>> vxCreateContextFromCL(
-                <<cl_context>> __opencl_context__,
-                <<cl_command_queue>> __opencl_command_queue__
-            );
-****
+
+include::api/protos/vxCreateContextFromCL.txt[]
+
 [horizontal]
 .Parameters
 opencl_context:: [in] The OpenCL context

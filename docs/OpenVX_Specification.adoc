@@ -468,7 +468,7 @@ This specification defines the following OpenVX framework objects.
     private in that the references that refer to data objects are given only
     to the creating party.
     The results of calling an OpenVX function on data objects created in
-    different contexts are implementation depedent.
+    different contexts are implementation-defined.
   * <<group_kernel>> - A Kernel in OpenVX is the abstract representation of
     a computer vision function, such as a "`Sobel Gradient`" or "`Lucas
     Kanade Feature Tracking`".

@@ -1859,7 +1859,7 @@ server.
             <param><type>vx_reference</type> <name>ref</name></param>
             <param><type>vx_status</type> <name>status</name></param>
             <param>const char* <name>message</name></param>
-            <param><varargs/></param>
+            <param><name>...</name></param>
         </command>
         <command>
             <proto>void <name>vxRegisterLogCallback</name></proto>
@@ -2171,7 +2171,7 @@ server.
             <proto><type>vx_status</type> <name>vxCopyRemapPatch</name></proto>
             <param><type>vx_remap</type> <name>remap</name></param>
             <param>const <type>vx_rectangle_t</type>* <name>rect</name></param>
-            <param><type>vx_size</type>* <name>user_stride_y</name></param>
+            <param><type>vx_size</type> <name>user_stride_y</name></param>
             <param>void* <name>user_ptr</name></param>
             <param><type>vx_enum</type> <name>user_coordinate_type</name></param>
             <param><type>vx_enum</type> <name>usage</name></param>
@@ -2603,6 +2603,11 @@ server.
             <param><type>vx_graph</type> <name>g</name></param>
             <param><type>vx_char</type> <name>dotfile</name>[]</param>
             <param><type>vx_bool</type> <name>showData</name></param>
+        </command>
+        <command>
+            <proto><type>vx_context</type> <name>vxCreateContextFromCL</name></proto>
+            <param>cl_context<type></type> <name>opencl_context</name></param>
+            <param>cl_command_queue<type></type> <name>opencl_command_queue</name></param>
         </command>
         <command>
             <proto>NOAPI <type>vx_status</type> <name>vxIcdGetPlatforms</name></proto>
@@ -3878,7 +3883,8 @@ server.
             <proto><type>vx_status</type> <name>vxuHOGCells</name></proto>
             <param><type>vx_context</type> <name>context</name></param>
             <param><type>vx_image</type> <name>input</name></param>
-            <param><type>vx_int32</type> <name>cell_size</name></param>
+            <param><type>vx_int32</type> <name>cell_width</name></param>
+            <param><type>vx_int32</type> <name>cell_height</name></param>
             <param><type>vx_int32</type> <name>num_bins</name></param>
             <param><type>vx_tensor</type> <name>magnitudes</name></param>
             <param><type>vx_tensor</type> <name>bins</name></param>
@@ -4149,7 +4155,7 @@ server.
         <command>
             <proto><type>vx_status</type> <name>vxRegisterEvent</name></proto>
             <param><type>vx_reference</type> <name>ref</name></param>
-            <param><type>vx_event_type_e</type> <name>type</name></param>
+            <param>enum <type>vx_event_type_e</type> <name>type</name></param>
             <param><type>vx_uint32</type> <name>param</name></param>
             <param><type>vx_uint32</type> <name>app_value</name></param>
         </command>
@@ -4676,6 +4682,12 @@ server.
                 <type name="VX/vx.h"/>
                 <enum name="OPENVX_KHR_DOT"/>
                 <command name="vxExportGraphToDot"/>
+            </require>
+        </extension>
+
+        <extension name="vx_khr_opencl_interop" author="KHR" contact="???" supported="openvx">
+            <require>
+                <command name="vxCreateContextFromCL"/>
             </require>
         </extension>
 

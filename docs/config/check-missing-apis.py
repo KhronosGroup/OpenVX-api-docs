@@ -21,6 +21,7 @@
 ##########################################################################
 
 import sys
+import subprocess
 
 verbose = False
 if (len(sys.argv) > 1) and (sys.argv[1] == '-v'):
@@ -74,7 +75,7 @@ for adoc_file in adoc_files:
     if verbose:
         print('')
         print('=========== ADOC: {}'.format(adoc_file))
-    
+
     for line in open(adoc_file,'r').readlines():
         line = line.strip()
         if line[:20] == 'include::api/protos/':
@@ -185,3 +186,15 @@ for api in sorted(origin_hdecl):
     if len(origin_hdecl[api]) > 1:
         print('DUPLICATE: .h: "{}" in {}'.format(api, ' '.join(origin_hdecl[api])))
 print('')
+
+def inCts(a):
+    cmd = "git --git-dir ../../cts/.git grep -q " + a + ""
+    ret = subprocess.call(cmd, shell=True)
+    if (ret) > 0:
+        return False
+    else:
+        return True
+
+for api in sorted(origin_adecl):
+    if not (inCts(api)):
+        print('MISSING from CTS: "{}": {}'.format(api, ' '.join(origin_adecl[api])))

@@ -9382,6 +9382,7 @@ definition of fixed width types.
   * `<<VX_VERSION_1_0,VX_VERSION_1_0>>`
   * `<<VX_VERSION_1_1,VX_VERSION_1_1>>`
   * `<<VX_VERSION_1_2,VX_VERSION_1_2>>`
+  * `<<VX_VERSION_1_3,VX_VERSION_1_3>>`
   * `<<VX_VERSION_MAJOR,VX_VERSION_MAJOR>>`
   * `<<VX_VERSION_MINOR,VX_VERSION_MINOR>>`
 
@@ -9817,6 +9818,17 @@ Defines the predefined version number for 1.2.
 include::api/defines/VX_VERSION_1_2.txt[]
 
 // end::refpage:VX_VERSION_1_2[]
+
+// tag::refpage:VX_VERSION_1_3[]
+// [desc='',type='defines']
+=== VX_VERSION_1_3
+
+// Brief text:
+Defines the predefined version number for 1.3.
+
+include::api/defines/VX_VERSION_1_3.txt[]
+
+// end::refpage:VX_VERSION_1_3[]
 
 // tag::refpage:VX_VERSION_MAJOR[]
 // [desc='',type='defines']

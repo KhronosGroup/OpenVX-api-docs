@@ -18,6 +18,7 @@ addons:
             - ttf-lyx gtk-doc-tools ghostscript ruby-dev default-jre
   
 branches:
+  - openvx_1.3
   - openvx_1.2
 
 before_script:

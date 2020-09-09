@@ -128,7 +128,7 @@ OpenVX specification:
 | `vx_node`
 | `vx_parameter`
 | `vx_meta_format`
-|
+| `vx_delay`
 |====
 
 The Base Feature Set also requires support for User Kernels as decribed in the main OpenVX
@@ -162,7 +162,6 @@ OpenVX specification:
 4+| Vision Conformance required data objects
 | `vx_array`
 | `vx_convolution`
-| `vx_delay`
 | `vx_distribution`
 | `vx_image`
 | `vx_lut`
@@ -172,6 +171,7 @@ OpenVX specification:
 | `vx_scalar`
 | `vx_threshold`
 | `vx_object_array`
+|
 |====
 
 ==== Vision Function Requirements
@@ -218,13 +218,26 @@ feature set, plus the following data objects and neural-network functions.
 
 The Neural Network Conformance Feature Set includes the following data objects in their entirety,
 including all functions, macros, typedefs, and enumerations described in their respective sections
-in the main OpenVX specification:
+in the main OpenVX specification, with exceptions stated explicitly:
 
 [options="header"]
 |====
-| Neural Network Conformance required data objects
+4+| Neural Network Conformance required data objects
 | `vx_tensor`
+| `vx_scalar`
+| `vx_lut`
+|
 |====
+
+To enable implementations to target neural network use cases without images, the following
+functions are not included in the Neural Network Conformance Feature Set:
+
+[options="header"]
+|====
+| Neural Network Conformance does not require functions
+| `vxCreateImageObjectArrayFromTensor`
+|====
+
 
 ==== Neural Network Function Requirements
 
@@ -239,7 +252,14 @@ and the tensor data object.  The neural-network functions are listed here for co
 3+| Neural Network Conformance required functions
 | vxActivationLayer | vxConvolutionLayer | vxDeconvolutionLayer
 | vxFullyConnectedLayer | vxLocalResponseNormalizationLayer | vxPoolingLayer
-| vxROIPoolingLayer | vxSoftmaxLayer |
+| vxROIPoolingLayer | vxSoftmaxLayer
+| vxTensorMultiplyNode
+| vxTensorAddNode
+| vxTensorSubtractNode
+| vxTensorTableLookupNode
+| vxTensorTransposeNode
+| vxTensorConvertDepthNode
+| vxTensorMatrixMultiplyNode
 |====
 
 [[sec_nnef]]

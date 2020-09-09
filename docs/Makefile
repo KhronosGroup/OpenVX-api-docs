@@ -66,7 +66,7 @@ all:
 	make SPECBASE=vx_khr_tiling html $(TARGET) SPECREVISION='1.0.1 (provisional)' SPECSUFFIX=1_0_1
 	make SPECBASE=vx_khr_xml html $(TARGET) SPECREVISION='1.1 (provisional)' SPECSUFFIX=1_1
 	make SPECBASE=vx_khr_xml_ug html $(TARGET) SPECREVISION='1.1 (provisional)' SPECSUFFIX=1_1
-	make SPECBASE=vx_khr_feature_sets html $(TARGET) SPECREVISION='1.0' SPECSUFFIX=1_0
+	make SPECBASE=vx_khr_feature_sets html $(TARGET) SPECREVISION='1.1' SPECSUFFIX=1_1
 	make SPECBASE=vx_khr_buffer_aliasing html $(TARGET) SPECREVISION='1.0 (provisional)' SPECSUFFIX=1_0
 	make SPECBASE=vx_khr_user_data_object html $(TARGET) SPECREVISION='1.0 (provisional)' SPECSUFFIX=1_0
 

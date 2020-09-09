@@ -166,7 +166,8 @@ There is interest in creating implementations that target a particular set of fe
 covering the entire OpenVX API. In order to offer this option while still managing the API to prevent
 excessive fragmentation regarding which implementations offer which features,
 the companion feature set document ("`vx_khr_feature_sets`") defines a collection of "`feature sets`"
-that form coherent and useful subsets of the OpenVX API. Refer to the Khronos OpenVX registry for
+that form coherent and useful subsets of the OpenVX API. Refer to the
+https://www.khronos.org/registry/OpenVX[Khronos OpenVX Registry]
 for this document.
 
 [[sec_typo]]
@@ -674,6 +675,72 @@ inaccessible memories.
 OpenVX does not proscribe _which_ optimization the vendor does, merely that
 it _may_ happen.
 
+For virtual images created with undefined or partially defined dimensions and/or without
+defined format (`<<VX_DF_IMAGE_VIRT,VX_DF_IMAGE_VIRT>>`), the image dimensions and format
+will be inherited from node input images during graph verification.
+
+[options="header"]
+|====
+| Vision Function      | Output Image Dimensions | Output Image Format
+| AbsDiff              | Same as input image |
+| Add                  | Same as input image |
+| And                  | Same as input image | Same as input image
+| BilateralFilter      |                     |
+| Box3x3               | Same as input image |
+| CannyEdgeDetector    | Same as input image |
+| ChannelCombine       | Same as input image |
+| ChannelExtract       | Same as input image |
+| ColorConvert         | Same as input image |
+| ConvertDepth         | Same as input image |
+| Convolve             | Same as input image |
+| Copy (image object)  | Same as input image | Same as input image
+| Dilate3x3            | Same as input image | Same as input image
+| EqualizeHist         | Same as input image |
+| Erode3x3             | Same as input image | Same as input image
+| FastCorners          |                 |
+| Gaussian3x3          | Same as input image |
+| GaussianPyramid      |                 |
+| HarrisCorners        |                 |
+| HalfScaleGaussian    |                 | Same as input image
+| HarrisCorners        |                 |
+| HOGCells             |                 |
+| HOGFeatures          |                 |
+| HoughLinesP          |                 |
+| IntegralImage        | Same as input image |
+| LaplacianPyramid     |                 | Same as input image
+| LaplacianReconstruct |                 | Same as input image
+| LBP                  | Same as input image |
+| Magnitude            | Same as input image |
+| MatchTemplate        |                 |
+| MeanStdDev           |                 |
+| Median3x3            | Same as input image | Same as input image
+| Max                  | Same as input image | Same as input image
+| Min                  | Same as input image | Same as input image
+| MinMaxLoc            |                 |
+| Multiply             | Same as input image |
+| NonLinearFilter      | Same as input image | Same as input image
+| NonMaxSuppression    | Same as input image | Same as input image
+| Not                  | Same as input image | Same as input image
+| OpticalFlowPyrLK     |                 |
+| Or                   | Same as input image | Same as input image
+| Phase                | Same as input image |
+| Remap                | Same as remap destination |
+| ScaleImage           |                 | Same as input image
+| Sobel3x3             | Same as input image |
+| Subtract             | Same as input image |
+| TableLookup          | Same as input image |
+| TensorMultiply       |                     |
+| TensorAdd            |                     |
+| TensorSubtract       |                     |
+| TensorMatrixMultiply |                 |
+| TensorTableLookup    |                     |
+| TensorTranspose      |                 |
+| Threshold            | Same as input image |
+| WarpAffine           |                 | Same as input image
+| WarpPerspective      |                 | Same as input image
+| WeightedAverage      | Same as input image |
+| Xor                  | Same as input image | Same as input image
+|====
 
 [[sub_node_parameters]]
 === Node Parameters
@@ -1187,13 +1254,13 @@ OpenVX in which they are supported.
 | ColorConvert         |     |     |     |     |     |     |     | 1.0 |
 | ConvertDepth         | 1.3 |     | 1.0 |     | 1.0 |     |     |     |
 | Convolve             |     |     | 1.0 |     |     |     |     |     |
-| Data Object Copy     |     |     |     |     |     |     |     |     | 1.2
+| Copy                 |     |     |     |     |     |     |     |     | 1.2
 | Dilate3x3            | 1.3 |     | 1.0 |     |     |     |     |     |
 | EqualizeHist         |     |     | 1.0 |     |     |     |     |     |
 | Erode3x3             | 1.3 |     | 1.0 |     |     |     |     |     |
 | FastCorners          |     |     | 1.0 |     |     |     |     |     |
 | Gaussian3x3          |     |     | 1.0 |     |     |     |     |     |
-| GaussianPyramid      |     |     | 1.1 |     |     |     |     |     |
+| GaussianPyramid      |     |     | 1.0 |     |     |     |     |     |
 | HarrisCorners        |     |     | 1.0 |     |     |     |     |     |
 | HalfScaleGaussian    |     |     | 1.0 |     |     |     |     |     |
 | Histogram            |     |     | 1.0 |     |     |     |     |     |
@@ -1218,7 +1285,6 @@ OpenVX in which they are supported.
 | OpticalFlowPyrLK     |     |     | 1.0 |     |     |     |     |     |
 | Or                   | 1.3 |     | 1.0 |     |     |     |     |     |
 | Phase                |     |     |     |     | 1.0 |     |     |     |
-| GaussianPyramid      |     |     | 1.0 |     |     |     |     |     |
 | Remap                |     |     | 1.0 |     |     |     |     |     |
 | ScaleImage           | 1.3 |     | 1.0 |     |     |     |     |     |
 | Sobel3x3             |     |     | 1.0 |     |     |     |     |     |
@@ -1255,18 +1321,18 @@ OpenVX in which they are supported.
 | ColorConvert         |     |     |     |     |     |     |     | 1.0 |
 | ConvertDepth         | 1.3 |     | 1.0 |     | 1.0 |     |     |     |
 | Convolve             |     |     | 1.0 |     | 1.0 |     |     |     |
-| Data Object Copy     |     |     |     |     |     |     |     |     | 1.2
+| Copy                 |     |     |     |     |     |     |     |     | 1.2
 | Dilate3x3            | 1.3 |     | 1.0 |     |     |     |     |     |
 | EqualizeHist         |     |     | 1.0 |     |     |     |     |     |
 | Erode3x3             | 1.3 |     | 1.0 |     |     |     |     |     |
 | FastCorners          |     |     | 1.0 |     |     |     |     |     |
 | Gaussian3x3          |     |     | 1.0 |     |     |     |     |     |
-| GaussianPyramid      |     |     | 1.1 |     |     |     |     |     |
+| GaussianPyramid      |     |     | 1.0 |     |     |     |     |     |
 | HarrisCorners        |     |     | 1.0 |     |     |     |     |     |
 | HalfScaleGaussian    |     |     | 1.0 |     |     |     |     |     |
 | Histogram            |     |     |     |     |     | 1.0 |     |     |
-| HOGCells             |     | 1.2 |     |     |     |     | 1.2 |     |
-| HOGFeatures          |     | 1.2 |     |     |     |     | 1.2 |     |
+| HOGCells             |     | 1.2 |     |     | 1.2 |     |     |     |
+| HOGFeatures          |     | 1.2 |     |     | 1.2 |     |     |     |
 | HoughLinesP          |     |     |     |     |     |     |     |     | 1.2
 | IntegralImage        |     |     |     |     |     | 1.0 |     |     |
 | LaplacianPyramid     |     |     |     |     | 1.1 |     |     |     |
@@ -1286,7 +1352,6 @@ OpenVX in which they are supported.
 | OpticalFlowPyrLK     |     |     |     |     |     |     |     |     |
 | Or                   | 1.3 |     | 1.0 |     |     |     |     |     |
 | Phase                |     |     | 1.0 |     |     |     |     |     |
-| GaussianPyramid      |     |     | 1.0 |     |     |     |     |     |
 | Remap                |     |     | 1.0 |     |     |     |     |     |
 | ScaleImage           | 1.3 |     | 1.0 |     |     |     |     |     |
 | Sobel3x3             |     |     |     |     | 1.0 |     |     |     |
@@ -1625,6 +1690,8 @@ enum {
 };
 --------------------------------------
 
+Some objects support APIs to set attributes even though all their attributes are
+specified as read-only in this specification. These APIs are meant for extending attributes.
 
 [[sub_kernel_extensions]]
 === Vendor Custom Kernels
@@ -1813,8 +1880,8 @@ include::api/protos/vxAbsDiffNode.txt[]
   * `[in]` _in2_ - An input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0007*]`[[REQ-0007]].
   * `[out]` _out_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
-    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0008*]`[[REQ-0008]], which must have the same dimensions as the
-    input image.
+    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0008*]`[[REQ-0008]].
+    The output image must have the same dimensions as the input image.
 
 *Return Values*
 
@@ -1843,6 +1910,7 @@ include::api/protos/vxuAbsDiff.txt[]
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
   * `[out]` _out_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -1911,8 +1979,8 @@ include::api/protos/vxAddNode.txt[]
   * `[in]` _policy_ - A `<<VX_TYPE_ENUM,VX_TYPE_ENUM>>` of the `<<vx_convert_policy_e>>`
     enumeration `[*REQ-0019*]`[[REQ-0019]].
   * `[out]` _out_ - The output image, a `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
-    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` image `[*REQ-0020*]`[[REQ-0020]], which must have the same dimensions as the
-    input images.
+    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` image `[*REQ-0020*]`[[REQ-0020]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -1945,6 +2013,7 @@ include::api/protos/vxuAdd.txt[]
   * `[in]` _policy_ - A `<<vx_convert_policy_e>>` enumeration.
   * `[out]` _out_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -2015,8 +2084,8 @@ include::api/protos/vxSubtractNode.txt[]
   * `[in]` _policy_ - A `<<VX_TYPE_ENUM,VX_TYPE_ENUM>>` of the `<<vx_convert_policy_e>>`
     enumeration `[*REQ-0031*]`[[REQ-0031]].
   * `[out]` _out_ - The output image, a `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
-    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` image `[*REQ-0032*]`[[REQ-0032]], which must have the same dimensions as the
-    input images.
+    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` image `[*REQ-0032*]`[[REQ-0032]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -2049,6 +2118,7 @@ include::api/protos/vxuSubtract.txt[]
   * `[in]` _policy_ - A `<<vx_convert_policy_e>>` enumeration.
   * `[out]` _out_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -2145,7 +2215,7 @@ include::api/protos/vxBilateralFilterNode.txt[]
     Supported values are bigger then 0 and smaller or equal 20 `[*REQ-0042*]`[[REQ-0042]].
   * `[out]` _dst_ - The output data, a `<<vx_tensor>>` of type
     `<<VX_TYPE_UINT8,VX_TYPE_UINT8>>` or `<<VX_TYPE_INT16,VX_TYPE_INT16>>`.
-    Must be the same type and size of the input `[*REQ-0043*]`[[REQ-0043]].
+    Must be the same type and size of the input.
 
 [NOTE]
 .Note
@@ -2263,8 +2333,8 @@ include::api/protos/vxAndNode.txt[]
   * `[in]` _graph_ - The reference to the graph `[*REQ-0046*]`[[REQ-0046]].
   * `[in]` _in1_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image `[*REQ-0047*]`[[REQ-0047]].
   * `[in]` _in2_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image `[*REQ-0048*]`[[REQ-0048]].
-  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image,
-    which must have the same dimensions and format as the input images `[*REQ-0049*]`[[REQ-0049]].
+  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image `[*REQ-0049*]`[[REQ-0049]].
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -2291,8 +2361,8 @@ include::api/protos/vxuAnd.txt[]
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _in1_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image
   * `[in]` _in2_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image
-  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image,
-    which must have the same dimensions and format as the input images.
+  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -2358,8 +2428,8 @@ include::api/protos/vxXorNode.txt[]
   * `[in]` _graph_ - The reference to the graph `[*REQ-0052*]`[[REQ-0052]].
   * `[in]` _in1_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image `[*REQ-0053*]`[[REQ-0053]].
   * `[in]` _in2_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image `[*REQ-0054*]`[[REQ-0054]].
-  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image,
-    which must have the same dimensions and format as the input images `[*REQ-0055*]`[[REQ-0055]].
+  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image `[*REQ-0055*]`[[REQ-0055]].
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -2386,8 +2456,8 @@ include::api/protos/vxuXor.txt[]
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _in1_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image
   * `[in]` _in2_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image
-  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image,
-    which must have the same dimensions and format as the input images.
+  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -2453,8 +2523,8 @@ include::api/protos/vxOrNode.txt[]
   * `[in]` _graph_ - The reference to the graph `[*REQ-0058*]`[[REQ-0058]].
   * `[in]` _in1_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image `[*REQ-0059*]`[[REQ-0059]].
   * `[in]` _in2_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image `[*REQ-0060*]`[[REQ-0060]].
-  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image,
-    which must have the same dimensions and format as the input images `[*REQ-0061*]`[[REQ-0061]].
+  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image `[*REQ-0061*]`[[REQ-0061]].
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -2481,8 +2551,8 @@ include::api/protos/vxuOr.txt[]
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _in1_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image
   * `[in]` _in2_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image
-  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image,
-    which must have the same dimensions and format as the input images.
+  * `[out]` _out_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -2546,8 +2616,8 @@ include::api/protos/vxNotNode.txt[]
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0064*]`[[REQ-0064]].
   * `[in]` _input_ - A `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image `[*REQ-0065*]`[[REQ-0065]].
-  * `[out]` _output_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image,
-    which must have the same dimensions and format as the input image `[*REQ-0066*]`[[REQ-0066]].
+  * `[out]` _output_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image `[*REQ-0066*]`[[REQ-0066]].
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -2573,8 +2643,8 @@ include::api/protos/vxuNot.txt[]
 
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` input image
-  * `[out]` _output_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image,
-    which must have the same dimensions and format as the input image.
+  * `[out]` _output_ - The `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` output image.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -2638,8 +2708,8 @@ include::api/protos/vxBox3x3Node.txt[]
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0069*]`[[REQ-0069]].
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0070*]`[[REQ-0070]].
-  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format,
-    which must have the same dimensions as the input image `[*REQ-0071*]`[[REQ-0071]].
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0071*]`[[REQ-0071]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -2666,6 +2736,7 @@ include::api/protos/vxuBox3x3.txt[]
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
   * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -2870,6 +2941,7 @@ include::api/protos/vxCannyEdgeDetectorNode.txt[]
     gradient, `<<VX_NORM_L1,VX_NORM_L1>>` or `<<VX_NORM_L2,VX_NORM_L2>>` `[*REQ-0078*]`[[REQ-0078]]
   * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>`
     format with values either 0 and 1 (`VX_DF_IMAGE_U1`), or 0 and 255 (`VX_DF_IMAGE_U8`) `[*REQ-0079*]`[[REQ-0079]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -2905,6 +2977,7 @@ include::api/protos/vxuCannyEdgeDetector.txt[]
     gradient, `<<VX_NORM_L1,VX_NORM_L1>>` or `<<VX_NORM_L2,VX_NORM_L2>>`.
   * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>`
     format with values either 0 and 1 (`VX_DF_IMAGE_U1`), or 0 and 255 (`VX_DF_IMAGE_U8`).
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -2973,7 +3046,7 @@ include::api/protos/vxChannelCombineNode.txt[]
     Must be `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` `[*REQ-0085*]`[[REQ-0085]].
   * `[out]` _output_ - The output image `[*REQ-0086*]`[[REQ-0086]].
     The format of the image must be defined, even if the image is virtual.
-    Must have the same dimensions as the input images
+    The output image must have the same dimensions as the input image.
 
 *See also:* `<<VX_KERNEL_CHANNEL_COMBINE,VX_KERNEL_CHANNEL_COMBINE>>`
 
@@ -3009,6 +3082,7 @@ include::api/protos/vxuChannelCombine.txt[]
   * `[in]` _plane3_ - [optional] The plane that forms channel 3.
     Must be `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>`.
   * `[out]` _output_ - The output image.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -3064,8 +3138,8 @@ include::api/protos/vxChannelExtractNode.txt[]
     Must be one of the defined `<<vx_df_image_e>>` multi-channel formats.
   * `[in]` _channel_ - The `<<vx_channel_e>>` channel to extract `[*REQ-0090*]`[[REQ-0090]].
   * `[out]` _output_ - The output image.
-    Must be `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` `[*REQ-0091*]`[[REQ-0091]], and must have the same dimensions as the
-    input image.
+    Must be `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` `[*REQ-0091*]`[[REQ-0091]].
+    The output image must have the same dimensions as the input image.
 
 *See also:* `<<VX_KERNEL_CHANNEL_EXTRACT,VX_KERNEL_CHANNEL_EXTRACT>>`
 
@@ -3097,6 +3171,7 @@ include::api/protos/vxuChannelExtract.txt[]
   * `[in]` _channel_ - The `<<vx_channel_e>>` enumeration to extract.
   * `[out]` _output_ - The output image.
     Must be `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>`.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -3323,8 +3398,8 @@ include::api/protos/vxColorConvertNode.txt[]
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0096*]`[[REQ-0096]].
   * `[in]` _input_ - The input image from which to convert `[*REQ-0097*]`[[REQ-0097]].
-  * `[out]` _output_ - The output image to which to convert, which must have
-    the same dimensions as the input image `[*REQ-0098*]`[[REQ-0098]].
+  * `[out]` _output_ - The output image to which to convert `[*REQ-0098*]`[[REQ-0098]].
+    The output image must have the same dimensions as the input image.
 
 *See also:* `<<VX_KERNEL_COLOR_CONVERT,VX_KERNEL_COLOR_CONVERT>>`
 
@@ -3353,6 +3428,7 @@ include::api/protos/vxuColorConvert.txt[]
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input image.
   * `[out]` _output_ - The output image.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -3659,8 +3735,8 @@ include::api/protos/vxConvertDepthNode.txt[]
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0133*]`[[REQ-0133]].
   * `[in]` _input_ - The input image `[*REQ-0134*]`[[REQ-0134]].
-  * `[out]` _output_ - The output image with the same dimensions of the
-    input image `[*REQ-0135*]`[[REQ-0135]].
+  * `[out]` _output_ - The output image `[*REQ-0135*]`[[REQ-0135]].
+    The output image must have the same dimensions as the input image.
   * `[in]` _policy_ - A `<<VX_TYPE_ENUM,VX_TYPE_ENUM>>` of the `<<vx_convert_policy_e>>`
     enumeration `[*REQ-0136*]`[[REQ-0136]].
   * `[in]` _shift_ - A scalar containing a `<<VX_TYPE_INT32,VX_TYPE_INT32>>` of the shift
@@ -3691,6 +3767,7 @@ include::api/protos/vxuConvertDepth.txt[]
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input image.
   * `[out]` _output_ - The output image.
+    The output image must have the same dimensions as the input image.
   * `[in]` _policy_ - A `<<VX_TYPE_ENUM,VX_TYPE_ENUM>>` of the `<<vx_convert_policy_e>>`
     enumeration.
   * `[in]` _shift_ - A scalar containing a `<<VX_TYPE_INT32,VX_TYPE_INT32>>` of the shift
@@ -3795,8 +3872,8 @@ include::api/protos/vxConvolveNode.txt[]
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0145*]`[[REQ-0145]].
   * `[in]` _conv_ - The `<<vx_int16>>` convolution matrix `[*REQ-0146*]`[[REQ-0146]]
   * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
-    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0147*]`[[REQ-0147]], which must have the same dimensions as the
-    input image `[*REQ-0148*]`[[REQ-0148]].
+    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0147*]`[[REQ-0147]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -3826,6 +3903,7 @@ include::api/protos/vxuConvolve.txt[]
   * `[in]` _conv_ - The `<<vx_int16>>` convolution matrix.
   * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -3986,8 +4064,8 @@ include::api/protos/vxDilate3x3Node.txt[]
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0157*]`[[REQ-0157]].
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format `[*REQ-0158*]`[[REQ-0158]].
-  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format,
-    which must have the same dimensions and same format as the input image `[*REQ-0159*]`[[REQ-0159]].
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -4013,8 +4091,8 @@ include::api/protos/vxuDilate3x3.txt[]
 
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format.
-  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format,
-    which must have the same dimensions and same format as the input image.
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -4071,8 +4149,8 @@ include::api/protos/vxEqualizeHistNode.txt[]
   * `[in]` _graph_ - The reference to the graph `[*REQ-0162*]`[[REQ-0162]].
   * `[in]` _input_ - The grayscale input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` `[*REQ-0163*]`[[REQ-0163]].
   * `[out]` _output_ - The grayscale output image of type
-    `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` with equalized brightness and contrast `[*REQ-0164*]`[[REQ-0164]] and same
-    size as the input image `[*REQ-0165*]`[[REQ-0165]].
+    `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` with equalized brightness and contrast `[*REQ-0164*]`[[REQ-0164]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -4100,6 +4178,7 @@ include::api/protos/vxuEqualizeHist.txt[]
   * `[in]` _input_ - The grayscale input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>`
   * `[out]` _output_ - The grayscale output image of type
     `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` with equalized brightness and contrast.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -4171,8 +4250,8 @@ include::api/protos/vxErode3x3Node.txt[]
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0168*]`[[REQ-0168]].
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format `[*REQ-0169*]`[[REQ-0169]].
-  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format,
-    which must have the same dimensions and same format as the input image `[*REQ-0170*]`[[REQ-0170]].
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format `[*REQ-0170*]`[[REQ-0170]].
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -4198,8 +4277,8 @@ include::api/protos/vxuErode3x3.txt[]
 
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format.
-  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format,
-    which must have the same dimensions and same format as the input image.
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -4447,8 +4526,8 @@ include::api/protos/vxGaussian3x3Node.txt[]
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0182*]`[[REQ-0182]]
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0183*]`[[REQ-0183]].
-  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0184*]`[[REQ-0184]],
-    which must have the same dimensions as the input image `[*REQ-0185*]`[[REQ-0185]].
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0184*]`[[REQ-0184]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -4475,6 +4554,7 @@ include::api/protos/vxuGaussian3x3.txt[]
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
   * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -5595,8 +5675,8 @@ include::api/protos/vxIntegralImageNode.txt[]
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0246*]`[[REQ-0246]].
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0247*]`[[REQ-0247]].
-  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U32,VX_DF_IMAGE_U32>>` format `[*REQ-0248*]`[[REQ-0248]],
-    which must have the same dimensions as the input image `[*REQ-0249*]`[[REQ-0249]].
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U32,VX_DF_IMAGE_U32>>` format `[*REQ-0248*]`[[REQ-0248]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -5623,6 +5703,7 @@ include::api/protos/vxuIntegralImage.txt[]
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
   * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U32,VX_DF_IMAGE_U32>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -5651,8 +5732,8 @@ input image.
 The function calculates one of the following LBP descriptors: Local Binary
 Pattern, Modified Local Binary Pattern, or Uniform Local Binary Pattern `[*REQ-0251*]`[[REQ-0251]].
 
-Local binary pattern is defined as: Each pixel (y,x) generate an 8 bit value
-describing the local binary pattern around the pixel, by comparing the pixel
+Local binary pattern is defined as: Each pixel (y,x) generate an unsigned 8-bit value
+describing the local binary pattern around the input pixel `SrcImg[y,x]`, by comparing the pixel
 value with its 8 neighbours (selected neighbours of the 3x3 or 5x5 window).
 
 We will define the pixels for the 3x3 neighbourhood as:
@@ -5708,7 +5789,7 @@ The LBP image is defined in the following equation `[*REQ-0252*]`[[REQ-0252]]:
   :: latexmath:[DstImg[y,x\] = \sum_{p=0}^{7} s(g_p - g_c)2^p]
 
 For modified local binary pattern.
-Each pixel (y,x) generate an 8 bit value describing the modified local
+Each pixel (y,x) generate an unsigned 8-bit value describing the modified local
 binary pattern around the pixel, by comparing the average of 8 neighbour
 pixels with its 8 neighbours (5x5 window) `[*REQ-0253*]`[[REQ-0253]].
 
@@ -5810,17 +5891,13 @@ include::api/protos/vxLBPNode.txt[]
 *Parameters*
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0255*]`[[REQ-0255]].
-  * `[in]` _in_ - An input image in `<<vx_image>>` `[*REQ-0256*]`[[REQ-0256]].
-    Or [eq]#SrcImg# in the equations.
-    The image is of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>`
+  * `[in]` _src_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0256*]`[[REQ-0256]].
   * `[in]` _format_ - A variation of LBP like original LBP and mLBP `[*REQ-0257*]`[[REQ-0257]].
     See `<<vx_lbp_format_e>>`
   * `[in]` _kernel_size_ - Kernel size `[*REQ-0258*]`[[REQ-0258]].
     Only size of 3 and 5 are supported
-  * `[out]` _out_ - An output image in `<<vx_image>>` `[*REQ-0259*]`[[REQ-0259]].
-    Or [eq]#DstImg# in the equations.
-    The image is of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` with the same dimensions as
-    the input image `[*REQ-0260*]`[[REQ-0260]].
+  * `[out]` _output_ - The output image in ``<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0259*]`[[REQ-0259]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -5845,16 +5922,13 @@ include::api/protos/vxuLBP.txt[]
 *Parameters*
 
   * `[in]` _context_ - The reference to the overall context.
-  * `[in]` _in_ - An input image in `<<vx_image>>`.
-    Or [eq]#SrcImg# in the equations.
-    the image is of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>`
+  * `[in]` _src_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
   * `[in]` _format_ - A variation of LBP like original LBP and mLBP.
     see `<<vx_lbp_format_e>>`
   * `[in]` _kernel_size_ - Kernel size.
     Only size of 3 and 5 are supported
-  * `[out]` _out_ - An output image in `<<vx_image>>`.
-    Or [eq]#DstImg# in the equations.
-    The image is of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>`
+  * `[out]` _output_ - The output image in ``<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -6059,13 +6133,10 @@ include::api/protos/vxMagnitudeNode.txt[]
 *Parameters*
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0271*]`[[REQ-0271]].
-  * `[in]` _grad_x_ - The input x image.
-    This must be in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0272*]`[[REQ-0272]].
-  * `[in]` _grad_y_ - The input y image.
-    This must be in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0273*]`[[REQ-0273]].
-  * `[out]` _mag_ - The magnitude image.
-    This is in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0274*]`[[REQ-0274]].
-    Must have the same dimensions as the input image `[*REQ-0275*]`[[REQ-0275]].
+  * `[in]` _grad_x_ - The input x image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0272*]`[[REQ-0272]].
+  * `[in]` _grad_y_ - The input y image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0273*]`[[REQ-0273]].
+  * `[out]` _magnitude_ - The output magnitude image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0274*]`[[REQ-0274]].
+    The output image must have the same dimensions as the input image.
 
 *See also:* `<<VX_KERNEL_MAGNITUDE,VX_KERNEL_MAGNITUDE>>`
 
@@ -6092,12 +6163,10 @@ include::api/protos/vxuMagnitude.txt[]
 *Parameters*
 
   * `[in]` _context_ - The reference to the overall context.
-  * `[in]` _grad_x_ - The input x image.
-    This must be in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
-  * `[in]` _grad_y_ - The input y image.
-    This must be in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
-  * `[out]` _mag_ - The magnitude image.
-    This will be in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+  * `[in]` _grad_x_ - The input x image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+  * `[in]` _grad_y_ - The input y image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+  * `[out]` _magnitude_ - The output magnitude image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -6321,8 +6390,8 @@ include::api/protos/vxMaxNode.txt[]
     Must be of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>`.
   * `[in]` _in2_ - The second input image `[*REQ-0290*]`[[REQ-0290]].
     Must be of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>`.
-  * `[out]` _out_ - The output image which will hold the result of max and
-    will have the same type and dimensions of the input images `[*REQ-0291*]`[[REQ-0291]].
+  * `[out]` _out_ - The output image which will hold the result of max `[*REQ-0291*]`[[REQ-0291]].
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -6352,6 +6421,7 @@ include::api/protos/vxuMax.txt[]
   * `[in]` _in2_ - The second input image.
     Must be of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>`.
   * `[out]` _out_ - The output image which will hold the result of max.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -6532,8 +6602,8 @@ include::api/protos/vxuMedian3x3.txt[]
 
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format.
-  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format,
-    which must have the same dimensions and same format as the input image.
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -6594,8 +6664,8 @@ include::api/protos/vxMinNode.txt[]
     Must be of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>`.
   * `[in]` _in2_ - The second input image `[*REQ-0309*]`[[REQ-0309]].
     Must be of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>`.
-  * `[out]` _out_ - The output image which will hold the result of min and
-    will have the same type and dimensions of the imput images `[*REQ-0310*]`[[REQ-0310]].
+  * `[out]` _out_ - The output image which will hold the result of min `[*REQ-0310*]`[[REQ-0310]].
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -6625,6 +6695,7 @@ include::api/protos/vxuMin.txt[]
   * `[in]` _in2_ - The second input image.
     Must be of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>`.
   * `[out]` _out_ - The output image which will hold the result of min.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -6825,7 +6896,7 @@ include::api/protos/vxNonLinearFilterNode.txt[]
     when computing the resulting image.
     See `<<vxCreateMatrixFromPattern>>`.
   * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format `[*REQ-0331*]`[[REQ-0331]],
-    which must have the same dimensions and format as the input image `[*REQ-0332*]`[[REQ-0332]].
+    which must have the same dimensions and same format as the input image `[*REQ-0332*]`[[REQ-0332]].
 
 *Returns:* `<<vx_node>>`.
 
@@ -6858,8 +6929,8 @@ include::api/protos/vxuNonLinearFilter.txt[]
     when computing the resulting image.
     See `<<vxCreateMatrixFromPattern>>` and
     `<<vxCreateMatrixFromPatternAndOrigin>>`.
-  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format,
-    which must have the same dimensions and format as the input image.
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -6946,8 +7017,9 @@ include::api/protos/vxNonMaxSuppressionNode.txt[]
     localized non-maxima suppression `[*REQ-0341*]`[[REQ-0341]].
     Must be odd, and less than or equal to the smallest dimension of the
     input image.
-  * `[out]` _output_ - The output image, of the same type and size as the
-    input, that has been non-maxima suppressed `[*REQ-0342*]`[[REQ-0342]].
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
+    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0342*]`[[REQ-0342]].
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -6983,8 +7055,9 @@ include::api/protos/vxuNonMaxSuppression.txt[]
     localized non-maxima suppression.
     Must be odd, and less than or equal to the smallest dimension of the
     input image.
-  * `[out]` _output_ - The output image, of the same type as the input, that
-    has been non-maxima suppressed.
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
+    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+    The output image must have the same dimensions and same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -7259,13 +7332,10 @@ include::api/protos/vxPhaseNode.txt[]
 *Parameters*
 
   * `[in]` _graph_ - The reference to the graph `[*REQ-0365*]`[[REQ-0365]].
-  * `[in]` _grad_x_ - The input x image.
-    This must be in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0366*]`[[REQ-0366]].
-  * `[in]` _grad_y_ - The input y image.
-    This must be in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0367*]`[[REQ-0367]].
-  * `[out]` _orientation_ - The phase image.
-    This is in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0368*]`[[REQ-0368]], and must have the same
-    dimensions as the input images `[*REQ-0369*]`[[REQ-0369]].
+  * `[in]` _grad_x_ - The input x image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0366*]`[[REQ-0366]].
+  * `[in]` _grad_y_ - The input y image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0367*]`[[REQ-0367]].
+  * `[out]` _orientation_ - The output phase image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0368*]`[[REQ-0368]].
+    The output image must have the same dimensions as the input image.
 
 *See also:* `<<VX_KERNEL_PHASE,VX_KERNEL_PHASE>>`
 
@@ -7292,12 +7362,10 @@ include::api/protos/vxuPhase.txt[]
 *Parameters*
 
   * `[in]` _context_ - The reference to the overall context.
-  * `[in]` _grad_x_ - The input x image.
-    This must be in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
-  * `[in]` _grad_y_ - The input y image.
-    This must be in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
-  * `[out]` _orientation_ - The phase image.
-    This will be in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
+  * `[in]` _grad_x_ - The input x image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+  * `[in]` _grad_y_ - The input y image in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+  * `[out]` _orientation_ - The output phase image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -7399,7 +7467,7 @@ include::api/protos/vxMultiplyNode.txt[]
     `<<vx_round_policy_e>>` enumeration `[*REQ-0380*]`[[REQ-0380]].
   * `[out]` _out_ - The output image, a `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` image `[*REQ-0381*]`[[REQ-0381]].
-    Must have the same type and dimensions of the input images `[*REQ-0382*]`[[REQ-0382]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -7435,6 +7503,7 @@ include::api/protos/vxuMultiply.txt[]
   * `[in]` _rounding_policy_ - A `<<vx_round_policy_e>>` enumeration.
   * `[out]` _out_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -7604,11 +7673,12 @@ include::api/protos/vxRemapNode.txt[]
   * `[in]` _graph_ - The reference to the graph that will contain the node `[*REQ-0393*]`[[REQ-0393]].
   * `[in]` _input_ - The input `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` image `[*REQ-0394*]`[[REQ-0394]].
   * `[in]` _table_ - The remap table object `[*REQ-0395*]`[[REQ-0395]].
+    Must be of the same dimensions as the remap table's source image.
   * `[in]` _policy_ - An interpolation type from
     `<<vx_interpolation_type_e>>` `[*REQ-0396*]`[[REQ-0396]].
     `<<VX_INTERPOLATION_AREA,VX_INTERPOLATION_AREA>>` is not supported.
-  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` image `[*REQ-0397*]`[[REQ-0397]] with the same
-    dimensions as the input image `[*REQ-0398*]`[[REQ-0398]].
+  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` image `[*REQ-0397*]`[[REQ-0397]].
+    Must be of the same dimensions as the remap table's destination image.
 
 [NOTE]
 .Note
@@ -7641,11 +7711,13 @@ include::api/protos/vxuRemap.txt[]
 
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` image.
+    Must be of the same dimensions as the remap table's source image.
   * `[in]` _table_ - The remap table object.
   * `[in]` _policy_ - The interpolation policy from
     `<<vx_interpolation_type_e>>`.
     `<<VX_INTERPOLATION_AREA,VX_INTERPOLATION_AREA>>` is not supported.
   * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` image.
+    Must be of the same dimensions as the remap table's destination image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 // end::refpage:vxuRemap[]
@@ -7794,7 +7866,7 @@ The output image size is determined by:
   * `[in]` _graph_ - The reference to the graph `[*REQ-0406*]`[[REQ-0406]].
   * `[in]` _input_ - The input `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` image `[*REQ-0407*]`[[REQ-0407]].
   * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` image `[*REQ-0408*]`[[REQ-0408]].
-     Must be of the same type as the input image.
+    The output image must have the same format as the input image.
   * `[in]` _kernel_size_ - The input size of the Gaussian filter `[*REQ-0409*]`[[REQ-0409]].
     Supported values are 1, 3 and 5 `[*REQ-0410*]`[[REQ-0410]].
 
@@ -7822,8 +7894,8 @@ include::api/protos/vxScaleImageNode.txt[]
 
   * `[in]` _graph_ - The reference to the graph.
   * `[in]` _src_ - The source image of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>`.
-  * `[out]` _dst_ - The destination image of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>`,
-     which must be of the same type as the input image.
+  * `[out]` _dst_ - The destination image of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>`.
+    The output image must have the same format as the input image.
   * `[in]` _type_ - The interpolation type to use.
 
 *See also:* `<<vx_interpolation_type_e>>`.
@@ -7861,8 +7933,8 @@ include::api/protos/vxuHalfScaleGaussian.txt[]
 
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _input_ - The input `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` image.
-  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` image,
-    which must be if the same type as the input image.
+  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` image.
+    The output image must have the same format as the input image.
   * `[in]` _kernel_size_ - The input size of the Gaussian filter.
     Supported values are 1, 3 and 5.
 
@@ -7890,8 +7962,8 @@ include::api/protos/vxuScaleImage.txt[]
 
   * `[in]` _context_ - The reference to the overall context.
   * `[in]` _src_ - The source image of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>`.
-  * `[out]` _dst_ - The destination image of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>`,
-    must be of the same type as the input image.
+  * `[out]` _dst_ - The destination image of type `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>`.
+    The output image must have the same format as the input image.
   * `[in]` _type_ - The interpolation type.
 
 *See also:* `<<vx_interpolation_type_e>>`.
@@ -7969,10 +8041,10 @@ include::api/protos/vxSobel3x3Node.txt[]
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format `[*REQ-0417*]`[[REQ-0417]].
   * `[out]` _output_x_ - [optional] The output gradient in the x direction
     in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` `[*REQ-0418*]`[[REQ-0418]].
-    Must have the same dimensions as the input image.
+    The `output_x` image must have the same dimension as the input image.
   * `[out]` _output_y_ - [optional] The output gradient in the y direction
     in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` `[*REQ-0419*]`[[REQ-0419]].
-    Must have the same dimensions as the input image.
+    The `output_y` image must have the same dimension as the input image.
 
 *See also:* `<<VX_KERNEL_SOBEL_3x3,VX_KERNEL_SOBEL_3x3>>`
 
@@ -8002,8 +8074,10 @@ include::api/protos/vxuSobel3x3.txt[]
   * `[in]` _input_ - The input image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` format.
   * `[out]` _output_x_ - [optional] The output gradient in the x direction
     in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>`.
+    The `output_x` image must have the same dimension as the input image.
   * `[out]` _output_y_ - [optional] The output gradient in the y direction
     in `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>`.
+    The `output_y` image must have the same dimension as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -8065,8 +8139,9 @@ include::api/protos/vxTableLookupNode.txt[]
   * `[in]` _lut_ - The LUT which is of type `<<VX_TYPE_UINT8,VX_TYPE_UINT8>>` if input
     image is `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_TYPE_INT16,VX_TYPE_INT16>>` if input image is
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` `[*REQ-0425*]`[[REQ-0425]].
-  * `[out]` _output_ - The output image of the same type and size as the
-    input image `[*REQ-0426*]`[[REQ-0426]].
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
+    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format `[*REQ-0426*]`[[REQ-0426]].
+    The output image must have the same dimension as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -8096,7 +8171,9 @@ include::api/protos/vxuTableLookup.txt[]
   * `[in]` _lut_ - The LUT which is of type `<<VX_TYPE_UINT8,VX_TYPE_UINT8>>` if input
     image is `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_TYPE_INT16,VX_TYPE_INT16>>` if input image is
     `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>`.
-  * `[out]` _output_ - The output image of the same type as the input image.
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or
+    `<<VX_DF_IMAGE_S16,VX_DF_IMAGE_S16>>` format.
+    The output image must have the same dimension as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -8956,10 +9033,9 @@ include::api/protos/vxThresholdNode.txt[]
     The `<<VX_THRESHOLD_INPUT_FORMAT,VX_THRESHOLD_INPUT_FORMAT>>` must be the same as the input image
     format and the `<<VX_THRESHOLD_OUTPUT_FORMAT,VX_THRESHOLD_OUTPUT_FORMAT>>` must be the same as the
     output image format.
-  * `[out]` _output_ - The output image, that will contain as pixel values
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format, that will contain as pixel values
     true and false values defined by _thresh_ `[*REQ-0495*]`[[REQ-0495]].
-    Only images with format `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` are supported.
-    The dimensions must be the same as the input image `[*REQ-0496*]`[[REQ-0496]].
+    The output image must have the same dimensions as the input image.
 
 *Returns:* `<<vx_node>>`.
 
@@ -8993,10 +9069,9 @@ include::api/protos/vxuThreshold.txt[]
     The `<<VX_THRESHOLD_INPUT_FORMAT,VX_THRESHOLD_INPUT_FORMAT>>` must be the same as the input image
     format and the `<<VX_THRESHOLD_OUTPUT_FORMAT,VX_THRESHOLD_OUTPUT_FORMAT>>` must be the same as the
     output image format.
-  * `[out]` _output_ - The output image, that will contain as pixel value
+  * `[out]` _output_ - The output image in `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` format, that will contain as pixel values
     true and false values defined by _thresh_.
-    Only images with format `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` are supported.
-    The dimensions must be the same as the input image.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -9070,8 +9145,8 @@ include::api/protos/vxWarpAffineNode.txt[]
   * `[in]` _type_ - The interpolation type from
     `<<vx_interpolation_type_e>>` `[*REQ-0502*]`[[REQ-0502]]. `<<VX_INTERPOLATION_AREA,VX_INTERPOLATION_AREA>>` is not
     supported `[*REQ-0503*]`[[REQ-0503]].
-  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` image `[*REQ-0504*]`[[REQ-0504]]
-    with the same dimensions and same format as the input image `[*REQ-0505*]`[[REQ-0505]].
+  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` image `[*REQ-0504*]`[[REQ-0504]].
+    The output image must have the same format as the input image.
 
 [NOTE]
 .Note
@@ -9109,8 +9184,8 @@ include::api/protos/vxuWarpAffine.txt[]
   * `[in]` _type_ - The interpolation type from
     `<<vx_interpolation_type_e>>`.
     `<<VX_INTERPOLATION_AREA,VX_INTERPOLATION_AREA>>` is not supported.
-  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` image
-    with the same dimensions and same format as the input image.
+  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` or `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` image.
+    The output image must have the same format as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -9185,8 +9260,8 @@ include::api/protos/vxWarpPerspectiveNode.txt[]
   * `[in]` _type_ - The interpolation type from
     `<<vx_interpolation_type_e>>` `[*REQ-0513*]`[[REQ-0513]].
     `<<VX_INTERPOLATION_AREA,VX_INTERPOLATION_AREA>>` is not supported `[*REQ-0514*]`[[REQ-0514]].
-  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` image with the same
-    dimensions as the input image `[*REQ-0515*]`[[REQ-0515]].
+  * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` image
+    `[*REQ-0515*]`[[REQ-0515]].
 
 [NOTE]
 .Note
@@ -9318,6 +9393,7 @@ include::api/protos/vxuWeightedAverage.txt[]
     range [eq]#0.0 {leq} {alpha} {leq} 1.0#.
   * `[in]` _img2_ - The second `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` image.
   * `[out]` _output_ - The output `<<VX_DF_IMAGE_U8,VX_DF_IMAGE_U8>>` image.
+    The output image must have the same dimensions as the input image.
 
 *Returns:* A `<<vx_status_e>>` enumeration.
 
@@ -9873,7 +9949,7 @@ include::api/basetypes/vx_bool.txt[]
 === vx_char
 
 // Brief text:
-An 8 bit ASCII character.
+An 8-bit ASCII character.
 
 include::api/basetypes/vx_char.txt[]
 
@@ -10171,7 +10247,7 @@ Use `<<vx_df_image>>` to contain these values.
   * [[VX_DF_IMAGE_IYUV]] `VX_DF_IMAGE_IYUV` - A 3 plane of 8-bit 4:2:0
     sampled Y, U, V planes.
     This uses the BT709 full range by default.
-  * [[VX_DF_IMAGE_YUV4]] `VX_DF_IMAGE_YUV4` - A 3 plane of 8 bit 4:4:4
+  * [[VX_DF_IMAGE_YUV4]] `VX_DF_IMAGE_YUV4` - A 3 plane of 8-bit 4:4:4
     sampled Y, U, V planes.
     This uses the BT709 full range by default.
   * [[VX_DF_IMAGE_U1]] `VX_DF_IMAGE_U1` - A single plane of unsigned 1-bit
@@ -10729,16 +10805,16 @@ include::api/enums/vx_reference_attribute_e.txt[]
 
   * [[VX_REFERENCE_COUNT]] `VX_REFERENCE_COUNT` - Returns the reference
     count of the object `[*REQ-0532*]`[[REQ-0532]].
-    Read-only.
+    Read-only `[*REQ-1983*]`[[REQ-1983]].
     Use a `<<vx_uint32>>` parameter.
   * [[VX_REFERENCE_TYPE]] `VX_REFERENCE_TYPE` - Returns the `<<vx_type_e>>`
     of the reference `[*REQ-0533*]`[[REQ-0533]].
-    Read-only.
+    Read-only `[*REQ-1984*]`[[REQ-1984]].
     Use a `<<vx_enum>>` parameter.
   * [[VX_REFERENCE_NAME]] `VX_REFERENCE_NAME` - Used to query the reference
     for its name `[*REQ-0534*]`[[REQ-0534]].
     This attribute can be set via the `<<vxSetReferenceName>>` function.
-    Read-write.
+    Read-write `[*REQ-1985*]`[[REQ-1985]].
     Use a *`<<vx_char>>` parameter.
 // end::refpage:vx_reference_attribute_e[]
 
@@ -11111,14 +11187,14 @@ include::api/enums/vx_context_attribute_e.txt[]
     than the value returned by this attribute.
   * [[VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION]]
     `VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION` - The maximum window
-    dimension of the <<OpticalFlowPyrLK>> kernel `[*REQ-0561*]`[[REQ-0561]].
+    dimension of the <<Optical Flow Pyramid (LK)>> kernel `[*REQ-0561*]`[[REQ-0561]].
     The value of this attribute shall be equal to or greater than '9' `[*REQ-0562*]`[[REQ-0562]].
+    Read-only `[*REQ-1986*]`[[REQ-1986]].
+    Use a `<<vx_size>>` parameter.
 +
 --
 // Detailed text
-*See also:* `<<VX_KERNEL_OPTICAL_FLOW_PYR_LK,VX_KERNEL_OPTICAL_FLOW_PYR_LK>>`.
-Read-only.
-Use a `<<vx_size>>` parameter.
+*See also:* `<<vxOpticalFlowPyrLKNode,vxOpticalFlowPyrLKNode>>`.
 --
   * [[VX_CONTEXT_IMMEDIATE_BORDER]] `VX_CONTEXT_IMMEDIATE_BORDER` - The
     border mode for immediate mode functions.
@@ -11126,7 +11202,7 @@ Use a `<<vx_size>>` parameter.
 --
 // Detailed text
 Graph mode functions are unaffected by this attribute.
-Read-write.
+Read-write `[*REQ-1987*]`[[REQ-1987]].
 Use a pointer to a `<<vx_border_t>>` structure as parameter.
 
 [NOTE]
@@ -11149,7 +11225,7 @@ The assumed default value for immediate mode functions is
   * [[VX_CONTEXT_IMMEDIATE_BORDER_POLICY]]
     `VX_CONTEXT_IMMEDIATE_BORDER_POLICY` - The unsupported border mode
     policy for immediate mode functions.
-    Read-Write.
+    Read-write `[*REQ-1988*]`[[REQ-1988]].
 +
 --
 // Detailed text
@@ -11176,7 +11252,7 @@ what border modes are supported by each kernel.
 The implementation must support all dimensions (height or width, not
 necessarily the same) up to the value of this attribute.
 The lowest value that must be supported for this attribute is 9.
-Read-only.
+Read-only `[*REQ-1989*]`[[REQ-1989]].
 Use a `<<vx_size>>` parameter.
 --
   * [[VX_CONTEXT_MAX_TENSOR_DIMS]] `VX_CONTEXT_MAX_TENSOR_DIMS` - tensor
@@ -11485,11 +11561,11 @@ include::api/enums/vx_graph_attribute_e.txt[]
 
   * [[VX_GRAPH_NUMNODES]] `VX_GRAPH_NUMNODES` - Returns the number of nodes
     in a graph.
-    Read-only.
+    Read-only `[*REQ-1990*]`[[REQ-1990]].
     Use a `<<vx_uint32>>` parameter.
   * [[VX_GRAPH_PERFORMANCE]] `VX_GRAPH_PERFORMANCE` - Returns the overall
     performance of the graph.
-    Read-only.
+    Read-only `[*REQ-1991*]`[[REQ-1991]].
     Use a `<<vx_perf_t>>` parameter.
     The accuracy of timing information is platform dependent.
 +
@@ -11504,9 +11580,10 @@ See `<<vx_directive_e>>`
 --
   * [[VX_GRAPH_NUMPARAMETERS]] `VX_GRAPH_NUMPARAMETERS` - Returns the number
     of explicitly declared parameters on the graph.
-    Read-only.
+    Read-only `[*REQ-1992*]`[[REQ-1992]].
     Use a `<<vx_uint32>>` parameter.
   * [[VX_GRAPH_STATE]] `VX_GRAPH_STATE` - Returns the state of the graph.
+    Read-only `[*REQ-1993*]`[[REQ-1993]].
     See `<<vx_graph_state_e>>` enum.
 // end::refpage:vx_graph_attribute_e[]
 
@@ -11774,6 +11851,7 @@ include::api/protos/vxSetGraphAttribute.txt[]
   * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure `[*REQ-0646*]`[[REQ-0646]].
   * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - graph is not a valid `<<vx_graph>>`
     reference.
+  * `<<VX_ERROR_NOT_SUPPORTED,VX_ERROR_NOT_SUPPORTED>>` - If the attribute is not settable.
 // end::refpage:vxSetGraphAttribute[]
 
 // tag::refpage:vxVerifyGraph[]
@@ -11960,7 +12038,7 @@ See `<<vx_directive_e>>`.
     Use a `<<vx_size>>` parameter.
   * [[VX_NODE_LOCAL_DATA_PTR]] `VX_NODE_LOCAL_DATA_PTR` - Indicates the
     pointer kernel local memory area `[*REQ-0666*]`[[REQ-0666]].
-    Read-Write `[*REQ-0667*]`[[REQ-0667]].
+    Read-write `[*REQ-0667*]`[[REQ-0667]].
     Can be written only at user-node (de)initialization if
     `<<VX_KERNEL_LOCAL_DATA_SIZE,VX_KERNEL_LOCAL_DATA_SIZE>>` == 0.
     Use a void * parameter.
@@ -12156,6 +12234,7 @@ Some of these can be overridden using this API, notably
     reference.
   * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - size is not correct for the type
     needed.
+  * `<<VX_ERROR_NOT_SUPPORTED,VX_ERROR_NOT_SUPPORTED>>` - If the attribute is not settable.
 // end::refpage:vxSetNodeAttribute[]
 
 // tag::refpage:vxSetNodeTarget[]
@@ -12781,7 +12860,7 @@ For 1.0, only powers of 2 are supported up to [eq]#2^31^#.
 --
   * [[VX_CONVOLUTION_SIZE]] `VX_CONVOLUTION_SIZE` - The total size of the
     convolution matrix in bytes.
-    Read-only.
+    Read-only `[*REQ-1994*]`[[REQ-1994]].
     Use a `<<vx_size>>` parameter.
 // end::refpage:vx_convolution_attribute_e[]
 
@@ -12972,6 +13051,7 @@ include::api/protos/vxSetConvolutionAttribute.txt[]
   * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure `[*REQ-0834*]`[[REQ-0834]].
   * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - conv is not a valid
     `<<vx_convolution>>` reference.
+  * `<<VX_ERROR_NOT_SUPPORTED,VX_ERROR_NOT_SUPPORTED>>` - If the attribute is not settable.
 // end::refpage:vxSetConvolutionAttribute[]
 
 // end::group_convolution:details[]
@@ -14305,6 +14385,7 @@ include::api/protos/vxSetImageAttribute.txt[]
     reference.
   * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - If any of the other parameters are
     incorrect.
+  * `<<VX_ERROR_NOT_SUPPORTED,VX_ERROR_NOT_SUPPORTED>>` - If the attribute is not settable.
 // end::refpage:vxSetImageAttribute[]
 
 // tag::refpage:vxSetImagePixelValues[]
@@ -14633,16 +14714,6 @@ include::api/protos/vxCreateLUT.txt[]
   * `[in]` _data_type_ - The type of data stored in the LUT `[*REQ-1090*]`[[REQ-1090]].
   * `[in]` _count_ - The number of entries desired `[*REQ-1091*]`[[REQ-1091]].
 
-[NOTE]
-.Note
-====
-_data_type_ can only be `<<VX_TYPE_UINT8,VX_TYPE_UINT8>>` or `<<VX_TYPE_INT16,VX_TYPE_INT16>>`.
-If _data_type_ is `<<VX_TYPE_UINT8,VX_TYPE_UINT8>>`, _count_ should not be greater than
-256 `[*REQ-1092*]`[[REQ-1092]].
-If _data_type_ is `<<VX_TYPE_INT16,VX_TYPE_INT16>>`, _count_ should not be greater than
-65536 `[*REQ-1093*]`[[REQ-1093]].
-====
-
 *Returns:* An LUT reference `<<vx_lut>>` `[*REQ-1094*]`[[REQ-1094]].
 Any possible errors preventing a successful creation should be checked using
 `<<vxGetStatus>>`.
@@ -14917,7 +14988,7 @@ include::api/enums/vx_matrix_attribute_e.txt[]
     Use a `<<vx_coordinates2d_t>>` parameter.
   * [[VX_MATRIX_PATTERN]] `VX_MATRIX_PATTERN` - The pattern of the matrix.
     See `<<vx_pattern_e>>`.
-    Read-only.
+    Read-only `[*REQ-1995*]`[[REQ-1995]].
     Use a `<<vx_enum>>` parameter.
     If the matrix was created via `<<vxCreateMatrixFromPattern>>` or
     `<<vxCreateMatrixFromPatternAndOrigin>>`, the attribute corresponds to
@@ -16600,6 +16671,7 @@ include::api/protos/vxSetThresholdAttribute.txt[]
   * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure `[*REQ-1448*]`[[REQ-1448]].
   * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - thresh is not a valid
     `<<vx_threshold>>` reference.
+  * `<<VX_ERROR_NOT_SUPPORTED,VX_ERROR_NOT_SUPPORTED>>` - If the attribute is not settable.
 // end::refpage:vxSetThresholdAttribute[]
 
 // end::group_threshold:details[]
@@ -20407,6 +20479,7 @@ be altered.
   * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure `[*REQ-1938*]`[[REQ-1938]].
   * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - kernel is not a valid `<<vx_kernel>>`
     reference.
+  * `<<VX_ERROR_NOT_SUPPORTED,VX_ERROR_NOT_SUPPORTED>>` - If the attribute is not settable.
 // end::refpage:vxSetKernelAttribute[]
 
 // tag::refpage:vxSetMetaFormatAttribute[]
@@ -20632,7 +20705,7 @@ via `<<vxGetParameterByIndex>>` and then set as a graph parameter via
 The `<<vxSetGraphParameterByIndex>>` function sets a reference object to graph parameter,
 which in turn set this parameter on originating node as well as any other connected nodes in the graph.
 The application must guarantee that none of the _input graph parameters_
-have a connection from another node's _output parameter_.  If the application violates this 
+have a connection from another node's _output parameter_.  If the application violates this
 restriction, the behavior is implementation-defined.
 
 Parameter objects reference an underlying data object that holds the value of the parameter.
@@ -20787,6 +20860,33 @@ http://lanl.arxiv.org/pdf/0810.2434[FASTER and better: A machine learning
 approach to corner detection.] IEEE Trans.
 Pattern Analysis and Machine Intelligence, 32:105b119, October 2010.
 
+[[discontinued_requirement_ids]]
+= List of Discontinued Requirement Identifiers
+
+[options="header"]
+|====
+| Requirement Identifier     | OpenVX Specification Revision
+| `[*REQ-0043*]`[[REQ-0043]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0148*]`[[REQ-0148]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0159*]`[[REQ-0159]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0165*]`[[REQ-0165]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0185*]`[[REQ-0185]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0249*]`[[REQ-0249]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0260*]`[[REQ-0260]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0275*]`[[REQ-0275]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0369*]`[[REQ-0369]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0382*]`[[REQ-0382]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0398*]`[[REQ-0398]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0496*]`[[REQ-0496]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-0505*]`[[REQ-0505]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-1092*]`[[REQ-1092]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+| `[*REQ-1093*]`[[REQ-1093]] | Version 1.3, Thu, 08 Aug 2019 20:26:04 +0000
+|====
+
+Refer to the
+https://www.khronos.org/registry/OpenVX[Khronos OpenVX Registry]
+for the above specification revisions.
+
 // Matches ifeval[] near start of document
 endif::[]
-//[*CNT-1982*]
+//[*CNT-1995*]

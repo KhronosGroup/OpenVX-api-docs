@@ -127,7 +127,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxScaleImageNode(vx_graph graph, vx_image src, 
  * \param [in] graph The reference to the graph.
  * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt> or <tt>\ref VX_DF_IMAGE_S16</tt>.
  * \param [in] lut The LUT which is of type <tt>\ref VX_TYPE_UINT8</tt> if input image is <tt>\ref VX_DF_IMAGE_U8</tt> or <tt>\ref VX_TYPE_INT16</tt> if input image is <tt>\ref VX_DF_IMAGE_S16</tt>.
- * \param [out] output The output image of the same type and size as the input image.
+ * \param [out] output The output image of the same size as the input image.
  * \ingroup group_vision_function_lut
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
@@ -537,7 +537,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCannyEdgeDetectorNode(vx_graph graph, vx_imag
  * \param [in] matrix The affine matrix. Must be 2x3 of type \ref VX_TYPE_FLOAT32.
  * \param [in] type The interpolation type from <tt>\ref vx_interpolation_type_e</tt>.
  * <tt>\ref VX_INTERPOLATION_AREA</tt> is not supported.
- * \param [out] output The output <tt>\ref VX_DF_IMAGE_U8</tt> or <tt>\ref VX_DF_IMAGE_U1</tt> image with the same dimensions and type as the input image.
+ * \param [out] output The output <tt>\ref VX_DF_IMAGE_U8</tt> or <tt>\ref VX_DF_IMAGE_U1</tt> image with the same format as the input image.
  * \ingroup group_vision_function_warp_affine
  * \note The border modes <tt>\ref VX_NODE_BORDER</tt> value <tt>\ref VX_BORDER_UNDEFINED</tt> and
  * <tt>\ref VX_BORDER_CONSTANT</tt> are supported.
@@ -552,7 +552,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpAffineNode(vx_graph graph, vx_image input
  * \param [in] matrix The perspective matrix. Must be 3x3 of type <tt>\ref VX_TYPE_FLOAT32</tt>.
  * \param [in] type The interpolation type from <tt>\ref vx_interpolation_type_e</tt>.
  * <tt>\ref VX_INTERPOLATION_AREA</tt> is not supported.
- * \param [out] output The output <tt>\ref VX_DF_IMAGE_U8</tt> image with the same dimensions as the input image.
+ * \param [out] output The output <tt>\ref VX_DF_IMAGE_U8</tt> image.
  * \ingroup group_vision_function_warp_perspective
  * \note The border modes <tt>\ref VX_NODE_BORDER</tt> value <tt>\ref VX_BORDER_UNDEFINED</tt> and
  * <tt>\ref VX_BORDER_CONSTANT</tt> are supported.

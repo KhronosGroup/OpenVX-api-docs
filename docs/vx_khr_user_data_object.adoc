@@ -37,9 +37,9 @@ toc::[]
 
 [[sec_purpose]]
 == Purpose
-[[vx_size,vx_size]] [[vx_char,vx_char]] [[vx_image,vx_image]] [[vx_array,vx_array]] [[vx_scalar,vx_scalar]] [[vx_keypoints_t,vx_keypoints_t]] [[vx_coordinates_t,vx_coordinates_t]] [[vx_enum,vx_enum]] [[vx_map_id,vx_map_id]] [[vxRegisterUserStruct,vxRegisterUserStruct]] [[vxGetStatus,vxGetStatus]] [[VX_MAX_REFERENCE_NAME,VX_MAX_REFERENCE_NAME]] [[vx_status_e,vx_status_e]] [[vx_accessor_e,vx_accessor_e]] [[vx_memory_type_e,vx_memory_type_e]] [[vx_map_flag_e,vx_map_flag_e]] [[VX_SUCCESS,VX_SUCCESS]] [[VX_FAILURE,VX_FAILURE]] [[VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE]] [[VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS]]This document details an extension to OpenVX 1.2.1, and references some APIs and symbols that may be found in that API, at https://www.khronos.org/registry/OpenVX/specs/1.2.1/OpenVX_Specification_1_2_1.html.
+[[vx_size,vx_size]] [[vx_char,vx_char]] [[vx_image,vx_image]] [[vx_array,vx_array]] [[vx_scalar,vx_scalar]] [[vx_keypoints_t,vx_keypoints_t]] [[vx_coordinates_t,vx_coordinates_t]] [[vx_enum,vx_enum]] [[vx_map_id,vx_map_id]] [[vxRegisterUserStruct,vxRegisterUserStruct]] [[vxGetStatus,vxGetStatus]] [[VX_MAX_REFERENCE_NAME,VX_MAX_REFERENCE_NAME]] [[vx_status_e,vx_status_e]] [[vx_accessor_e,vx_accessor_e]] [[vx_memory_type_e,vx_memory_type_e]] [[vx_map_flag_e,vx_map_flag_e]] [[VX_SUCCESS,VX_SUCCESS]] [[VX_FAILURE,VX_FAILURE]] [[VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE]] [[VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS]]This document details an extension to any OpenVX version from 1.1 to 1.3, and references some APIs and symbols that may be found in those APIs: https://www.khronos.org/registry/OpenVX/.
 
-[[user_data_object,User Data Object Extension]] This extension is intended to define the new User Data Object support for OpenVX. 
+[[user_data_object,User Data Object Extension]] This extension is intended to define the new User Data Object support for OpenVX.
 This data object is intended to offer a standard mechanism
 to enable user kernels with a data object parameter which is not natively supported by existing data objects in the OpenVX spec.
 
@@ -59,9 +59,9 @@ user data objects solve, the following is a brief list of relevant points from t
 - In OpenVX 1.2, the scope of user structs was expanded to `<<vx_scalar>>`, which was meant to handle a single instance of a data structure as opposed to an array of them.
 - The function `<<vxRegisterUserStruct>>` simply informed the framework that it needed a `<<vx_enum>>` which would be associated with a fixed buffer size to house the user struct.
   This enum was needed as a backward-compatible way to create an array or scalar using this type, as the create functions require passing a type enum as an argument in order to
-  properly allocate enough memory for each element in the array. 
+  properly allocate enough memory for each element in the array.
 - The user kernel has no way to know which specific data structure this enum is assigned to since it is assigned at run-time.  The most it can determine is the size of the structure.
-  This can be indirectly used to determine which user structure was passed to the user kernel assuming all user structures are different sizes.  However, if two or more different 
+  This can be indirectly used to determine which user structure was passed to the user kernel assuming all user structures are different sizes.  However, if two or more different
   user structs have the same size, then the user structure can't be sure which one was passed.
 
 [[sec_problem]]
@@ -104,7 +104,7 @@ a data structure used within the user data object: user_custom_data_t.
 [source,cpp]
 ----
 /*
- * The custom data object structure for a user custom kernel which contains 
+ * The custom data object structure for a user custom kernel which contains
  * a custom object of 2 images with embedded metadata (as an example).
  */
 typedef struct {
@@ -126,9 +126,9 @@ typedef struct {
  * user defined nodes:
  *
  * The following graph is created,
- * IMG1 -> vxCustomPreprocessCombineImagesNode -> TMP_USER_DATA_OBJECT 
+ * IMG1 -> vxCustomPreprocessCombineImagesNode -> TMP_USER_DATA_OBJECT
  * IMG2 ->                                          '-> vxCustomClassifier -> CLASS
- * 
+ *
  */
 static vx_graph create_graph(vx_context context,
                              vx_uint32 byte_size[],
@@ -154,10 +154,10 @@ static vx_graph create_graph(vx_context context,
     payload_size = calculate_payload(byte_size, width, height, meta_size);
 
     /* create intermediate custom object */
-	tmp_user_obj = vxCreateUserDataObject(context,
-	                                  "user_custom_data_t",
-	                                  sizeof(user_custom_data_t) + payload_size,
-	                                  NULL);
+    tmp_user_obj = vxCreateUserDataObject(context,
+                                      "user_custom_data_t",
+                                      sizeof(user_custom_data_t) + payload_size,
+                                      NULL);
 
     /* create first node: input is 2 images and source string, output is combined
      * images data object with mode, source information, and meta information added
@@ -199,31 +199,31 @@ The following code shows an example of how the query API and map/unmap or copy f
 static vx_status get_source_data_using_map(vx_user_data_object usr_obj,
                                            uint16_t *source_data)
 {
-	vx_status status = VX_FAILURE;
-	uint16_t *pSourceData = NULL;
+    vx_status status = VX_FAILURE;
+    uint16_t *pSourceData = NULL;
     vx_map_id map_id;
 
-	vx_char obj_name[VX_MAX_REFERENCE_NAME];
-	
-	vxQueryUserDataObject(usr_obj, VX_USER_DATA_OBJECT_NAME, &obj_name,
-	                      sizeof(obj_name));
-	
-	if(strncmp(obj_name, "user_custom_data_t", VX_MAX_REFERENCE_NAME) == 0)
-	{
-		vx_size offset = offsetof(user_custom_data_t, source_data);
-		vx_size size   = sizeof(((user_custom_data_t *)0)->source_data;
-		
-		status = vxMapUserDataObject(usr_obj, offset, size, &map_id,
-		                             (void **)&pSourceData, VX_READ_ONLY,
-		                             VX_MEMORY_TYPE_HOST, 0);
-		if( VX_SUCCESS == status )
-		{
-			*source_data = *pSourceData;
-			status = vxUnmapUserDataObject(map_id);
-		}
-	}
-	
-	return status;
+    vx_char obj_name[VX_MAX_REFERENCE_NAME];
+
+    vxQueryUserDataObject(usr_obj, VX_USER_DATA_OBJECT_NAME, &obj_name,
+                          sizeof(obj_name));
+
+    if(strncmp(obj_name, "user_custom_data_t", VX_MAX_REFERENCE_NAME) == 0)
+    {
+        vx_size offset = offsetof(user_custom_data_t, source_data);
+        vx_size size   = sizeof(((user_custom_data_t *)0)->source_data;
+
+        status = vxMapUserDataObject(usr_obj, offset, size, &map_id,
+                                     (void **)&pSourceData, VX_READ_ONLY,
+                                     VX_MEMORY_TYPE_HOST, 0);
+        if( VX_SUCCESS == status )
+        {
+            *source_data = *pSourceData;
+            status = vxUnmapUserDataObject(map_id);
+        }
+    }
+
+    return status;
 }
 
 /*
@@ -232,28 +232,28 @@ static vx_status get_source_data_using_map(vx_user_data_object usr_obj,
  * - Uses copy API
  * - Uses query API
  */
-static vx_status get_source_data_using_copy(vx_user_data_object usr_obj, 
+static vx_status get_source_data_using_copy(vx_user_data_object usr_obj,
                                             uint16_t *source_data)
 {
-	vx_status status = VX_FAILURE;
-	uint16_t *pSourceData = NULL;
+    vx_status status = VX_FAILURE;
+    uint16_t *pSourceData = NULL;
     vx_map_id map_id;
 
-	vx_char obj_name[VX_MAX_REFERENCE_NAME];
-	
-	vxQueryUserDataObject(usr_obj, VX_USER_DATA_OBJECT_NAME, &obj_name,
-	                      sizeof(obj_name));
-	
-	if(strncmp(obj_name, "user_custom_data_t", VX_MAX_REFERENCE_NAME) == 0)
-	{
-		vx_size offset = offsetof(user_custom_data_t, source_data);
-		vx_size size   = sizeof(((user_custom_data_t *)0)->source_data;
-		
-		status = vxCopyUserDataObject(usr_obj, offset, size, source_data, 
-		                         VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
-	}
-	
-	return status;
+    vx_char obj_name[VX_MAX_REFERENCE_NAME];
+
+    vxQueryUserDataObject(usr_obj, VX_USER_DATA_OBJECT_NAME, &obj_name,
+                          sizeof(obj_name));
+
+    if(strncmp(obj_name, "user_custom_data_t", VX_MAX_REFERENCE_NAME) == 0)
+    {
+        vx_size offset = offsetof(user_custom_data_t, source_data);
+        vx_size size   = sizeof(((user_custom_data_t *)0)->source_data;
+
+        status = vxCopyUserDataObject(usr_obj, offset, size, source_data,
+                                 VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+    }
+
+    return status;
 }
 ----
 
@@ -337,6 +337,11 @@ include::api/enums/vx_user_data_object_attribute_e.txt[]
     Use a `<<vx_char>>`[`<<VX_MAX_REFERENCE_NAME>>`] array.
   * [[VX_USER_DATA_OBJECT_SIZE]] `VX_USER_DATA_OBJECT_SIZE` - The number of bytes in the user data object.
     Read-only.
+    Use a `<<vx_size>>` parameter.
+  * [[VX_USER_DATA_OBJECT_VALID_SIZE]] `VX_USER_DATA_OBJECT_VALID_SIZE` - The number of valid bytes in the user data object.
+    Must be less than or equal to the value of `VX_USER_DATA_OBJECT_SIZE`.  By default, upon object creation, this value is set
+    to be equal to `VX_USER_DATA_OBJECT_SIZE`, and may be modified by either the application or a node connected to this object.
+    Read-write.
     Use a `<<vx_size>>` parameter.
 // end::refpage:vx_user_data_object_attribute_e[]
 
@@ -464,6 +469,38 @@ include::api/protos/vxQueryUserDataObject.txt[]
   * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - If any of the other parameters are
     incorrect.
 // end::refpage:vxQueryUserDataObject[]
+
+// tag::refpage:vxSetUserDataObjectAttribute[]
+// [desc='',type='protos']
+=== vxSetUserDataObjectAttribute
+indexterm:[User Data Object API, vxSetUserDataObjectAttribute]
+// Brief text:
+Sets an attribute in the User data object.
+
+include::api/protos/vxSetUserDataObjectAttribute.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _user_data_object_ - The reference to the user data object.
+  * `[in]` _attribute_ - The attribute to set.
+    Use a `<<vx_user_data_object_attribute_e>>`.
+  * `[in]` _ptr_ - The pointer to the data to which to set the attribute
+  * `[in]` _size_ - The size in bytes of the data to which _ptr_ points
+
+*Returns:* A `<<vx_status_e>>` enumeration.
+
+*Return Values*
+
+  * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure.
+  * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - _user_data_object_ is not a valid `<<vx_user_data_object>>`
+    reference.
+  * `<<VX_ERROR_NOT_SUPPORTED,VX_ERROR_NOT_SUPPORTED>>` - If the _attribute_ is not a value
+    supported on this implementation.
+  * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - If any of the other parameters are
+    incorrect.
+// end::refpage:vxSetUserDataObjectAttribute[]
 
 // tag::refpage:vxCopyUserDataObject[]
 // [desc='',type='protos']

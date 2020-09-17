@@ -1352,6 +1352,7 @@ server.
     <enums name="vx_user_data_object_attribute_e" type="enum">
         <enum name="VX_USER_DATA_OBJECT_NAME"  value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_USER_DATA_OBJECT) + 0x0"/>
         <enum name="VX_USER_DATA_OBJECT_SIZE" value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_USER_DATA_OBJECT) + 0x1"/>
+        <enum name="VX_USER_DATA_OBJECT_VALID_SIZE" value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_USER_DATA_OBJECT) + 0x2"/>
     </enums>
 
     <commands comment="OpenVX command definitions">
@@ -2266,6 +2267,13 @@ server.
         </command>
         <command>
             <proto><type>vx_status</type> <name>vxQueryUserDataObject</name></proto>
+            <param><type>vx_user_data_object</type> <name>user_data_object</name></param>
+            <param><type>vx_enum</type> <name>attribute</name></param>
+            <param>void* <name>ptr</name></param>
+            <param><type>vx_size</type> <name>size</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxSetUserDataObjectAttribute</name></proto>
             <param><type>vx_user_data_object</type> <name>user_data_object</name></param>
             <param><type>vx_enum</type> <name>attribute</name></param>
             <param>void* <name>ptr</name></param>
@@ -5045,6 +5053,7 @@ server.
                 <command name="vxCreateVirtualUserDataObject"/>
                 <command name="vxReleaseUserDataObject"/>
                 <command name="vxQueryUserDataObject"/>
+                <command name="vxSetUserDataObjectAttribute"/>
                 <command name="vxCopyUserDataObject"/>
                 <command name="vxMapUserDataObject"/>
                 <command name="vxUnmapUserDataObject"/>

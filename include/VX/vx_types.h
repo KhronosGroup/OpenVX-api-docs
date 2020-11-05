@@ -116,7 +116,11 @@ typedef uint32_t vx_bitfield;
 /*! \brief A 16-bit float value.
  * \ingroup group_basic_features
  */
+#if defined(__arm__) || defined(__arm64__)
+typedef __fp16   vx_float16;
+#else
 typedef hfloat   vx_float16;
+#endif
 #endif
 
 /*! \brief A 32-bit float value.
@@ -337,9 +341,7 @@ enum vx_type_e {
     VX_TYPE_ENUM            = 0x00C,/*!< \brief A <tt>\ref vx_enum</tt>. Equivalent in size to a <tt>\ref vx_int32</tt>. */
     VX_TYPE_SIZE            = 0x00D,/*!< \brief A <tt>\ref vx_size</tt>. */
     VX_TYPE_DF_IMAGE        = 0x00E,/*!< \brief A <tt>\ref vx_df_image</tt>. */
-#if defined(EXPERIMENTAL_PLATFORM_SUPPORTS_16_FLOAT)
     VX_TYPE_FLOAT16         = 0x00F,/*!< \brief A <tt>\ref vx_float16</tt>. */
-#endif
     VX_TYPE_BOOL            = 0x010,/*!< \brief A <tt>\ref vx_bool</tt>. */
 
     VX_TYPE_RECTANGLE       = 0x020,/*!< \brief A <tt>\ref vx_rectangle_t</tt>. */

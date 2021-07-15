@@ -1,12 +1,12 @@
 language: c
 sudo: false
-dist: trusty
+dist: bionic
 
 os:
   - linux
 
 compiler:
-  - gcc
+  - g++
 
 addons:
     apt:
@@ -14,8 +14,8 @@ addons:
             - ubuntu-toolchain-r-test
         packages:
             - lcov wget unzip build-essential python3 git cmake bison flex libffi-dev zip
-            - libgmp-dev libxml2-dev libgdk-pixbuf2.0-dev libcairo2-dev libpango1.0-dev 
-            - ttf-lyx gtk-doc-tools ghostscript ruby-dev default-jre
+            - libgmp-dev libxml2-dev libgdk-pixbuf2.0-dev libcairo2-dev libpango1.0-dev
+            - fonts-lyx gtk-doc-tools ghostscript ruby-dev default-jre
   
 branches:
   - openvx_1.3
@@ -23,9 +23,9 @@ branches:
 
 before_script:
   - uname -a
-  - gem install asciidoctor-diagram -v 1.5.14
+  - gem install asciidoctor-diagram -v 1.5.18
   - gem install asciidoctor-pdf --pre
-  - gem install asciidoctor-mathematical -v 0.2.2
+  - gem install asciidoctor-mathematical -v 0.3.5
   - gem install coderay --pre
   
 script:
@@ -36,4 +36,7 @@ after_success:
 
 notifications:
   email:
-    - kiritigowda@gmail.com
+    - kiriti.nageshgowda@amd.com
+    - jesse.villarreal@ti.com
+    - radhakrishna.giduthuri@intel.com
+    - brill@cadence.com

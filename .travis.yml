@@ -1,4 +1,4 @@
-language: c
+language: cpp
 sudo: false
 dist: bionic
 
@@ -23,6 +23,7 @@ branches:
 
 before_script:
   - uname -a
+  - apt-get update -qq
   - gem install asciidoctor-diagram -v 1.5.18
   - gem install asciidoctor-pdf --pre
   - gem install asciidoctor-mathematical -v 0.3.5

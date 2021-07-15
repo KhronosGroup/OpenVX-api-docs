@@ -1,5 +1,5 @@
 language: cpp
-sudo: false
+sudo: required
 dist: bionic
 
 os:
@@ -23,11 +23,11 @@ branches:
 
 before_script:
   - uname -a
-  - apt-get update -qq
-  - gem install asciidoctor-diagram -v 1.5.18
-  - gem install asciidoctor-pdf --pre
-  - gem install asciidoctor-mathematical -v 0.3.5
-  - gem install coderay --pre
+  - sudo apt-get update -qq
+  - sudo gem install asciidoctor-diagram -v 1.5.18
+  - sudo gem install asciidoctor-pdf --pre
+  - sudo gem install asciidoctor-mathematical -v 0.3.5
+  - sudo gem install coderay --pre
   
 script:
   - cd docs

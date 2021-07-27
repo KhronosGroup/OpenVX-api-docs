@@ -520,6 +520,12 @@ that runs on an embedded target device with limited resources.  A developer may 
 features to create and export a graph, and then for deployment this graph is imported by a program
 that only uses features in the Deployment Feature Set.
 
+A safety-critical implementation of OpenVX must include a Development Feature Set that passes the 
+conformance test suite for one or more of the Conformance feature sets described above. It must also
+implement and pass the conformance tests for the Import/Export extension.  There are
+no special additional tests for the Deployment Feature Set or for Safety-Critical implementations 
+generally.
+
 The safety-critical environment requires that graphs must execute in a deterministic,
 reproducible way. It is up to the implementation to guarantee this behavior in some way.
 The implementation-dependent behaviors must be defined and documented by the implementation.

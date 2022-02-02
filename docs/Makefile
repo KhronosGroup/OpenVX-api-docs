@@ -51,7 +51,7 @@ APITITLE =
 #  manhtmlpages - HTML5 separate per-feature reference pages
 
 default:
-	make SPECBASE=OpenVX_Specification html $(TARGET) SPECREVISION='1.3' SPECSUFFIX=1_3
+	make SPECBASE=OpenVX_Specification html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
 
 all:
 	make

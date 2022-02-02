@@ -1558,6 +1558,13 @@ server.
             <param>const <type>vx_rectangle_t</type>* <name>rect</name></param>
         </command>
         <command>
+            <proto><type>vx_status</type> <name>vxRegisterKernelLibrary</name></proto>
+            <param><type>vx_context</type> <name>context</name></param>
+            <param>const <type>vx_char</type>* <name>module</name></param>
+            <param><type>vx_publish_kernels_f</type> <name>publish</name></param>
+            <param><type>vx_unpublish_kernels_f</type> <name>unpublish</name></param>
+        </command>
+        <command>
             <proto><type>vx_status</type> <name>vxLoadKernels</name></proto>
             <param><type>vx_context</type> <name>context</name></param>
             <param>const <type>vx_char</type>* <name>module</name></param>
@@ -4235,6 +4242,7 @@ server.
             <command name="vxUnmapImagePatch"/>
             <command name="vxCreateImageFromChannel"/>
             <command name="vxSetImageValidRectangle"/>
+            <command name="vxRegisterKernelLibrary"/>
             <command name="vxLoadKernels"/>
             <command name="vxUnloadKernels"/>
             <command name="vxGetKernelByName"/>

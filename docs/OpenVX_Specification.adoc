@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Khronos Group. This work is licensed under a
+// Copyright (c) 2016-2022 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
@@ -128,6 +128,7 @@ implementation-defined.
   * OpenVX 1.2 - May 2017
   * OpenVX 1.2.1 - May 2018
   * OpenVX 1.3 - June 2019
+  * OpenVX 1.3.1 - kernel module registration API - Oct 2021
 
 
 [[sec_deprecation]]
@@ -19945,6 +19946,7 @@ data inside the buffer will not be persistent between kernel executions.
   * `<<vxQueryMetaFormatAttribute>>`
   * `<<vxSetMetaFormatFromReference>>`
   * `<<vxUnloadKernels>>`
+  * `<<vxRegisterKernelLibrary>>`
 
 // end::group_user_kernels:summary[]
 
@@ -20401,7 +20403,7 @@ This API uses the system pre-defined paths for modules.
   * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - If any of the other parameters are
     incorrect.
 
-*See also:* `<<vxGetKernelByName>>`
+*See also:* `<<vxRegisterKernelLibrary>>`, `<<vxGetKernelByName>>`
 // end::refpage:vxLoadKernels[]
 
 // tag::refpage:vxRemoveKernel[]
@@ -20683,6 +20685,42 @@ This API uses the system pre-defined paths for modules.
 *See also:* `<<vxLoadKernels>>`
 // end::refpage:vxUnloadKernels[]
 
+// tag::refpage:vxRegisterKernelLibrary[]
+// [desc='',type='protos']
+==== vxRegisterKernelLibrary
+
+// Brief text:
+Registers a module with kernels in a context `[*REQ-1996*]`[[REQ-1996]].
+
+include::api/protos/vxRegisterKernelLibrary.txt[]
+
+
+// Detailed text:
+This function registers the appropriate _publish_ and _unpublish_ functions
+with the module name if the _module_ is not a dynamic library, so
+`<<vxLoadKernels,vxLoadKernels>>` and `<<vxUnloadKernels,vxUnloadKernels>>`
+can be called.
+
+*Parameters*
+
+  * `[in]` _context_ - The reference to the context `[*REQ-1997*]`[[REQ-1997]].
+  * `[in]` _module_ - The short name of the module to register `[*REQ-1998*]`[[REQ-1998]].
+  * `[in]` _publish_ - The entry function of the module for loading from `<<vxLoadKernels,vxLoadKernels>>` `[*REQ-1999*]`[[REQ-1999]].
+  * `[in]` _unpublish_ - The entry function of the module for unloading from `<<vxUnloadKernels,vxUnloadKernels>>` `[*REQ-2000*]`[[REQ-2000]].
+
+*Returns:* A `<<vx_status_e>>` enumeration `[*REQ-2001*]`[[REQ-2001]].
+
+*Return Values*
+
+  * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure `[*REQ-2002*]`[[REQ-2002]].
+  * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - context is not a valid
+    `<<vx_context>>` reference.
+  * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - If any of the other parameters are
+    incorrect.
+
+*See also:* `<<vxLoadKernels,vxLoadKernels>>`, `<<vxUnloadKernels,vxUnloadKernels>>`
+// end::refpage:vxRegisterKernelLibrary[]
+
 // end::group_user_kernels:details[]
 
 
@@ -20889,4 +20927,4 @@ for the above specification revisions.
 
 // Matches ifeval[] near start of document
 endif::[]
-//[*CNT-1995*]
+//[*CNT-2002*]

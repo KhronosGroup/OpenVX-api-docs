@@ -1059,7 +1059,7 @@ generic interface) is explicitly specified here.
   * `[in]` _size_of_roi_params_ - [static] Size in bytes of roi_pool_params.
     Note that this parameter is not counted as one of the kernel parameters.
   * `[out]` _output_arr_ - The output tensor.
-    Output will have [output_width, output_height, #IFM, #batches]
+    Output will have [output_width, output_height, #IFM, roi_count, #batches]
     dimensions.
     #batches is optional and must be the same as in inputs.
     (Kernel parameter #3)

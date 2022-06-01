@@ -25,9 +25,9 @@ before_script:
   - uname -a
   - sudo apt-get update -qq
   - sudo gem install asciidoctor-diagram -v 1.5.18
-  - sudo gem install asciidoctor-pdf --pre
+  - sudo gem install asciidoctor-pdf --pre -v 1.6.2
   - sudo gem install asciidoctor-mathematical -v 0.3.5
-  - sudo gem install coderay --pre
+  - sudo gem install coderay --pre -v 1.1.3
   
 script:
   - cd docs

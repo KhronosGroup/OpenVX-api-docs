@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2020 The Khronos Group Inc.
+ * Copyright (c) 2012-2023 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ enum vx_vendor_id_e {
     VX_ID_CADENCE   = 0x019, /*!< \brief Cadence */
     VX_ID_HUAWEI    = 0x01A, /*!< \brief Huawei */
     VX_ID_SOCIONEXT = 0x01B, /*!< \brief Socionext */
+    VX_ID_BOSCH     = 0x01C, /*!< \brief Robert Bosch GmbH */
     /* Add new vendor code above this line */
     VX_ID_USER      = 0xFFE, /*!< \brief For use by vxAllocateUserKernelId and vxAllocateUserKernelLibraryId */
     VX_ID_MAX       = 0xFFF,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2020 The Khronos Group Inc.
+ * Copyright (c) 2012-2023 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -951,7 +951,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel);
 
 /*! \brief Allows users to add custom kernels to a context at run-time.
  * \param [in] context The reference to the context the kernel must be added to.
- * \param [in] name The string to use to match the kernel.
+ * \param [in] name The string to use to match the kernel.  The length of the string
+ * shall be lower than VX_MAX_KERNEL_NAME bytes.
  * \param [in] enumeration The enumerated value of the kernel to be used by clients.
  * \param [in] func_ptr The process-local function pointer to be invoked.
  * \param [in] numParams The number of parameters for this kernel.
@@ -964,7 +965,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel);
  * \ingroup group_user_kernels
  */
 VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
-                             const vx_char name[VX_MAX_KERNEL_NAME],
+                             const vx_char *name,
                              vx_enum enumeration,
                              vx_kernel_f func_ptr,
                              vx_uint32 numParams,

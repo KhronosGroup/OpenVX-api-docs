@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2020 The Khronos Group Inc.
+ * Copyright (c) 2012-2023 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -380,6 +380,16 @@ enum vx_kernel_e {
      * \see group_vision_function_weighted_average
      */
     VX_KERNEL_WEIGHTED_AVERAGE = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x40,
+
+    /*! \brief The data object swap kernel. (If implemented)
+    * \see group_vision_function_swap
+    */
+    VX_KERNEL_SWAP = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x41,
+
+    /*! \brief The data object move kernel. (If implemented)
+    * \see group_vision_function_move
+    */
+    VX_KERNEL_MOVE = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x42,
 
 };
 

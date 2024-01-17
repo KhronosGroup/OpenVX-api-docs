@@ -1,0 +1,643 @@
+// Copyright (c) 2022 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+= The OpenVX(TM) Raw Image Extension
+:regtitle: pass:q,r[^®^]
+The Khronos{regtitle} OpenVX Working Group; Editor: Jesse Villarreal
+:title-logo-image: images/Khronos_RGB.svg
+:data-uri:
+:icons: font
+:toc2:
+:toclevels: 4
+:max-width: 100
+:numbered:
+:imagewidth: 800
+:fullimagewidth: width="800"
+:halfimagewidth: width="400"
+:source-highlighter: coderay
+// Various special / math symbols. This is easier to edit with than Unicode.
+include::config/attribs.txt[]
+
+// Paths to code examples and headers
+:examples: examples
+:headers: examples
+
+image::images/OpenVX_RGB.svg[align="center",{halfimagewidth}]
+include::copyright-spec.txt[]
+
+<<<<
+
+// Table of contents is inserted here
+toc::[]
+
+:leveloffset: 1
+= Introduction
+
+
+[[sec_purpose]]
+== Purpose
+[[VX_COLOR_SPACE_NONE,VX_COLOR_SPACE_NONE]] [[VX_MEMORY_TYPE_NONE,VX_MEMORY_TYPE_NONE]] [[VX_IMAGE_WIDTH,VX_IMAGE_WIDTH]] [[VX_IMAGE_HEIGHT,VX_IMAGE_HEIGHT]] [[VX_IMAGE_FORMAT,VX_IMAGE_FORMAT]] [[VX_IMAGE_PLANES,VX_IMAGE_PLANES]] [[VX_IMAGE_SPACE,VX_IMAGE_SPACE]] [[VX_IMAGE_RANGE,VX_IMAGE_RANGE]] [[VX_IMAGE_MEMORY_TYPE,VX_IMAGE_MEMORY_TYPE]] [[VX_IMAGE_IS_UNIFORM,VX_IMAGE_IS_UNIFORM]] [[VX_IMAGE_UNIFORM_VALUE,VX_IMAGE_UNIFORM_VALUE]] [[vxQueryImage,vxQueryImage]] [[vxMapImagePatch,vxMapImagePatch]] [[vxCopyImagePatch,vxCopyImagePatch]] [[vx_false_e,vx_false_e]] [[vx_true_e,vx_true_e]] [[vx_bool,vx_bool]] [[vx_uint32,vx_uint32]] [[vx_size,vx_size]] [[vx_image,vx_image]] [[vx_enum,vx_enum]] [[vx_map_id,vx_map_id]] [[vxGetStatus,vxGetStatus]] [[vx_status_e,vx_status_e]] [[vx_accessor_e,vx_accessor_e]] [[vx_memory_type_e,vx_memory_type_e]] [[vx_map_flag_e,vx_map_flag_e]] [[VX_SUCCESS,VX_SUCCESS]] [[VX_FAILURE,VX_FAILURE]] [[VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE]] [[VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS]]This document details an extension to any OpenVX version from 1.1 to 1.3.1, and references some APIs and symbols that may be found in those APIs: https://www.khronos.org/registry/OpenVX/.
+
+[[raw_image,Raw Image Extension]] This extension is intended to add Raw Image support to the vx_image object in OpenVX.
+
+[[sec_scope]]
+== In Scope
+In the context of this extension, a "raw image" contains the readout of camera sensors which output pre-processed "raw" images, including,
+but not limited to, Bayer sensor readouts. The raw image data type, for example, may be used as an output parameter of a custom camera capture OpenVX
+source node.
+
+This extension is focused on specifying the minimal set of attributes required to store/access a variety of known sensor readout information in memory.
+The following features were included to accommodate known readout types across a variety of raw image sensors commonly used in the industry:
+
+* *Multi-exposure readout* - There is a class of wide dynamic range (WDR) sensors that support multiple exposures per timestamp.  Some of these sensors
+read out each exposure on different CSI Virtual Channels, and others read out all exposures in a single CSI Virtual Channel in interleaved fashion. Data access APIs like
+"map" and "copy" allow the user to access data from a specific exposure while abstracting if the data was interleaved or not during read out.
+  ** *Separate CSI Virtual Channels* - When each exposure is read out on separate CSI Virtual Channels, then each exposure can be stored in memory in separate planes.
+  Additionally, this mode enables each exposure to be stored as a different bit width (e.g. 16+12 mode).
+  ** *Single CSI Virtual Channel* - When all exposures are read out in a single CSI Virtual Channel, they are read out in either a line interleaved or pixel interleaved
+  fashion, requiring all exposures to be stored accordingly in memory in a single buffer. The raw image object has a parameter that can be set to indicate the interleaved
+  format of the readout of these exposures.
+
+* *Meta Data* - Several sensor vendors offer various, vendor-specific meta information that is read out either before, or after, the pixel data. This meta
+data may contain side-band information such as histograms or statistics that may be used by auto exposure or auto white balance algorithms running on the
+application processor.  The image data type created for raw images, therefore, can be configured with programmable number of lines of meta data before, and/or after, the pixel data.
+Data access APIs like "map" and "copy" allow the user to access the pixel data, or the meta data, accordingly.
+
+[[sec_outscope]]
+== Not in Scope
+This extension does NOT specify any new kernels, nor does it specify which existing OpenVX vision kernels are expected to support raw images.  These details shall be defined by
+specific implementations at this time.
+
+[[page_design]]
+= Design Overview
+Instead of creating a new data type for raw images, this extension primarily extends the existing `<<vx_image>>` data type.  Most of the existing image data object
+functions can be reused with minor extensions (outlined below), however it does require a new 'create' function to create images of raw format type, where additional
+information should be passed from new types and enum definitions.
+
+[[sec_changes]]
+== Changes to the OpenVX Specification
+This section outlines the new functions, extensions to existing functions, and other changes to the OpenVX Specification included in this extension.
+
+
+[[new_functions]]
+=== New Functions
+There are only three new functions added as part of this extension:
+
+  * `<<vxCreateRawImage>>`
+  * `<<vxCreateVirtualRawImage>>`
+  * `<<vxCopyImagePatchWithFlags>>`
+
+One of the two create functions should be used to create a `<<vx_image>>` object that contains raw image data instead of using the existing image create functions.
+
+The new copy function is meant to be a generic extension to the main spec, since the original copy image function does not have the 'flags' parameter like the image map
+function does.  This 'flags' parameter is a generic extension field that is needed by this extension, so we are defining this new copy image function here for consideration
+as part of a future version of the main specification.
+
+The API details of these functions, along with associated new data structures are found in the <<module_documentation>>
+section.
+
+[[extended_functions]]
+=== Extended Functions
+This section clarifies how to use the following `<<vx_image>>` functions with raw images:
+
+  * `<<vxQueryImage>>`
+  * `<<vxMapImagePatch>>`
+  * `<<vxCopyImagePatchWithFlags>>`
+
+[[query_function]]
+==== vxQueryImage
+The `<<vxQueryImage>>` function can be used with the following new attribute definitions added to support raw images:
+
+  * `<<VX_IMAGE_IS_RAW>>`
+  * `<<VX_IMAGE_RAW_EXPOSURE_INTERLEAVING>>`
+  * `<<VX_IMAGE_RAW_FORMAT>>`
+  * `<<VX_IMAGE_RAW_META_HEIGHT_BEFORE>>`
+  * `<<VX_IMAGE_RAW_META_HEIGHT_AFTER>>`
+
+Generally, if the application is not sure if a `<<vx_image>>` object contains a raw image, it can query the `<<vx_image>>` using the `<<VX_IMAGE_IS_RAW>>`
+definition.  If the query returns `<<vx_true_e>>`, then the other raw image attributes can also be queried.
+
+The following table lists which attributes are valid for raw images, and which attributes are valid for all other images from the main specification.
+
+[options="header"]
+|====
+| Attribute                                 |  Main Spec Images |  Raw Images  |  Comments for Raw Images
+| `<<VX_IMAGE_IS_RAW>>`                     |        valid      |   valid      | Returns `<<vx_true_e>>`
+| `<<VX_IMAGE_WIDTH>>`                      |        valid      |   valid      |
+| `<<VX_IMAGE_HEIGHT>>`                     |        valid      |   valid      |
+| `<<VX_IMAGE_FORMAT>>`                     |        valid      |   valid      | Returns `<<VX_DF_IMAGE_RAW>>`
+| `<<VX_IMAGE_PLANES>>`                     |        valid      |   valid      | Returns number of exposures
+| `<<VX_IMAGE_SPACE>>`                      |        valid      |   valid      | Returns `<<VX_COLOR_SPACE_NONE>>`
+| `<<VX_IMAGE_RANGE>>`                      |        valid      |              |
+| `<<VX_IMAGE_MEMORY_TYPE>>`                |        valid      |   valid      | Returns `<<VX_MEMORY_TYPE_NONE>>`
+| `<<VX_IMAGE_IS_UNIFORM>>`                 |        valid      |   valid      | Returns `<<vx_false_e>>`
+| `<<VX_IMAGE_UNIFORM_VALUE>>`              |        valid      |              |
+| `<<VX_IMAGE_RAW_EXPOSURE_INTERLEAVING>>`  |                   |   valid      |
+| `<<VX_IMAGE_RAW_FORMAT>>`                 |                   |   valid      |
+| `<<VX_IMAGE_RAW_META_HEIGHT_BEFORE>>`     |                   |   valid      |
+| `<<VX_IMAGE_RAW_META_HEIGHT_AFTER>>`      |                   |   valid      |
+|====
+
+NOTE: If a query is made using an attribute which is not valid for the type of image as indicated in the table above, then a VX_ERROR_NOT_SUPPORTED error
+shall be returned.
+
+[[Map_function]]
+==== vxMapImagePatch
+The `<<vxMapImagePatch>>` function can be used with the following extensions:
+
+  * The 'plane_index' parameter can refer to the exposure_index of the raw image.
+  * The flags parameter shall be set to one of the values from the new `<<vx_image_raw_buffer_access_e>>` enumeration to specify
+    which buffer within the raw image to map.
+
+[[Copy_function]]
+==== vxCopyImagePatchWithFlags
+This extension relies on
+The `<<vxCopyImagePatchWithFlags>>` function can be used with the following extensions:
+
+  * The 'image_plane_index' parameter can refer to the exposure_index of the raw image.
+  * The flags parameter shall be set to one of the values from the new `<<vx_image_raw_buffer_access_e>>` enumeration to specify
+    which buffer within the raw image to map.
+
+[[sec_code]]
+== Example Code
+This section demonstrates the usage of the new APIs in example code.
+
+[[sec_create]]
+=== Create and Release
+The following example shows how the Raw Image create API could be used to connect two custom user kernels together in a graph. The example also defines
+a data structure used within the raw image: user_custom_data_t.
+
+[source,cpp]
+----
+/*
+ * Utility API used to create the graph below using raw image in between two
+ * user defined nodes:
+ *
+ * The following graph is created,
+ * vxRawSensorCaptureNode -> TMP_RAW_IMAGE -> vxRawProcessingNode -> VX_IMAGE
+ *
+ */
+static vx_graph create_graph(vx_context context,
+                             vx_enum raw_image_sensor_id)
+{
+    vx_graph graph;
+    vx_node n0, n1;
+    vx_image imgYuv;
+    vx_image tmp_raw_image_obj;
+    vx_user_data_object tuning_user_obj;
+    vx_image_raw_create_params_t create_params;
+    user_tuning_params_t tuning_params;
+
+    graph = vxCreateGraph(context);
+
+    /* Initialize create_params data structure from sensor driver */
+    sensor_get_raw_create_params(raw_image_sensor_id, &create_params);
+
+    /* create intermediate custom raw image object */
+    tmp_raw_image_obj = vxCreateRawImage(context,
+                                         &create_params,
+                                         sizeof(vx_image_raw_create_params_t));
+
+    /* create first node: This is a source node connected to the capture driver on
+     * csi interface. output is an image object containing raw data */
+    n0 = userRawSensorCaptureNode(graph, tmp_raw_image_obj);
+
+
+
+    /* Initialize raw processing tuning parameters from sensor driver */
+    sensor_get_tuning_params(raw_image_sensor_id, &tuning_params);
+
+    /* create tuning parameters user data object to send as input to the
+     * raw processing node */
+    tuning_user_obj = vxCreateUserDataObject(context,
+                                      "user_tuning_params_t",
+                                      sizeof(user_tuning_params_t),
+                                      &tuning_params);
+
+    /* create output image object */
+    imgYuv = vxCreateImage(context, create_params.width, create_params.height, VX_DF_IMAGE_YUYV);
+
+    /* create second node: inputs are output of first node and tuning parameters,
+     * output is yuv image */
+    n1 = userRawProcessingNode(graph, tmp_raw_image_obj, tuning_user_obj, imgYuv);
+
+    vxReleaseNode(&n0);
+    vxReleaseNode(&n1);
+    vxReleaseImage(&tmp_raw_image_obj);
+    vxReleaseImage(&imgYuv);
+    vxReleaseUserDataObject(&tuning_user_obj);
+
+    return graph;
+}
+----
+
+[[sec_query]]
+=== Query and Map/Unmap or Copy
+The map/unmap and copy functions operate in a manner almost identical to the OpenVX specification
+`<<vx_image>>` functions, so those can be used more or less as a reference.  The main difference is that
+the user can specify which exposure to access in the 'plane_index' paramter; and the user can also specify
+which type of data to access (pixel data, or meta data) as part of the 'flags' parameter.
+
+
+
+
+<<<
+[[module_documentation]]
+= Module Documentation
+
+// tag::group_raw_image:summary[]
+*Macros*
+
+  * `<<VX_IMAGE_RAW_MAX_EXPOSURES>>`
+  * `<<VX_IMAGE_IS_RAW>>`
+  * `<<VX_IMAGE_RAW_EXPOSURE_INTERLEAVING>>`
+  * `<<VX_IMAGE_RAW_FORMAT>>`
+  * `<<VX_IMAGE_RAW_META_HEIGHT_BEFORE>>`
+  * `<<VX_IMAGE_RAW_META_HEIGHT_AFTER>>`
+  * `<<VX_DF_IMAGE_RAW>>`
+  * `<<VX_ENUM_IMAGE_RAW_BUFFER_ACCESS>>`
+  * `<<VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER>>`
+  * `<<VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING>>`
+
+*Typedefs*
+
+  * `<<vx_image_raw_format_t>>`
+  * `<<vx_image_raw_create_params_t>>`
+
+*Enumerations*
+
+  * `<<vx_image_raw_buffer_access_e>>`
+  * `<<vx_image_raw_pixel_container_e>>`
+  * `<<vx_image_raw_exposure_interleaving_e>>`
+
+*Functions*
+
+  * `<<vxCreateRawImage>>`
+  * `<<vxCreateVirtualRawImage>>`
+  * `<<vxCopyImagePatchWithFlags>>`
+
+
+// end::group_raw_image:summary[]
+
+// tag::group_raw_image:details[]
+== Macros
+
+// tag::refpage:VX_IMAGE_RAW_MAX_EXPOSURES[]
+// [desc='',type='defines']
+=== VX_IMAGE_RAW_MAX_EXPOSURES
+indexterm:[Raw Image API, VX_IMAGE_RAW_MAX_EXPOSURES]
+// Brief text:
+Maximum number of RAW image exposures that can be contained in a raw image object.
+
+include::api/defines/VX_IMAGE_RAW_MAX_EXPOSURES.txt[]
+
+// end::refpage:VX_IMAGE_RAW_MAX_EXPOSURES[]
+
+
+// tag::refpage:VX_IMAGE_IS_RAW[]
+// [desc='',type='defines']
+=== VX_IMAGE_IS_RAW
+indexterm:[Raw Image API, VX_IMAGE_IS_RAW]
+// Brief text:
+Image Attribute which queries if an image was created using `<<vxCreateRawImage>>` API. Read-only. Use a `<<vx_bool>>` parameter */
+
+include::api/defines/VX_IMAGE_IS_RAW.txt[]
+
+// end::refpage:VX_IMAGE_IS_RAW[]
+
+
+// tag::refpage:VX_IMAGE_RAW_EXPOSURE_INTERLEAVING[]
+// [desc='',type='defines']
+=== VX_IMAGE_RAW_EXPOSURE_INTERLEAVING
+indexterm:[Raw Image API, VX_IMAGE_RAW_EXPOSURE_INTERLEAVING]
+// Brief text:
+Indicates if the exposures are interleaved in memory. Read-only. Use a `<<vx_image_raw_exposure_interleaving_e>>` parameter.
+include::api/defines/VX_IMAGE_RAW_EXPOSURE_INTERLEAVING.txt[]
+
+// end::refpage:VX_IMAGE_RAW_EXPOSURE_INTERLEAVING[]
+
+
+// tag::refpage:VX_IMAGE_RAW_FORMAT[]
+// [desc='',type='defines']
+=== VX_IMAGE_RAW_FORMAT
+indexterm:[Raw Image API, VX_IMAGE_RAW_FORMAT]
+// Brief text:
+The format of the the raw image. Read-only. Use a pointer to a `<<vx_image_raw_format_t>>` array.
+include::api/defines/VX_IMAGE_RAW_FORMAT.txt[]
+
+// end::refpage:VX_IMAGE_RAW_FORMAT[]
+
+
+// tag::refpage:VX_IMAGE_RAW_META_HEIGHT_BEFORE[]
+// [desc='',type='defines']
+=== VX_IMAGE_RAW_META_HEIGHT_BEFORE
+indexterm:[Raw Image API, VX_IMAGE_RAW_META_HEIGHT_BEFORE]
+// Brief text:
+The meta height at top of readout of raw image. Read-only. Use a `<<vx_uint32>>` parameter.
+include::api/defines/VX_IMAGE_RAW_META_HEIGHT_BEFORE.txt[]
+
+// end::refpage:VX_IMAGE_RAW_META_HEIGHT_BEFORE[]
+
+
+// tag::refpage:VX_IMAGE_RAW_META_HEIGHT_AFTER[]
+// [desc='',type='defines']
+=== VX_IMAGE_RAW_META_HEIGHT_AFTER
+indexterm:[Raw Image API, VX_IMAGE_RAW_META_HEIGHT_AFTER]
+// Brief text:
+The meta height at bottom of readout of raw image. Read-only. Use a `<<vx_uint32>>` parameter.
+include::api/defines/VX_IMAGE_RAW_META_HEIGHT_AFTER.txt[]
+
+// end::refpage:VX_IMAGE_RAW_META_HEIGHT_AFTER[]
+
+// tag::refpage:VX_DF_IMAGE_RAW[]
+// [desc='',type='defines']
+=== VX_DF_IMAGE_RAW
+indexterm:[Raw Image API, VX_DF_IMAGE_RAW]
+// Brief text:
+Returned for a raw image when the `<<vxQueryImage>>` API is called on the `<<VX_IMAGE_FORMAT>>` attribute.
+
+include::api/defines/VX_DF_IMAGE_RAW.txt[]
+
+// end::refpage:VX_DF_IMAGE_RAW[]
+
+
+// tag::refpage:VX_ENUM_IMAGE_RAW_BUFFER_ACCESS[]
+// [desc='',type='defines']
+=== VX_ENUM_IMAGE_RAW_BUFFER_ACCESS
+indexterm:[Raw Image API, VX_ENUM_IMAGE_RAW_BUFFER_ACCESS]
+// Brief text:
+A `<<vx_image_raw_buffer_access_e>>`
+
+include::api/defines/VX_ENUM_IMAGE_RAW_BUFFER_ACCESS.txt[]
+
+// end::refpage:VX_ENUM_IMAGE_RAW_BUFFER_ACCESS[]
+
+
+// tag::refpage:VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER[]
+// [desc='',type='defines']
+=== VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER
+indexterm:[Raw Image API, VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER]
+// Brief text:
+A `<<vx_image_raw_pixel_container_e>>`
+
+include::api/defines/VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER.txt[]
+
+// end::refpage:VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER[]
+
+
+// tag::refpage:VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING[]
+// [desc='',type='defines']
+=== VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING
+indexterm:[Raw Image API, VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING]
+// Brief text:
+A `<<vx_image_raw_exposure_interleaving_e>>`
+
+include::api/defines/VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING.txt[]
+
+// end::refpage:VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING[]
+
+== Typedefs
+
+// tag::refpage:vx_image_raw_format_t[]
+// [desc='',type='struct']
+=== vx_image_raw_format_t
+indexterm:[Raw Image API, vx_image_raw_format_t]
+// Brief text:
+The raw image format structure that is part of the vx_image_raw_create_params_t structure
+
+include::api/structs/vx_image_raw_format_t.txt[]
+
+// Detailed text:
+  * _pixel_container_ - Pixel Container, see `<<vx_image_raw_pixel_container_e>>`
+  * _msb_ - Most significant bit in pixel container.
+
+// end::refpage:vx_image_raw_format_t[]
+
+// tag::refpage:vx_image_raw_create_params_t[]
+// [desc='',type='struct']
+=== vx_image_raw_create_params_t
+indexterm:[Raw Image API, vx_image_raw_create_params_t]
+// Brief text:
+The raw image create params structure that is given to the vxCreateRawImage function.
+
+include::api/structs/vx_image_raw_create_params_t.txt[]
+
+// Detailed text:
+  * _width_ - The image width in pixels
+  * _height_ - TThe image height in lines (not including meta rows).
+  * _num_exposures_ - The number of exposures contained in the sensor readout for a given timestamp.
+                     Max supported is `<<VX_IMAGE_RAW_MAX_EXPOSURES>>`
+  * _exposure_interleaving_ - Indicates the type of exposure interleaving, if any, in memory.
+                     see `<<vx_image_raw_exposure_interleaving_e>>`.
+  * _format_ - Array of `<<vx_image_raw_format_t>>`    structures indicating the pixel packing and
+        bit alignment format of each exposure.  If _exposure_interleaving_ == `<<VX_IMAGE_RAW_PLANAR,VX_IMAGE_RAW_PLANAR>>`, then the number of
+        valid structures in this array should be equal to the value of num_exposures.  If _exposure_interleaving_ !=
+        `<<VX_IMAGE_RAW_PLANAR,VX_IMAGE_RAW_PLANAR>>`, then the format should be the same for each exposure in a single buffer, so the
+        number of valid structures in this array should equal 1.
+  * _meta_height_before_ - Number of lines of meta data at top of sensor readout  (before pixel data)
+                         (uses the same width as original sensor readout width)
+  * _meta_height_after_ - Number of lines of meta data at bottom of sensor readout  (after pixel data)
+                       (uses the same width as original sensor readout width)
+
+// end::refpage:vx_image_raw_create_params_t[]
+
+
+== Enumerations
+
+// tag::refpage:vx_image_raw_buffer_access_e[]
+// [desc='',type='enums']
+=== vx_image_raw_buffer_access_e
+indexterm:[Raw Image API, vx_image_raw_buffer_access_e]
+// Brief text:
+The raw image buffer access enum.
+
+include::api/enums/vx_image_raw_buffer_access_e.txt[]
+
+*Enumerator*
+
+  * [[VX_IMAGE_RAW_ALLOC_BUFFER]] `VX_IMAGE_RAW_ALLOC_BUFFER` - For accessing pointer to full allocated buffer (pixel buffer + meta buffer)
+  * [[VX_IMAGE_RAW_PIXEL_BUFFER]] `VX_IMAGE_RAW_PIXEL_BUFFER` - For accessing pointer to pixel buffer only
+  * [[VX_IMAGE_RAW_META_BEFORE_BUFFER]] `VX_IMAGE_RAW_META_BEFORE_BUFFER` - For accessing pointer to meta buffer only
+  * [[VX_IMAGE_RAW_META_AFTER_BUFFER]] `VX_IMAGE_RAW_META_AFTER_BUFFER` - For accessing pointer to meta buffer only
+// end::refpage:vx_image_raw_buffer_access_e[]
+
+
+// tag::refpage:vx_image_raw_pixel_container_e[]
+// [desc='',type='enums']
+=== vx_image_raw_pixel_container_e
+indexterm:[Raw Image API, vx_image_raw_pixel_container_e]
+// Brief text:
+The raw image pixel container enum.
+
+include::api/enums/vx_image_raw_pixel_container_e.txt[]
+
+*Enumerator*
+
+  * [[VX_IMAGE_RAW_16_BIT]] `VX_IMAGE_RAW_16_BIT` - Two bytes per pixel in memory
+  * [[VX_IMAGE_RAW_8_BIT]] `VX_IMAGE_RAW_8_BIT` - One byte per pixel in memory
+  * [[VX_IMAGE_RAW_P12_BIT]] `VX_IMAGE_RAW_P12_BIT` - Packed 12 bit mode; Three bytes per two pixels in memory.
+// end::refpage:vx_image_raw_pixel_container_e[]
+
+
+// tag::refpage:vx_image_raw_exposure_interleaving_e[]
+// [desc='',type='enums']
+=== vx_image_raw_exposure_interleaving_e
+indexterm:[Raw Image API, vx_image_raw_exposure_interleaving_e]
+// Brief text:
+The raw image exposure interleaving enum.
+
+include::api/enums/vx_image_raw_exposure_interleaving_e.txt[]
+
+*Enumerator*
+
+  * [[VX_IMAGE_RAW_PLANAR]] `VX_IMAGE_RAW_PLANAR` - Each exposure is readout and stored in separate planes; single exposure per CSI virtual channel.
+  * [[VX_IMAGE_RAW_LINE_INTERLEAVED]] `VX_IMAGE_RAW_LINE_INTERLEAVED` - Each exposure is readout and stored in line interleaved fashion; multiple exposures share same CSI virtual channel
+  * [[VX_IMAGE_RAW_PIXEL_INTERLEAVED]] `VX_IMAGE_RAW_PIXEL_INTERLEAVED` - Each exposure is readout and stored in pixel interleaved fashion; multiple exposures share same CSI virtual channel.
+// end::refpage:vx_image_raw_exposure_interleaving_e[]
+
+== Functions
+
+// tag::refpage:vxCreateRawImage[]
+// [desc='',type='protos']
+=== vxCreateRawImage
+indexterm:[Raw Image API, vxCreateRawImage]
+// Brief text:
+Creates an opaque reference to a raw sensor image (including multi-exposure and metadata)
+
+include::api/protos/vxCreateRawImage.txt[]
+
+
+// Detailed text:
+Not guaranteed to exist until the vx_graph containing it has been verified.
+
+*Parameters*
+
+  * `[in]` _context_ - The reference to the overall Context.
+  * `[in]` _params_ - The pointer to a `<<vx_image_raw_create_params_t>>` structure
+  * `[in]` _size_ - The size of the structure pointed to by the params pointer, in bytes.
+
+*Returns:* An image reference `<<vx_image>>`.
+Any possible errors preventing a successful creation should be checked using `<<vxGetStatus>>`
+// end::refpage:vxCreateRawImage[]
+
+// tag::refpage:vxCreateVirtualRawImage[]
+// [desc='',type='protos']
+=== vxCreateVirtualRawImage
+indexterm:[Raw Image API, vxCreateVirtualRawImage]
+// Brief text:
+Creates an opaque reference to a virtual raw sensor image with no direct user access (including multi-exposure and metadata).
+
+include::api/protos/vxCreateVirtualRawImage.txt[]
+
+
+// Detailed text:
+Virtual Raw Images are useful when the Raw Image is used as internal graph edge.
+Virtual Raw Images are scoped within the parent graph only.
+
+*Parameters*
+
+  * `[in]` _graph_ - The reference to the parent graph.
+  * `[in]` _params_ - The pointer to a `<<vx_image_raw_create_params_t>>` structure
+  * `[in]` _size_ - The size of the structure pointed to by the params pointer, in bytes.
+
+*Returns:* An image reference `<<vx_image>>`.
+Any possible errors preventing a successful creation should be checked using `<<vxGetStatus>>`
+// end::refpage:vxCreateVirtualRawImage[]
+
+
+
+// tag::refpage:vxCopyImagePatchWithFlags[]
+// [desc='',type='protos']
+=== vxCopyImagePatchWithFlags
+indexterm:[Raw Image API, vxCopyImagePatchWithFlags]
+// Brief text:
+Allows the application to copy a rectangular patch from/into an image object
+plane.
+
+include::api/protos/vxCopyImagePatchWithFlags.txt[]
+
+
+// Detailed text:
+*Parameters*
+
+  * `[in]` _image_ - The reference to the image object that is the source or
+    the destination of the copy.
+  * `[in]` _image_rect_ - The coordinates of the image patch.
+    The patch must be within the bounds of the image.
+    (_start_x_, _start_y_) gives the coordinates of the topleft pixel inside
+    the patch, while (_end_x_, _end_y_) gives the coordinates of the
+    bottomright element out of the patch.
+    Must be 0 {leq} start < end {leq} number of pixels in the image
+    dimension.
+  * `[in]` _image_plane_index_ - The plane index of the image object that is
+    the source or the destination of the patch copy.
+  * `[in]` _user_addr_ - The address of a structure describing the layout of
+    the user memory location pointed by user_ptr.
+    In the structure, only _dim_x_, _dim_y_, _stride_x_ and _stride_y_
+    fields must be provided, other fields are ignored by the function.
+    The layout of the user memory must follow a row major order: _stride_x_
+    = pixel size in bytes, and _stride_y_ {geq} _stride_x_ * _dim_x_ .
+  * `[in]` _user_ptr_ - The address of the memory location where to store
+    the requested data if the copy was requested in read mode, or from where
+    to get the data to store into the image object if the copy was requested
+    in write mode.
+    The accessible memory must be large enough to contain the specified
+    patch with the specified layout: accessible memory in bytes {geq}
+    (_end_y_ - _start_y_) * _stride_y_.
+  * `[in]` _usage_ - This declares the effect of the copy with regard to the
+    image object using the `<<vx_accessor_e>>` enumeration.
+    For uniform images, only `<<VX_READ_ONLY,VX_READ_ONLY>>` is supported.
+    For other images, only `<<VX_READ_ONLY,VX_READ_ONLY>>` and `<<VX_WRITE_ONLY,VX_WRITE_ONLY>>` are
+    supported:
+  ** `<<VX_READ_ONLY,VX_READ_ONLY>>` means that data is copied from the image object into
+     the application memory.
+  ** `<<VX_WRITE_ONLY,VX_WRITE_ONLY>>` means that data is copied into the image object
+     from the application memory.
+  * `[in]` _user_mem_type_ - A `<<vx_memory_type_e>>` enumeration that
+    specifies the memory type of the memory referenced by the user_addr.
+  * `[in]` _flags_ - An integer that allows passing options to the copy
+    operation.
+
+*Returns:* A `<<vx_status_e>>` enumeration.
+
+*Return Values*
+
+  * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors; any other value indicates failure.
+  * `<<VX_ERROR_OPTIMIZED_AWAY,VX_ERROR_OPTIMIZED_AWAY>>` - This is a reference to a virtual image
+    that cannot be accessed by the application.
+  * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - image is not a valid `<<vx_image>>`
+    reference.
+  * `<<VX_ERROR_INVALID_PARAMETERS,VX_ERROR_INVALID_PARAMETERS>>` - An other parameter is incorrect.
+  * `<<VX_ERROR_NO_MEMORY,VX_ERROR_NO_MEMORY>>` - Internal memory allocation failed.
+
+[NOTE]
+.Note
+====
+If the application asks for data outside the valid region, the returned values
+are implementation-defined.
+====
+
+[NOTE]
+.Note
+====
+When copying data from/to `<<VX_DF_IMAGE_U1,VX_DF_IMAGE_U1>>` images the bit offsets for pixels are
+preserved. It's not necessary for the coordinates of the image patch to start and end at byte
+boundaries. In that case, when copying data _to_ an image only the pixels inside the specified image
+patch will be written to and when copying _from_ an image the resulting padding pixels at the start
+and/or end of the patch are implementation-defined.
+====
+
+// end::refpage:vxCopyImagePatchWithFlags[]
+
+
+// end::group_raw_image:details[]
+
+ifdef::backend-pdf[]
+[index]
+= Index
+////////////////////////////////////////////////////////////////
+The index is normally left completely empty, it's contents being
+generated automatically by the DocBook toolchain.
+////////////////////////////////////////////////////////////////
+endif::[]

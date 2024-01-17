@@ -1,14 +1,19 @@
 Build OpenVX API Docs:
   stage: build
 
+  image: ubuntu:20.04
+
   before_script:
    - uname -a
-   - apt-get update -qq && apt-get install -y -qq wget unzip build-essential python3 git cmake bison flex libffi-dev zip
-   - apt-get install -y -qq libgmp-dev libxml2-dev libgdk-pixbuf2.0-dev libcairo2-dev libpango1.0-dev ttf-lyx gtk-doc-tools ghostscript ruby-dev default-jre
-   - gem install asciidoctor-diagram -v 1.5.14
-   - gem install asciidoctor-pdf --pre
-   - gem install asciidoctor-mathematical -v 0.2.2
-   - gem install coderay --pre
+   - cat /etc/lsb-release 
+   - apt-get update -qq 
+   - DEBIAN_FRONTEND=noninteractive apt-get install -y -qq wget unzip build-essential python3 git cmake bison flex libffi-dev zip fonts-lyx
+   - DEBIAN_FRONTEND=noninteractive apt-get install -y -qq libgmp-dev libxml2-dev libgdk-pixbuf2.0-dev libcairo2-dev libpango1.0-dev 
+   - DEBIAN_FRONTEND=noninteractive apt-get install -y -qq gtk-doc-tools ghostscript ruby-dev default-jre
+   - gem install asciidoctor-diagram -v 1.5.18
+   - gem install asciidoctor-pdf --pre -v 1.6.2
+   - gem install asciidoctor-mathematical -v 0.3.5
+   - gem install coderay --pre -v 1.1.3
 
   script:
     - cd docs

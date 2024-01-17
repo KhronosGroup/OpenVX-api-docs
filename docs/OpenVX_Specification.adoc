@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2022 Khronos Group. This work is licensed under a
+// Copyright (c) 2016-2023 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
@@ -20231,7 +20231,8 @@ include::api/protos/vxAddUserKernel.txt[]
 
   * `[in]` _context_ - The reference to the context the kernel must be added
     to `[*REQ-1898*]`[[REQ-1898]].
-  * `[in]` _name_ - The string to use to match the kernel `[*REQ-1899*]`[[REQ-1899]].
+  * `[in]` _name_ - The string to use to match the kernel. The length of the string
+    shall be lower than VX_MAX_KERNEL_NAME bytes. `[*REQ-1899*]`[[REQ-1899]].
   * `[in]` _enumeration_ - The enumerated value of the kernel to be used by
     clients `[*REQ-1900*]`[[REQ-1900]].
   * `[in]` _func_ptr_ - The process-local function pointer to be invoked `[*REQ-1901*]`[[REQ-1901]].

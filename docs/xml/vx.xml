@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <registry>
     <comment>
-Copyright (c) 2012-2020 The Khronos Group Inc.
+Copyright (c) 2012-2023 The Khronos Group Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -87,6 +87,16 @@ server.
         <type category="define">#define <name>VX_VERSION_MINOR</name>(x) (((x) &amp; 0xFF) &lt;&lt; 0)</type>
         <type category="define">#define <name>dimof</name>(x) (sizeof(x)/sizeof(x[0]))</type>
         <type category="define">#define <name>VX_TYPE_USER_DATA_OBJECT</name> 0x816</type>
+        <type category="define">#define <name>VX_IMAGE_RAW_MAX_EXPOSURES</name> (3)</type>
+        <type category="define">#define <name>VX_ENUM_IMAGE_RAW_BUFFER_ACCESS</name> (vx_enum)0x24</type>
+        <type category="define">#define <name>VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER</name> (vx_enum)0x25</type>
+        <type category="define">#define <name>VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING</name> (vx_enum)0x26</type>
+        <type category="define">#define <name>VX_IMAGE_IS_RAW</name> (VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0xA)</type>
+        <type category="define">#define <name>VX_IMAGE_RAW_EXPOSURE_INTERLEAVING</name> (VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0xB)</type>
+        <type category="define">#define <name>VX_IMAGE_RAW_FORMAT</name> (VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0xC)</type>
+        <type category="define">#define <name>VX_IMAGE_RAW_META_HEIGHT_BEFORE</name> (VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0xD)</type>
+        <type category="define">#define <name>VX_IMAGE_RAW_META_HEIGHT_AFTER</name> (VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0xE)</type>
+        <type category="define">#define <name>VX_DF_IMAGE_RAW</name> (VX_DF_IMAGE('R','A','W','0'))</type>
 
         <comment>Macro definitions from vx_khr_tiling.h</comment>
         <type category="define">#define <name>vxImageHeight</name>(ptile)         ((ptile))->image.height)</type>
@@ -466,6 +476,19 @@ server.
             <member><type>vx_uint32</type> <name>app_value</name></member>
             <member><type>vx_event_info_t</type> <name>event_info</name></member>
         </type>
+        <type category="struct" name="vx_image_raw_create_params_t">
+            <member><type>vx_uint32</type> <name>width</name></member>
+            <member><type>vx_uint32</type> <name>height</name></member>
+            <member><type>vx_uint32</type> <name>num_exposures</name></member>
+            <member><type>vx_uint32</type> <name>exposure_interleaving</name></member>
+            <member><type>vx_image_raw_format_t</type> <name>format[VX_IMAGE_RAW_MAX_EXPOSURES]</name></member>
+            <member><type>vx_uint32</type> <name>meta_height_before</name></member>
+            <member><type>vx_uint32</type> <name>meta_height_after</name></member>
+        </type>
+        <type category="struct" name="vx_image_raw_format_t">
+            <member><type>vx_uint32</type> <name>pixel_container</name></member>
+            <member><type>vx_uint32</type> <name>msb</name></member>
+        </type>
 
             <comment>Types generated from corresponding enums tags below</comment>
         <type name="vx_bool_e" category="enum"/>
@@ -559,6 +582,10 @@ server.
         <type name="vx_event_type_e" category="enum"/>
         <type name="vx_buffer_aliasing_enum_e" category="enum"/>
         <type name="vx_buffer_aliasing_processing_type_e" category="enum"/>
+        <type name="vx_image_raw_attribute_e" category="enum"/>
+        <type name="vx_image_raw_buffer_access_e" category="enum"/>
+        <type name="vx_image_raw_pixel_container_e" category="enum"/>
+        <type name="vx_image_raw_exposure_interleaving_e" category="enum"/>
     </types>
 
     <comment>OpenVX enumerant (token) definitions</comment>
@@ -575,6 +602,7 @@ server.
         <enum name="OPENVX_KHR_PIPELINING"              value="&quot;vx_khr_pipelining&quot;"/>
         <enum name="OPENVX_KHR_BUFFER_ALIASING"         value="&quot;vx_khr_buffer_aliasing&quot;"/>
         <enum name="OPENVX_KHR_USER_DATA_OBJECT"        value="&quot;vx_khr_user_data_object&quot;"/>
+        <enum name="OPENVX_KHR_RAW_IMAGE"               value="&quot;vx_khr_raw_image&quot;"/>
         <enum name="OPENVX_KHR_TILING"                  value="&quot;vx_khr_tiling&quot;"/>
         <enum name="OPENVX_KHR_VARIANTS"                value="&quot;vx_khr_variants&quot;"/>
         <enum name="OPENVX_KHR_XML"                     value="&quot;vx_khr_xml&quot;"/>
@@ -901,6 +929,8 @@ server.
         <comment> Reserved for IX and XML extensions </comment>
         <comment> VX_TYPE_IMPORT          -> 0x814, </comment>
         <enum name="VX_TYPE_TENSOR"          value="0x815"/>
+        <comment> Reserved for UserDataObject extension </comment>
+        <comment> VX_TYPE_USER_DATA_OBJECT-> 0x816, </comment>
             <comment> \todo add new object types here </comment>
     </enums>
     <enums name="vx_status_e" type="enum">
@@ -971,6 +1001,16 @@ server.
         // VX_ENUM_IX_USE                      0x1F
         </comment>
         <enum name="VX_ENUM_SCALAR_OPERATION" value="0x20"/>
+        // Buffer Aliasing extension
+        // VX_ENUM_BUFFER_ALIASING_TYPE        0x1F
+        // Pipelining extension
+        // VX_ENUM_EVENT_TYPE                  0x22
+        // VX_ENUM_NODE_STATE_TYPE             0x23
+        // RawImage extension
+        // VX_ENUM_IMAGE_RAW_BUFFER_ACCESS     0x24
+        // VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER   0x25
+        // VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING   0x26
+
     </enums>
     <enums name="vx_action_e" type="enum">
         <enum name="VX_ACTION_CONTINUE" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_ACTION) + 0x0"/>
@@ -1354,6 +1394,22 @@ server.
         <enum name="VX_USER_DATA_OBJECT_SIZE" value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_USER_DATA_OBJECT) + 0x1"/>
         <enum name="VX_USER_DATA_OBJECT_VALID_SIZE" value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_USER_DATA_OBJECT) + 0x2"/>
     </enums>
+    <enums name="vx_image_raw_buffer_access_e" type="enum">
+        <enum name="VX_IMAGE_RAW_ALLOC_BUFFER"  value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_BUFFER_ACCESS) + 0x0"/>
+        <enum name="VX_IMAGE_RAW_PIXEL_BUFFER" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_BUFFER_ACCESS) + 0x1"/>
+        <enum name="VX_IMAGE_RAW_META_BEFORE_BUFFER" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_BUFFER_ACCESS) + 0x2"/>
+        <enum name="VX_IMAGE_RAW_META_AFTER_BUFFER" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_BUFFER_ACCESS) + 0x3"/>
+    </enums>
+    <enums name="vx_image_raw_pixel_container_e" type="enum">
+        <enum name="VX_IMAGE_RAW_16_BIT"  value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER) + 0x0"/>
+        <enum name="VX_IMAGE_RAW_8_BIT" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER) + 0x1"/>
+        <enum name="VX_IMAGE_RAW_P12_BIT" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER) + 0x2"/>
+    </enums>
+    <enums name="vx_image_raw_exposure_interleaving_e" type="enum">
+        <enum name="VX_IMAGE_RAW_PLANAR"  value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING) + 0x0"/>
+        <enum name="VX_IMAGE_RAW_LINE_INTERLEAVED" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING) + 0x1"/>
+        <enum name="VX_IMAGE_RAW_PIXEL_INTERLEAVED" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING) + 0x2"/>
+    </enums>
 
     <commands comment="OpenVX command definitions">
         <command>
@@ -1531,6 +1587,17 @@ server.
             <param><type>vx_enum</type> <name>user_mem_type</name></param>
         </command>
         <command>
+            <proto><type>vx_status</type> <name>vxCopyImagePatchWithFlags</name></proto>
+            <param><type>vx_image</type> <name>image</name></param>
+            <param>const <type>vx_rectangle_t</type>* <name>image_rect</name></param>
+            <param><type>vx_uint32</type> <name>image_plane_index</name></param>
+            <param>const <type>vx_imagepatch_addressing_t</type>* <name>user_addr</name></param>
+            <param>void* <name>user_ptr</name></param>
+            <param><type>vx_enum</type> <name>usage</name></param>
+            <param><type>vx_enum</type> <name>user_mem_type</name></param>
+            <param><type>vx_uint32</type> <name>flags</name></param>
+        </command>
+        <command>
             <proto><type>vx_status</type> <name>vxMapImagePatch</name></proto>
             <param><type>vx_image</type> <name>image</name></param>
             <param>const <type>vx_rectangle_t</type>* <name>rect</name></param>
@@ -1598,7 +1665,7 @@ server.
         <command>
             <proto><type>vx_kernel</type> <name>vxAddUserKernel</name></proto>
             <param><type>vx_context</type> <name>context</name></param>
-            <param>const <type>vx_char</type> <name>name</name>[<enum>VX_MAX_KERNEL_NAME</enum>]</param>
+            <param>const <type>vx_char</type>* <name>name</name></param>
             <param><type>vx_enum</type> <name>enumeration</name></param>
             <param><type>vx_kernel_f</type> <name>func_ptr</name></param>
             <param><type>vx_uint32</type> <name>numParams</name></param>
@@ -2310,6 +2377,18 @@ server.
             <proto><type>vx_status</type> <name>vxUnmapUserDataObject</name></proto>
             <param><type>vx_user_data_object</type> <name>user_data_object</name></param>
             <param><type>vx_map_id</type> <name>map_id</name></param>
+        </command>
+        <command>
+            <proto><type>vx_image</type> <name>vxCreateRawImage</name></proto>
+            <param><type>vx_context</type> <name>context</name></param>
+            <param>const vx_image_raw_create_params_t* <name>params</name></param>
+            <param><type>vx_size</type> <name>size</name></param>
+        </command>
+        <command>
+            <proto><type>vx_image</type> <name>vxCreateVirtualRawImage</name></proto>
+            <param><type>vx_graph</type> <name>graph</name></param>
+            <param>const vx_image_raw_create_params_t* <name>params</name></param>
+            <param><type>vx_size</type> <name>size</name></param>
         </command>
         <command>
             <proto><type>vx_object_array</type> <name>vxCreateObjectArray</name></proto>
@@ -5065,6 +5144,30 @@ server.
                 <command name="vxCopyUserDataObject"/>
                 <command name="vxMapUserDataObject"/>
                 <command name="vxUnmapUserDataObject"/>
+            </require>
+        </extension>
+        <extension name="vx_khr_raw_image" protect="_OPENVX_RAW_IMAGE_H_" author="KHR" contact="???" supported="openvx">
+            <require>
+                <type name="VX/vx.h"/>
+                <enum name="OPENVX_KHR_RAW_IMAGE"/>
+                <type name="VX_IMAGE_RAW_MAX_EXPOSURES"/>
+                <type name="VX_ENUM_IMAGE_RAW_BUFFER_ACCESS"/>
+                <type name="VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER"/>
+                <type name="VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING"/>
+                <type name="VX_IMAGE_IS_RAW"/>
+                <type name="VX_IMAGE_RAW_EXPOSURE_INTERLEAVING"/>
+                <type name="VX_IMAGE_RAW_FORMAT"/>
+                <type name="VX_IMAGE_RAW_META_HEIGHT_BEFORE"/>
+                <type name="VX_IMAGE_RAW_META_HEIGHT_AFTER"/>
+                <type name="vx_image_raw_create_params_t"/>
+                <type name="vx_image_raw_format_t"/>
+                <type name="vx_image_raw_buffer_access_e"/>
+                <type name="vx_image_raw_pixel_container_e"/>
+                <type name="vx_image_raw_exposure_interleaving_e"/>
+                <type name="VX_DF_IMAGE_RAW"/>
+                <command name="vxCreateRawImage"/>
+                <command name="vxCreateVirtualRawImage"/>
+                <command name="vxCopyImagePatchWithFlags"/>
             </require>
         </extension>
      </extensions>

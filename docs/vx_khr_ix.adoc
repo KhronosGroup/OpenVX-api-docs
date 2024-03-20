@@ -41,6 +41,7 @@ toc::[]
 Provide a way of exporting and importing pre-verified graphs or other
 objects, in vendor-specific formats.
 
+The name of this extension is *vx_khr_ix*.
 
 [[sec_usecases]]
 == Use Case

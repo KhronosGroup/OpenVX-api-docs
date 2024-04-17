@@ -31,7 +31,7 @@ adoc_files = [
     'OpenVX_Specification.adoc',
     'vx_khr_buffer_aliasing.adoc',
     'vx_khr_class.adoc',
-    'vx_khr_export_and_import.adoc',
+    'vx_khr_ix.adoc',
     'vx_khr_feature_sets.adoc',
     'vx_khr_icd.adoc',
     'vx_khr_import_kernel.adoc',

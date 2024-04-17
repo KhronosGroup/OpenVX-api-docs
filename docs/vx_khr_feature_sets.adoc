@@ -89,7 +89,7 @@ Details of these feature sets are described below.  These feature sets below are
 or higher, and reference some APIs and symbols that may be found in that API, at
 https://www.khronos.org/registry/OpenVX/specs/1.1/html/index.html.  They also incorporate material
 in the OpenVX 1.1.1 Export and Import extension at
-https://www.khronos.org/registry/OpenVX/extensions/vx_khr_ix/1.1.1/vx_khr_export_and_import_1_1_1.html,
+https://www.khronos.org/registry/OpenVX/extensions/vx_khr_ix/1.1.1/vx_khr_ix_1_1_1.html,
 and the neural network extension at
 https://www.khronos.org/registry/OpenVX/extensions/vx_khr_nn/1.2.1/vx_khr_nn_1_2_1.html.
 We will start with the Base Feature Set, upon which most of the others are built.

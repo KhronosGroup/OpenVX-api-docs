@@ -43,6 +43,8 @@ enum vx_bidirectional_enum_e
 };
 
 #ifdef OPENVX_KHR_BIDIRECTIONAL_OPTIONAL_KERNELS
+
+#ifndef VX_VERSION_1_1
 /*! \brief [Graph] Creates an accumulate node.
  * \param [in] graph The reference to the graph.
  * \param [in] input The input <tt>\ref VX_DF_IMAGE_U8</tt> image.
@@ -52,6 +54,7 @@ enum vx_bidirectional_enum_e
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>  
  */
 VX_API_ENTRY vx_node VX_API_CALL vxAccumulateImageNode(vx_graph graph, vx_image input, vx_image accum);
+#endif
 
 /*! \brief [Graph] Creates a weighted accumulate node.
  * \param [in] graph The reference to the graph.

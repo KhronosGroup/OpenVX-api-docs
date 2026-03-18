@@ -21,6 +21,7 @@
 #include <VX/vx.h>
 
 /* NOTE: The bidirectional parameters extension is required for the swap_move extension */
+#define OPENVX_KHR_SWAP_MOVE  "vx_khr_swap_move"
 
 #ifdef  __cplusplus
 extern "C" {

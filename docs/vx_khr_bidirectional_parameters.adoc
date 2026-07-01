@@ -313,3 +313,41 @@ vx_node VX_API_CALL vxAccumulateWeightedImageNodeX (vx_graph graph, vx_image inp
 | vx_node | A node reference. | `[*REQ-BP35*]`[[REQ-BP35]] Any possible errors preventing a successful creation can be checked using vxGetStatus() 
 |====
 
+== Kernel Names
+
+`[*REQ-BP31*]`[[REQ-BP31]]
+
+Notice that only node APIs are added when compared to the original definition of the accumulate functions in OpenVX, consequently the same kernels are re-used.
+When using `vxGetKernelByName` the following are strings specifying the bidirectional parameter extension kernel names:
+
+  * org.khronos.openvx.accumulate
+  * org.khronos.openvx.accumulate_square
+  * org.khronos.openvx.accumulate_weighted
+
+== Kernel enumerations
+
+`[*REQ-BP32*]`[[REQ-BP32]]
+
+The following enumeration constants are defined:
+
+```c
+enum vx_kernel_e {
+
+     /*! \brief The accumulation kernel.
+     * \see group_vision_function_accumulate
+     */
+    VX_KERNEL_ACCUMULATE = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x16,
+
+    /*! \brief The weighted accumulation kernel.
+     * \see group_vision_function_accumulate_weighted
+     */
+    VX_KERNEL_ACCUMULATE_WEIGHTED = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x17,
+
+    /*! \brief The squared accumulation kernel.
+     * \see group_vision_function_accumulate_square
+     */
+    VX_KERNEL_ACCUMULATE_SQUARE = VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x18,
+
+};
+```
+

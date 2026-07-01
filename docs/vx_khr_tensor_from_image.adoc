@@ -1,0 +1,411 @@
+// Copyright (c) 2023 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+= The OpenVX^(TM)^ Tensor from Image Extension
+:regtitle: pass:q,r[^®^]
+The Khronos{regtitle} OpenVX Working Group; Contributor: Steve Ramm
+:title-logo-image: images/Khronos_RGB.svg
+:data-uri:
+:icons: font
+:toc2:
+:toclevels: 3
+:max-width: 100
+:numbered:
+:imagewidth: 800
+:fullimagewidth: width="800"
+:halfimagewidth: width="400"
+:source-highlighter: coderay
+// Various special / math symbols. This is easier to edit with than Unicode.
+include::config/attribs.txt[]
+
+// Paths to code examples and headers
+:examples: examples
+:headers: examples
+
+image::images/OpenVX_RGB.svg[align="center",{halfimagewidth}]
+include::copyright-spec.txt[]
+
+<<<<
+
+// Table of contents is inserted here
+toc::[]
+
+:leveloffset: 1
+=  Extension to support tensor views of images
+[[sec_purpose]]
+== Purpose
+
+Visual perception often requires that images are processed as tensors, which may be inconvenient if they have previously be processed as images, for example to correct for aberrations or extract a channel from a multi-channel image. As always, there is a desire to eliminate copies wherever possible, so rather than copy data from an image to a tensor it would be better if the tensor handled the data as a 'view' of the original image, i.e. the tensor uses exactly the same data locations as the image, and when one is changed it affects the other. Because of the single-plane nature of tensors, this operation can only be performed with single-plane images, or at least one plane of an image, and the type of that image plane will determine the type of the tensor.
+
+Additionally, node replication is frequently use to process several images in parallel, hence it's also necessary to have object arrays of tensors where each tensor is a view of an image in a corresponding object array of images.
+
+For convenience we supply functions to:
+
+* Create a tensor view of an entire single-plane image or a subset (ROI) of a single-plane image.
+* Create a tensor view of a single channel of a multi-channel image; the implementation is only required to support the case where a channel occupies the entire plane.
+* Create object arrays of tensors as views of object arrays of single-plane images (entire or ROI).
+* Create object arrays of tensors as views of single channels of object arrays of multi-channel images.
+* For completeness, a function to create an object array of tensors as views of an object array of tensors.
+
+Note that an entire plane of various single-plane interleaved images types may be mapped to a tensor of type VX_TYPE_UINT8 but the effect is dependent upon the underlying pixel format. The dimensions of the output tensor do not necessarily correspond to the dimensions of the input image in that the height, width or both may be changed according to the actual number of bytes used to store the pixel values. For example an image of packed 1-bit pixels will result in a tensor of width one-eighth if the image where each element consists of 8 pixels, and images of type RGB and RGBX will result in tensors where the width is four times the width of the image, and the pixels are interleaved. For sub-sampled formats, the tensor dimensions will be less than that of the image.
+In theses cases, the tensor view of the image can be thought of as a "plain old data" view.
+
+Note that as tensors support fixed-point arithmetic, the ability to specify a fixed-point position in the tensor view of the image is supplied.
+
+
+[[sec_usecases]]
+== Example Use Cases
+
+* Processing of images by nodes that expect tensors
+* Replication of nodes in graphs where tensor views of images are involved
+
+[[sec_acknowledge]]
+== Acknowledgements
+
+This specification would not be possible without the contributions from this
+partial list of the following individuals from the Khronos Working Group and
+the companies that they represented at the time:
+
+  * Simon Barfield - ETAS (Robert Bosch GmbH)
+  * Raphael Cano - Robert Bosch GmbH
+  * Radhakrishna Giduthuri - Intel
+  * Andrew Graves - ETAS (Robert Bosch GmbH)
+  * Viktor Gyenes - AI Motive
+  * Kiriti Nagesh Gowda - AMD
+  * Stephen Ramm - ETAS (Robert Bosch GmbH)
+  * Jesse Villarreal - TI
+  
+[[page_requirements_requirements]]
+= Requirements
+
+== Functions
+
+=== vxCreateTensorFromROI
+
+`[*REQ-TFI01*]`[[REQ-TFI01]]
+
+Creates a Tensor from a region of interest in a virtual or non-virtual image.
+
+Function signature:
+```C
+
+vx_tensor vxCreateTensorFromROI(vx_image image, const vx_rectangle_t *rect, vx_int8 fixed_point_position);
+
+```
+
+==== Parameters
+
+* [in] *image* - The reference to the parent image.
+* [in] *rect* - Pointer to the region of interest rectangle.
+* [in] *fixed_point_position* - Specifies the fixed point position. If 0, calculations are performed using integer arithmetic.
+
+`[*REQ-TFI02*]`[[REQ-TFI02]]
+
+The input *image* must be a non-virtual or virtual single-plane image with width, height and format all defined.
+
+`[*REQ-TFI03*]`[[REQ-TFI03]]
+
+The input pointer *rect* must either be NULL or point to a vx_rectangle_t defining points within the parent image pixel space; if the pointer is NULL then the bounds shall be set equal to the entire image.
+
+`[*REQ-TFI04*]`[[REQ-TFI04]]
+
+For single-plane images of a simple numeric image format (DF_IMAGE _U8, _U16, _U32, _S16, _S32) the tensor shall be created with the dimensions given by *rect* and the corresponding numeric type (VX_TYPE _UINT8, UINT16, UINT32, INT16, INT32).
+
+`[*REQ-TFI05*]`[[REQ-TFI05]]
+
+For single-plane images of format DF_IMAGE_U1, the tensor shall be created with a type of VX_TYPE_UINT8, a first dimension equal to (the width + 7) / 8, and the second dimension equal to the height, the width and height being defined by *rect*. Note that for this format the origin of the *rect* must be at a multiple of 8 pixels, due to the packed nature of the format.
+
+`[*REQ-TFI06*]`[[REQ-TFI06]]
+
+For other interleaved single-plane formats including sub-sampled formats, tensors shall be created as follows:
+
+* VX_DF_IMAGE_RGB: tensor type VX_TYPE_UINT32 with padding in the high order byte.
+* VX_DF_IMAGE_RGBX: tensor type VX_TYPE_UINT32.
+* VX_DF_IMAGE_YUYV, VX_DF_IMAGE_UYVY: tensor type VX_TYPE_UINT16.
+
+Padding bits are unchanged from the original image data.
+
+The following table summarises the previous requirements:
+
+[#table1]
+.Image formats, tensor dimensions and tensor types
+[cols="1,1,1,1,1"]
+|===
+| Image format | Tensor dimension 1 | Tensor dimension 2 | Tensor type | Notes
+
+| DF_IMAGE_U8 | rect.endx - rect.startx | rect.endy - rect.starty | VX_TYPE_UINT8 |
+| DF_IMAGE_U16 | rect.endx - rect.startx | rect.endy - rect.starty | VX_TYPE_UINT16 |
+| DF_IMAGE_U32 | rect.endx - rect.startx | rect.endy - rect.starty | VX_TYPE_UINT32 |
+| DF_IMAGE_S16 | rect.endx - rect.startx | rect.endy - rect.starty | VX_TYPE_INT16 |
+| DF_IMAGE_S32 | rect.endx - rect.startx | rect.endy - rect.starty | VX_TYPE_INT32 |
+| DF_IMAGE_U1 | (rect.endx - rect.startx + 7) / 8 | rect.endy - rect.starty | VX_TYPE_UNIT8 | (rect.startx % 8) == 0
+| DF_IMAGE_RGB | rect.endx - rect.startx | rect.endy - rect.starty | VX_TYPE_UINT32 | High order byte of each tensor element is padding
+| DF_IMAGE_RGBX | rect.endx - rect.startx | rect.endy - rect.starty | VX_TYPE_UINT32 |
+| DF_IMAGE_YUYV | rect.endx - rect.startx | rect.endy - rect.starty | VX_TYPE_UINT16 | Entries alternate as YU, YV
+| DF_IMAGE_UYVY | rect.endx - rect.startx | rect.endy - rect.starty | VX_TYPE_UINT16 | Entries alternate as UY, VY
+
+|===
+
+==== Returns
+
+`[*REQ-TFI07*]`[[REQ-TFI07]]
+
+A reference to the tensor; any possible errors preventing a successful creation may be checked using vxGetStatus().
+
+Possible causes of errors are:
+
+* Invalid input reference
+* Input reference is not to an image
+* Input image does not have its width, height or format specified
+* The values in the rectangle do not fall within the image bounds
+* Out of resources
+
+`[*REQ-TFI08*]`[[REQ-TFI08]]
+
+The new reference refers to data in the original image, so that updates to the tensor shall update the parent image, and updates to the ROI in the parent image shall update the tensor.
+
+`[*REQ-TFI09*]`[[REQ-TFI09]]
+
+If the input image is virtual, the new reference returned is to a virtual tensor.
+If the input image is non-virtual, the new reference returned is to a non-virtual tensor.
+
+=== vxCreateTensorFromChannel
+
+`[*REQ-TFI10*]`[[REQ-TFI10]]
+
+Creates a tensor or virtual tensor from a single plane channel of another image. The original image may be virtual or non-virtual.
+
+Function signature:
+```C
+
+vx_tensor vxCreateTensorFromChannel(vx_image image, vx_enum channel, vx_int8 fixed_point_position);
+
+```
+
+==== Parameters
+
+* [in] *image* - The reference to the parent image
+* [in] *channel* - The vx_channel to use.
+* [in] *fixed_point_position* - Specifies the fixed point position. If 0, calculations are performed using integer arithmetic.
+
+`[*REQ-TFI11*]`[[REQ-TFI11]]
+
+The input *image* must be a non-virtual or virtual image with defined format.
+
+`[*REQ-TFI12*]`[[REQ-TFI12]]
+
+The function supports channels that occupy an entire plane of multi-planar images in *image_array*. Image formats and channels shall be supported as described in the following table:
+
+[#table2]
+.Image formats, supported channels and corresponding tensor type
+[cols="1,1,1"]
+|===
+| Supported image format | Supported channel(s) | Tensor type
+
+| NV12 | VX_CHANNEL_Y | VX_TYPE_UINT8
+| NV21 | VX_CHANNEL_Y | VX_TYPE_UINT8
+.3+| IYUV 
+| VX_CHANNEL_Y | VX_TYPE_UINT8
+| VX_CHANNEL_U | VX_TYPE_UINT8
+| VX_CHANNEL_V | VX_TYPE_UINT8
+.3+| YUV4 
+| VX_CHANNEL_Y | VX_TYPE_UINT8
+| VX_CHANNEL_U | VX_TYPE_UINT8
+| VX_CHANNEL_V | VX_TYPE_UINT8
+|===
+
+
+==== Returns
+
+`[*REQ-TFI13*]`[[REQ-TFI13]]
+
+A reference to the tensor; any possible errors preventing a successful creation may be checked using vxGetStatus().
+
+Possible causes of errors are:
+
+* Invalid input reference
+* Input reference is not to an image
+* The input image does not have its format specified
+* Input image is not in a supported multi-planar format
+* *channel* is not a valid channel comprising the entire plane of the input format
+* Out of resources
+
+`[*REQ-TFI14*]`[[REQ-TFI14]]
+
+The new reference refers to data in the original image, so that updates to the new tensor update the parent image, and updates to the specified channel of the parent image update the tensor.
+
+`[*REQ-TFI15*]`[[REQ-TFI15]]
+
+If the input image is virtual, the new reference returned is to a virtual tensor.
+If the input image is non-virtual, the new reference returned is to a non-virtual tensor.
+
+=== vxCreateTensorObjectArrayFromROI
+
+`[*REQ-TFI16*]`[[REQ-TFI16]]
+
+Creates an object array or virtual object array of tensors from another object array of images given a rectangle. The original object array may be virtual or non-virtual.
+
+Function signature:
+```C
+
+vx_object_array vxCreateTensorObjectArrayFromROI(vx_object_array image_array, const vx_rectangle_t* rect, vx_int8 fixed_point_position);
+
+```
+
+==== Parameters
+
+* [in] *image_array* - The reference to the parent object array
+* [in] *rect* - The region of interest rectangle. Must contain points within the parent images' pixel space.
+* [in] *fixed_point_position* - Specifies the fixed point position. If 0, calculations are performed using integer arithmetic.
+
+`[*REQ-TFI17*]`[[REQ-TFI17]]
+
+The input object array *image_array* must be a non-virtual or virtual object array of images with width, height and format all defined.
+
+`[*REQ-TFI18*]`[[REQ-TFI18]]
+
+The input pointer *rect* must either be NULL or point to a vx_rectangle_t defining points within the parent image pixel space; if the pointer is NULL then the bounds shall be set equal to the entire image.
+
+`[*REQ-TFI19*]`[[REQ-TFI19]]
+
+For single-plane images of a simple numeric image format (DF_IMAGE _U8, _U16, _U32, _S16, _S32) the tensor shall be created with the same dimensions and the corresponding numeric type (VX_TYPE _UINT8, _UINT16, _UINT32, _INT16, _INT32), just as described for <<vxCreateTensorFromROI>>.
+
+`[*REQ-TFI20*]`[[REQ-TFI20]]
+
+For single-plane images of format DF_IMAGE_U1, the tensors shall be created with a type of VX_TYPE_UINT8, a first dimension equal to (the image width + 7) / 8, and the second dimension equal to the height, just as described for <<vxCreateTensorFromROI>>.
+
+`[*REQ-TFI21*]`[[REQ-TFI21]]
+
+For other interleaved single-plane formats including sub-sampled formats, tensors shall be created as described for <<vxCreateTensorFromROI>>
+
+For a summary, please refer to <<table1>>.
+
+==== Returns
+
+`[*REQ-TFI22*]`[[REQ-TFI22]]
+
+A reference to the array of tensors; any possible errors preventing a successful creation may be checked using vxGetStatus().
+
+Possible causes of errors are:
+
+* Invalid input reference
+* Input reference is not to an object array
+* Input object array does not contain images
+* Input images do not have their width, height or format specified
+* Input object array images bounds are not defined, do not contain the region described by *rect* or are not supported for the image format
+* Out of resources
+
+`[*REQ-TFI23*]`[[REQ-TFI23]]
+
+The new reference refers to data in the original array, so that updates to the tensors shall update the parent images, and updates to the parent images in the region of interest shall update the tensors.
+
+`[*REQ-TFI24*]`[[REQ-TFI24]]
+
+If the input object array is virtual, the new reference returned is to a virtual object array of tensors.
+If the input object array is non-virtual, the new reference returned is to a non-virtual object array of tensors.
+
+=== vxCreateTensorObjectArrayFromChannel
+
+`[*REQ-TFI25*]`[[REQ-TFI25]]
+
+Creates an object array or virtual object array of tensors from a single plane channel of another object array of images. The original object array may be virtual or non-virtual.
+
+Function signature:
+```C
+
+vx_object_array vxCreateTensorObjectArrayFromChannel(vx_object_array image_array, vx_enum channel, vx_int8 fixed_point_position);
+
+```
+
+==== Parameters
+
+* [in] *image_array* - The reference to the parent object array
+* [in] *channel* - The vx_channel to use.
+* [in] *fixed_point_position* - Specifies the fixed point position. If 0, calculations are performed using integer arithmetic.
+
+`[*REQ-TFI26*]`[[REQ-TFI26]]
+
+The input object array *image_array* must be a non-virtual or virtual object array of images with defined format.
+
+`[*REQ-TFI27*]`[[REQ-TFI27]]
+
+The function supports channels that occupy an entire plane of the multi-planar images in *image_array*. Formats and channels shall be supported as described for <<vxCreateTensorFromChannel>> in the table <<table2>>.
+
+==== Returns
+
+`[*REQ-TFI28*]`[[REQ-TFI28]]
+
+A reference to the array of tensors; any possible errors preventing a successful creation may be checked using vxGetStatus().
+
+Possible causes of errors are:
+
+* Invalid input reference
+* Input reference is not to an object array
+* Input object array does not contain images
+* Input images do not have their format specified
+* Input images are not in a supported multi-planar format
+* *channel* is not a valid channel comprising the entire plane of the input format
+* Out of resources
+
+`[*REQ-TFI29*]`[[REQ-TFI29]]
+
+The new reference refers to data in the original array, so that updates to the tensors shall update the parent images, and updates to the specified channel of the parent images shall update the tensors.
+
+`[*REQ-TFI30*]`[[REQ-TFI30]]
+
+If the input object array is virtual, the new reference returned is to a virtual object array of tensors.
+If the input object array is non-virtual, the new reference returned is to a non-virtual object array of tensors.
+
+=== vxCreateTensorObjectArrayFromView
+
+`[*REQ-TFI31*]`[[REQ-TFI31]]
+
+Creates an object array or virtual object array of tensors from another object array of tensors given lists of start and end points per dimension. The original object array may be virtual or non-virtual.
+
+Function signature:
+```C
+
+vx_object_array vxCreateTensorObjectArrayFromView(vx_object_array tensor_array, vx_size number_of_dims, const vx_size* view_start, const vx_size* view_end);
+
+```
+
+==== Parameters
+
+* [in] *tensor_array* - The reference to the parent object array
+* [in] *number_of_dims* - Number of dimensions in the view. Error return if 0 or greater than number of tensor dimensions. If smaller than number of tensor dimensions, the lower dimensions are assumed.
+* [in] *view_start* - View start coordinates.
+* [in] *view_end* - View end coordinates.
+
+`[*REQ-TFI32*]`[[REQ-TFI32]]
+
+The input object array *tensor_array* must be a non-virtual or virtual object array of tensors with dimensions and type all defined.
+
+`[*REQ-TFI33*]`[[REQ-TFI33]]
+
+The input pointers *view_start* and *view_end* must either be both NULL or point to arrays of length *number_of_dims* defining start and end points within the parent tensor; if the pointers are NULL then the bounds shall be set equal to zero and the size of each dimension. The end point must never be less than the start point; the size of each dimension is given by (end point) - (start point).
+
+==== Returns
+
+`[*REQ-TFI34*]`[[REQ-TFI34]]
+
+A reference to the array of tensors; any possible errors preventing a successful creation may be checked using vxGetStatus().
+
+Possible causes of errors are:
+
+* Invalid input reference
+* Input reference is not to an object array
+* Input object array does not contain tensors
+* Input tensors do not have their type or dimensions all defined
+* Input object array tensors do not contain the region described by *view_start* and *view_end* or end points are less then start points
+* Out of resources
+
+`[*REQ-TFI35*]`[[REQ-TFI35]]
+
+The new reference refers to data in the original array, so that updates to the new tensors shall update the parent tensors, and updates to the parent tensors in the region of interest shall update the new tensors.
+
+`[*REQ-TFI36*]`[[REQ-TFI36]]
+
+If the input object array is virtual, the new reference returned is to a virtual object array of tensors.
+If the input object array is non-virtual, the new reference returned is to a non-virtual object array of tensors.
+

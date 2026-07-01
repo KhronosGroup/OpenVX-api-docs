@@ -61,7 +61,7 @@ all:
 	make SPECBASE=vx_khr_ix html $(TARGET) SPECREVISION='1.1.1' SPECSUFFIX=1_1_1
 	make SPECBASE=vx_khr_icd html $(TARGET) SPECREVISION='1.0.1 (provisional)' SPECSUFFIX=1_0_1
 	make SPECBASE=vx_khr_nn html $(TARGET) SPECREVISION='1.3' SPECSUFFIX=1_3
-	make SPECBASE=vx_khr_pipelining html $(TARGET) SPECREVISION='1.1.0' SPECSUFFIX=1_1_0
+	make SPECBASE=vx_khr_pipelining html $(TARGET) SPECREVISION='2.0.0' SPECSUFFIX=2_0_0
 	make SPECBASE=vx_khr_s16 html $(TARGET) SPECREVISION='1.1.1 (provisional)' SPECSUFFIX=1_1_1
 	make SPECBASE=vx_khr_tiling html $(TARGET) SPECREVISION='1.0.1 (provisional)' SPECSUFFIX=1_0_1
 	make SPECBASE=vx_khr_xml html $(TARGET) SPECREVISION='1.1 (provisional)' SPECSUFFIX=1_1
@@ -70,8 +70,12 @@ all:
 	make SPECBASE=vx_khr_buffer_aliasing html $(TARGET) SPECREVISION='1.0 (provisional)' SPECSUFFIX=1_0
 	make SPECBASE=vx_khr_user_data_object html $(TARGET) SPECREVISION='1.1' SPECSUFFIX=1_1
 	make SPECBASE=vx_khr_raw_image html $(TARGET) SPECREVISION='1.0' SPECSUFFIX=1_0
+	make SPECBASE=vx_khr_tensor_from_image html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
+	make SPECBASE=vx_khr_sub_image_arrays html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
 	make SPECBASE=vx_khr_swap_move html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
 	make SPECBASE=vx_khr_bidirectional_parameters html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
+	make SPECBASE=vx_khr_supplementary_data html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
+	make SPECBASE=vx_khr_safe_casts html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
 
 ## alldocs: allspecs allman
 alldocs: allspecs

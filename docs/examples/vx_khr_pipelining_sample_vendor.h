@@ -43,7 +43,7 @@ void DisplayDeviceOpen(int *fd, vx_uint32 width, vx_uint32 height, vx_enum df);
 /* Stop and close Display device */
 void DisplayDeviceClose(int *fd);
 /* Swap buffer with a display device */
-void DisplayDeviceSwapHandles(int fd, vx_reference new_buf, vx_reference *old_buf);
+void DisplayDeviceSwapHandles(int fd, vx_reference full_buf);
 
 /* Open capture device */
 void CaptureDeviceOpen(int *fd, vx_uint32 width, vx_uint32 height, vx_enum df);
@@ -54,7 +54,7 @@ void CaptureDeviceStop(int fd);
 /* Close capture device */
 void CaptureDeviceClose(int *fd);
 /* Swap buffer with capture device */
-void CaptureDeviceSwapHandles(int fd, vx_reference empty_buf, vx_reference *full_buf);
+void CaptureDeviceSwapHandles(int fd, vx_reference empty_buf);
 /* alloc buffers for capturing with capture device */
 void CaptureDeviceAllocHandles(int fd, vx_reference bufs[], int num_bufs);
 /* free buffers previously allocated */

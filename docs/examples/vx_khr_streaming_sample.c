@@ -93,7 +93,7 @@ static vx_status user_node_source_init(
     /* prime image references to capture device */
     for(i=0; i<MAX_CAPTURE_REFS_PRIME; i++)
     {
-        CaptureDeviceSwapHandles(capture_dev, capture_refs_prime[i], NULL);
+        CaptureDeviceSwapHandles(capture_dev, capture_refs_prime[i]);
     }
     /* start capturing data to primed image references */
     CaptureDeviceStart(capture_dev);
@@ -103,20 +103,16 @@ static vx_status user_node_source_init(
 
 static vx_status user_node_source_run(
                     vx_node node,
-                    vx_reference parameters[],
+                    const vx_reference parameters[],
                     vx_uint32 num)
 {
-    vx_reference empty_ref, full_ref;
-
-    empty_ref = parameters[0];
 
     /* swap a 'empty' image reference with a captured image reference filled with data
-     * If this is one of the first few calls to CaptureDeviceSwapHandle, then full_buf
-     * would be one of the image references primed during user_node_source_init
+     * It's assumed that CaptureDeviceSwapHandles is able to internally use vxSwapImageHandle
+     * or equivalent to avoid any copying of data
      */
-    CaptureDeviceSwapHandles(capture_dev, empty_ref, &full_ref);
 
-    parameters[0] = full_ref;
+    CaptureDeviceSwapHandles(capture_dev, parameters[0]);
 
     return VX_SUCCESS;
 }
@@ -142,7 +138,7 @@ static void user_node_source_add(vx_context context)
             context,
             "user_kernel.source",
             user_node_source_kernel_id,
-            (vx_kernel_f)user_node_source_run,
+            user_node_source_run,
             1,
             user_node_source_validate,
             user_node_source_init,
@@ -202,31 +198,26 @@ static vx_status user_node_source_init(
 
 static vx_status user_node_source_run(
                     vx_node node,
-                    vx_reference parameters[],
+                    const vx_reference parameters[],
                     vx_uint32 num)
 {
     uint32_t state;
-    vx_reference empty_ref, full_ref;
 
     vxQueryNode(node, VX_NODE_STATE, &state, sizeof(state));
-
-    empty_ref = parameters[0];
 
     if (state == VX_NODE_STATE_STEADY)
     {
         /* swap a 'empty' image reference with a captured image reference filled with data
-         * If this is one of the first few calls to CaptureDeviceSwapHandle, then full_buf
-         * would be one of the image references primed during VX_NODE_STATE_PIPEUP
-         */
-        CaptureDeviceSwapHandles(capture_dev, empty_ref, &full_ref);
+         * It's assumed that CaptureDeviceSwapHandles is able to internally use vxSwapImageHandle
+        * or equivalent to avoid any copying of data
+        */
+        CaptureDeviceSwapHandles(capture_dev, parameters[0]);
     }
     else
     {
         /* prime image reference to capture device */
-        CaptureDeviceSwapHandles(capture_dev, empty_ref, NULL);
+        CaptureDeviceSwapHandles(capture_dev, NULL);
     }
-
-    parameters[0] = full_ref;
 
     return VX_SUCCESS;
 }
@@ -253,7 +244,7 @@ static void user_node_source_add(vx_context context)
             context,
             "user_kernel.source",
             user_node_source_kernel_id,
-            (vx_kernel_f)user_node_source_run,
+            user_node_source_run,
             1,
             user_node_source_validate,
             user_node_source_init,
@@ -325,9 +316,9 @@ static vx_status user_node_sink_init(
     DisplayDeviceAllocHandles(display_dev, display_refs_prime,
                               MAX_DISPLAY_REFS_PRIME);
     /* prime image references to display device */
-    for(i=0; i<MAX_DISPLAY_REFS_PRIME; i++)
+    for(int i=0; i<MAX_DISPLAY_REFS_PRIME; i++)
     {
-        DisplayDeviceSwapHandles(display_dev, display_refs_prime[i], NULL);
+        DisplayDeviceSwapHandles(display_dev, display_refs_prime[i]);
     }
 
     return VX_SUCCESS;
@@ -335,20 +326,15 @@ static vx_status user_node_sink_init(
 
 static vx_status user_node_sink_run(
                     vx_node node,
-                    vx_reference parameters[],
+                    const vx_reference parameters[],
                     vx_uint32 num)
 {
-    vx_reference new_ref, old_ref;
 
-    new_ref = parameters[0];
-
-    /* Swap input reference with reference currently held by display
-     * Return parameters to framework to be recycled
+    /* Swap input reference handle with reference currently held by display
+     * Return handle to framework to be recycled
      * for subsequent graph execution
      */
-    DisplayDeviceSwapHandles(display_dev, new_ref, &old_ref);
-
-    parameters[0] = old_ref;
+    DisplayDeviceSwapHandles(display_dev, parameters[0]);
 
     return VX_SUCCESS;
 }
@@ -440,15 +426,12 @@ static vx_status user_node_sink_init(
 
 static vx_status user_node_sink_run(
                     vx_node node,
-                    vx_reference parameters[],
+                    const vx_reference parameters[],
                     vx_uint32 num)
 {
     uint32_t state;
-    vx_reference new_ref, old_ref = NULL;
 
     vxQueryNode(node, VX_NODE_STATE, &state, sizeof(state));
-
-    new_ref = parameters[0];
 
     if (state == VX_NODE_STATE_STEADY)
     {
@@ -456,15 +439,13 @@ static vx_status user_node_sink_run(
          * Return parameters to framework to be recycled
          * for subsequent graph execution
          */
-        DisplayDeviceSwapHandles(display_dev, new_ref, &old_ref);
+        DisplayDeviceSwapHandles(display_dev, parameters[0]);
     }
     else
     {
         /* Send image reference to display device without getting one in return*/
-        DisplayDeviceSwapHandles(display_dev, new_ref, NULL);
+        DisplayDeviceSwapHandles(display_dev, NULL);
     }
-
-    parameters[0] = old_ref;
 
     return VX_SUCCESS;
 }

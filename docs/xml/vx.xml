@@ -98,6 +98,8 @@ server.
         <type category="define">#define <name>VX_IMAGE_RAW_META_HEIGHT_AFTER</name> (VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0xE)</type>
         <type category="define">#define <name>VX_DF_IMAGE_RAW</name> (VX_DF_IMAGE('R','A','W','0'))</type>
 
+        <type category="define">#define <name>VX_TIMEOUT_WAIT_FOREVER</name> ((vx_uint32)0xFFFFFFFFU)</type>
+
         <comment>Macro definitions from vx_khr_tiling.h</comment>
         <type category="define">#define <name>vxImageHeight</name>(ptile)         ((ptile))->image.height)</type>
         <type category="define">#define <name>vxImageWidth</name>(ptile)          ((ptile))->image.width)</type>
@@ -440,9 +442,23 @@ server.
             <member><type>vx_pixel_value_t</type> <name>constant_value</name></member>
         </type>
         <type category="struct" name="vx_graph_parameter_queue_params_t">
-            <member><type>uint32_t</type> <name>graph_parameter_index</name></member>
+            <member><type>vx_uint32</type> <name>graph_parameter_index</name></member>
             <member><type>vx_uint32</type> <name>refs_list_size</name></member>
             <member><type>vx_reference</type> *<name>refs_list</name></member>
+        </type>
+        <type category="struct" name="vx_graph_parameter_config_t">
+            <member><type>vx_uint32</type> <name>index</name></member>
+            <member><type>vx_enum</type> <name>type</name></member>
+            <member><type>vx_enum</type> <name>direction</name></member>
+            <member><type>vx_enum</type> <name>state</name></member>
+            <member><type>vx_uint32</type> <name>refs_list_size</name></member>
+        </type>
+        <type category="struct" name="vx_kernel_parameter_config_t">
+            <member><type>vx_uint32</type> <name>index</name></member>
+            <member><type>vx_enum</type> <name>type</name></member>
+            <member><type>vx_enum</type> <name>direction</name></member>
+            <member><type>vx_enum</type> <name>state</name></member>
+            <member><type>vx_meta_format</type> <name>meta</name></member>
         </type>
         <type category="struct" name="vx_event_graph_parameter_consumed">
             <member><type>vx_graph</type> <name>graph</name></member>
@@ -574,6 +590,8 @@ server.
         <type name="vx_graph_schedule_mode_enum_e" category="enum"/>
         <type name="vx_graph_schedule_mode_type_e" category="enum"/>
         <type name="vx_graph_attribute_pipelining_e" category="enum"/>
+        <type name="vx_reference_attribute_pipelining_e" category="enum"/>
+        <type name="vx_context_attribute_event_e" category="enum"/>
         <type name="vx_node_state_enum_e" category="enum"/>
         <type name="vx_node_state_e" category="enum"/>
         <type name="vx_node_attribute_streaming_e" category="enum"/>
@@ -652,7 +670,7 @@ server.
         <enum name="VX_TYPE_TARGET" value="0x816"/>
     </enums>
     <enums name="vx_ext_target_context_attribute_e" type="enum">
-        <enum name="VX_CONTEXT_TARGETS" value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0xE"/>
+        <enum name="VX_CONTEXT_TARGETS" value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0xF"/>
     </enums>
     <enums name="vx_target_attribute_e" type="enum">
         <enum name="VX_TARGET_ATTRIBUTE_INDEX" value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_TARGET) + 0x0"/>
@@ -935,7 +953,8 @@ server.
     </enums>
     <enums name="vx_status_e" type="enum">
         <comment> add new error codes here </comment>
-        <enum name="VX_STATUS_MIN"                       value="-25"/>
+        <enum name="VX_STATUS_MIN"                       value="-26"/>
+        <enum name="VX_ERROR_TIMEOUT"                    value="-25"/>
         <enum name="VX_ERROR_REFERENCE_NONZERO"          value="-24"/>
         <enum name="VX_ERROR_MULTIPLE_WRITERS"           value="-23"/>
         <enum name="VX_ERROR_GRAPH_ABANDONED"            value="-22"/>
@@ -1342,7 +1361,8 @@ server.
         <enum name="VX_ID_SYNOPSYS"  value="0x018"/>
         <enum name="VX_ID_CADENCE"   value="0x019"/>
         <enum name="VX_ID_HUAWEI"    value="0x01A"/>
-        <enum name="VX_ID_SOCIONEXT" value="0x01B" comment="Add new vendor code starting below"/>
+        <enum name="VX_ID_SOCIONEXT" value="0x01B"/>
+        <enum name="VX_ID_BOSCH"     value="0x01C" comment="Add new vendor code starting below"/>
         <enum name="VX_ID_USER"      value="0xFFE"/>
         <enum name="VX_ID_MAX"       value="0xFFF"/>
         <enum name="VX_ID_DEFAULT"   value="VX_ID_MAX"/>
@@ -1351,36 +1371,45 @@ server.
         <enum name="VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE"   value="0x21"/>
     </enums>
     <enums name="vx_graph_schedule_mode_type_e" type="enum">
-        <enum name="VX_GRAPH_SCHEDULE_MODE_NORMAL"      value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE &lt;&lt; 12)) + 0x0"/>
-        <enum name="VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO"  value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE &lt;&lt; 12)) + 0x1"/>
-        <enum name="VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL" value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE &lt;&lt; 12)) + 0x2"/>
+        <enum name="VX_GRAPH_SCHEDULE_MODE_NORMAL"      value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE) + 0x0"/>
+        <enum name="VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO"  value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE) + 0x1"/>
+        <enum name="VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE) + 0x2"/>
     </enums>
     <enums name="vx_graph_attribute_pipelining_e" type="enum">
         <enum name="VX_GRAPH_SCHEDULE_MODE"             value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x5"/>
+        <enum name="VX_GRAPH_TIMEOUT"                   value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x6"/>
+        <enum name="VX_GRAPH_EVENT_TIMEOUT"             value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x7"/>
+        <enum name="VX_GRAPH_PIPELINE_DEPTH"            value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x8"/>
+    </enums>
+    <enums name="vx_reference_attribute_pipelining_e" type="enum">
+        <enum name="VX_REFERENCE_ENQUEUE_COUNT"         value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x3"/>
+    </enums>
+    <enums name="vx_context_attribute_event_e" type="enum">
+        <enum name="VX_CONTEXT_EVENT_TIMEOUT"           value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0x10"/>
     </enums>
     <enums name="vx_node_state_enum_e" type="enum">
         <enum name="VX_ENUM_NODE_STATE_TYPE"   value="0x23"/>
     </enums>
     <enums name="vx_node_state_e" type="enum">
-        <enum name="VX_NODE_STATE_STEADY"  value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_NODE_STATE_TYPE &lt;&lt; 12)) + 0x0"/>
-        <enum name="VX_NODE_STATE_PIPEUP"  value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_NODE_STATE_TYPE &lt;&lt; 12)) + 0x1"/>
+        <enum name="VX_NODE_STATE_STEADY"  value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_NODE_STATE_TYPE) + 0x0"/>
+        <enum name="VX_NODE_STATE_PIPEUP"  value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_NODE_STATE_TYPE) + 0x1"/>
     </enums>
     <enums name="vx_node_attribute_streaming_e" type="enum">
-        <enum name="VX_NODE_STATE"          value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_TYPE_NODE &lt;&lt; 12)) + 0x9"/>
+        <enum name="VX_NODE_STATE"          value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x9"/>
     </enums>
     <enums name="vx_kernel_attribute_streaming_e" type="enum">
-        <enum name="VX_KERNEL_PIPEUP_OUTPUT_DEPTH"          value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_TYPE_KERNEL &lt;&lt; 12)) + 0x4"/>
-        <enum name="VX_KERNEL_PIPEUP_INPUT_DEPTH"          value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_TYPE_KERNEL &lt;&lt; 12)) + 0x5"/>
+        <enum name="VX_KERNEL_PIPEUP_OUTPUT_DEPTH"          value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_KERNEL) + 0x4"/>
+        <enum name="VX_KERNEL_PIPEUP_INPUT_DEPTH"          value="VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_KERNEL) + 0x5"/>
     </enums>
     <enums name="vx_event_enum_e" type="enum">
         <enum name="VX_ENUM_EVENT_TYPE"                 value="0x22"/>
     </enums>
     <enums name="vx_event_type_e" type="enum">
-        <enum name="VX_EVENT_GRAPH_PARAMETER_CONSUMED"  value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_EVENT_TYPE &lt;&lt; 12)) + 0x0"/>
-        <enum name="VX_EVENT_GRAPH_COMPLETED"           value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_EVENT_TYPE &lt;&lt; 12)) + 0x1"/>
-        <enum name="VX_EVENT_NODE_COMPLETED"            value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_EVENT_TYPE &lt;&lt; 12)) + 0x2"/>
-        <enum name="VX_EVENT_NODE_ERROR"                value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_EVENT_TYPE &lt;&lt; 12)) + 0x3"/>
-        <enum name="VX_EVENT_USER"                      value="((( VX_ID_KHRONOS ) &lt;&lt; 20) | ( VX_ENUM_EVENT_TYPE &lt;&lt; 12)) + 0x4"/>
+        <enum name="VX_EVENT_GRAPH_PARAMETER_CONSUMED"  value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x0"/>
+        <enum name="VX_EVENT_GRAPH_COMPLETED"           value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x1"/>
+        <enum name="VX_EVENT_NODE_COMPLETED"            value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x2"/>
+        <enum name="VX_EVENT_NODE_ERROR"                value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x3"/>
+        <enum name="VX_EVENT_USER"                      value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x4"/>
     </enums>
     <enums name="vx_buffer_aliasing_enum_e" type="enum">
         <enum name="VX_ENUM_BUFFER_ALIASING_TYPE"  value="0x1F"/>
@@ -2350,7 +2379,7 @@ server.
             <proto><type>vx_status</type> <name>vxSetUserDataObjectAttribute</name></proto>
             <param><type>vx_user_data_object</type> <name>user_data_object</name></param>
             <param><type>vx_enum</type> <name>attribute</name></param>
-            <param>void* <name>ptr</name></param>
+            <param>const void* <name>ptr</name></param>
             <param><type>vx_size</type> <name>size</name></param>
         </command>
         <command>
@@ -4210,7 +4239,7 @@ server.
             <proto><type>vx_status</type> <name>vxGraphParameterEnqueueReadyRef</name></proto>
             <param><type>vx_graph</type> <name>graph</name></param>
             <param><type>vx_uint32</type> <name>graph_parameter_index</name></param>
-            <param><type>vx_reference</type> *<name>refs</name></param>
+            <param>const <type>vx_reference</type> *<name>refs</name></param>
             <param><type>vx_uint32</type> <name>num_refs</name></param>
         </command>
         <command>
@@ -4226,6 +4255,32 @@ server.
             <param><type>vx_graph</type> <name>graph</name></param>
             <param><type>vx_uint32</type> <name>graph_parameter_index</name></param>
             <param><type>vx_uint32</type> *<name>num_refs</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxGetGraphParameterConfig</name></proto>
+            <param><type>vx_graph</type> <name>graph</name></param>
+            <param><type>vx_uint32</type> <name>num_params</name></param>
+            <param><type>vx_graph_parameter_config_t</type> <name>parameter_config[]</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxGetGraphParameterRefsList</name></proto>
+            <param><type>vx_graph</type> <name>graph</name></param>
+            <param><type>vx_uint32</type> <name>param</name></param>
+            <param><type>vx_uint32</type> <name>ref_list_size</name></param>
+            <param><type>vx_reference</type> <name>refs_list[]</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxGetKernelParameterConfig</name></proto>
+            <param><type>vx_kernel</type> <name>kernel</name></param>
+            <param><type>vx_uint32</type> <name>num_params</name></param>
+            <param><type>vx_kernel_parameter_config_t</type> <name>parameter_config[]</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxAddReferencesToGraphParameterList</name></proto>
+            <param><type>vx_graph</type> <name>graph</name></param>
+            <param><type>vx_uint32</type> <name>graph_parameter_index</name></param>
+            <param><type>vx_uint32</type> <name>number_to_add</name></param>
+            <param>const <type>vx_reference</type> <name>new_references[]</name></param>
         </command>
         <command>
             <proto><type>vx_status</type> <name>vxWaitEvent</name></proto>
@@ -4245,11 +4300,38 @@ server.
             <proto><type>vx_status</type> <name>vxSendUserEvent</name></proto>
             <param><type>vx_context</type> <name>context</name></param>
             <param><type>vx_uint32</type> <name>app_value</name></param>
-            <param><type>void</type> *<name>parameter</name></param>
+            <param>const <type>void</type> *<name>parameter</name></param>
         </command>
         <command>
             <proto><type>vx_status</type> <name>vxRegisterEvent</name></proto>
             <param><type>vx_reference</type> <name>ref</name></param>
+            <param>enum <type>vx_event_type_e</type> <name>type</name></param>
+            <param><type>vx_uint32</type> <name>param</name></param>
+            <param><type>vx_uint32</type> <name>app_value</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxWaitGraphEvent</name></proto>
+            <param><type>vx_graph</type> <name>graph</name></param>
+            <param><type>vx_event_t</type> *<name>event</name></param>
+            <param><type>vx_bool</type> <name>do_not_block</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxEnableGraphEvents</name></proto>
+            <param><type>vx_graph</type> <name>graph</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxDisableGraphEvents</name></proto>
+            <param><type>vx_graph</type> <name>graph</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxSendUserGraphEvent</name></proto>
+            <param><type>vx_graph</type> <name>graph</name></param>
+            <param><type>vx_uint32</type> <name>app_value</name></param>
+            <param>const <type>void</type> *<name>parameter</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxRegisterGraphEvent</name></proto>
+            <param><type>vx_reference</type> <name>graph_or_node</name></param>
             <param>enum <type>vx_event_type_e</type> <name>type</name></param>
             <param><type>vx_uint32</type> <name>param</name></param>
             <param><type>vx_uint32</type> <name>app_value</name></param>
@@ -5077,13 +5159,20 @@ server.
             </require>
             <require comment="pipelining interfaces">
                 <type name="vx_graph_attribute_pipelining_e"/>
+                <type name="vx_reference_attribute_pipelining_e"/>
                 <type name="vx_graph_schedule_mode_enum_e"/>
                 <type name="vx_graph_schedule_mode_type_e"/>
                 <type name="vx_graph_parameter_queue_params_t"/>
+                <type name="vx_graph_parameter_config_t"/>
+                <type name="vx_kernel_parameter_config_t"/>
                 <command name="vxGraphParameterCheckDoneRef"/>
                 <command name="vxGraphParameterDequeueDoneRef"/>
                 <command name="vxGraphParameterEnqueueReadyRef"/>
                 <command name="vxSetGraphScheduleConfig"/>
+                <command name="vxGetGraphParameterConfig"/>
+                <command name="vxGetGraphParameterRefsList"/>
+                <command name="vxAddReferencesToGraphParameterList"/>
+                <command name="vxGetKernelParameterConfig"/>
             </require>
             <require comment="streaming interfaces">
                 <type name="vx_node_state_enum_e"/>
@@ -5095,6 +5184,7 @@ server.
                 <command name="vxStopGraphStreaming"/>
             </require>
             <require comment="pipelining interfaces">
+                <type name="vx_context_attribute_event_e"/>
                 <type name="vx_event_enum_e"/>
                 <type name="vx_event_type_e"/>
                 <type name="vx_event_graph_completed"/>
@@ -5109,6 +5199,11 @@ server.
                 <command name="vxRegisterEvent"/>
                 <command name="vxSendUserEvent"/>
                 <command name="vxWaitEvent"/>
+                <command name="vxRegisterGraphEvent"/>
+                <command name="vxWaitGraphEvent"/>
+                <command name="vxDisableGraphEvents"/>
+                <command name="vxEnableGraphEvents"/>
+                <command name="vxSendUserGraphEvent"/>
             </require>
         </extension>
         <extension name="vx_khr_kernel_import" protect="_OPENVX_IMPORT_KERNEL_H_" author="KHR" contact="???" supported="openvx">

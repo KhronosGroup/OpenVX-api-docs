@@ -383,7 +383,7 @@ void vx_khr_pipelining_with_events()
 
     vxVerifyGraph(graph);
 
-    /* disable events generation */
+    /* enable events generation */
     vxEnableEvents(context);
     /* clear pending events.
      * Not strictly required but- it's a good practice to clear any
@@ -425,8 +425,8 @@ void vx_khr_pipelining_with_events()
             enqueue_output(graph, out_img);
         }
         else
-        if(event.type == VX_EVENT_USER && event.event_info.user_event.user_event_id
-                                               == 0xDEADBEEF /* app code for exit */
+        if(event.type == VX_EVENT_USER && event.event_info.user_event.user_event_parameter
+                                               == (void *)0xDEADBEEF /* app code for exit */
             )
         {
             /* App wants to exit, break from main loop */

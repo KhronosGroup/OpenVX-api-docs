@@ -1,0 +1,192 @@
+// Copyright (c) 2023 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+= The OpenVX^(TM)^ Sub-image object arrays Extension
+:regtitle: pass:q,r[^®^]
+The Khronos{regtitle} OpenVX Working Group; Contributor: Steve Ramm
+:title-logo-image: images/Khronos_RGB.svg
+:data-uri:
+:icons: font
+:toc2:
+:toclevels: 3
+:max-width: 100
+:numbered:
+:imagewidth: 800
+:fullimagewidth: width="800"
+:halfimagewidth: width="400"
+:source-highlighter: coderay
+// Various special / math symbols. This is easier to edit with than Unicode.
+include::config/attribs.txt[]
+
+// Paths to code examples and headers
+:examples: examples
+:headers: examples
+
+image::images/OpenVX_RGB.svg[align="center",{halfimagewidth}]
+include::copyright-spec.txt[]
+
+<<<<
+
+// Table of contents is inserted here
+toc::[]
+
+:leveloffset: 1
+=  Extension to support object arrays of sub-images
+[[sec_purpose]]
+== Purpose
+
+Node replication is a useful mechanism whereby several images may be processed the same way, in parallel. To accomplish this, nodes are connected with data objects that are the first elements in object arrays, and the nodes then replicated. Often it is convenient to perform some graph operations on sub-images, such as regions of interest or single channels from a multi-channel image, and this is accomplished by creating the necessary sub-image and connecting this to one or more nodes. However, since it is not possible currently to create object arrays that are sub-images, it is not possible to replicate these nodes.
+
+The other method of replication uses image pyramids, but at present we cannot see a use case where a pyramid of sub-images of another pyramid is required.
+
+
+[[sec_usecases]]
+== Example Use Case
+
+* Replication of nodes in graphs where sub-images are involved
+
+[[sec_acknowledge]]
+== Acknowledgements
+
+This specification would not be possible without the contributions from this
+partial list of the following individuals from the Khronos Working Group and
+the companies that they represented at the time:
+
+  * Simon Barfield - ETAS (Robert Bosch GmbH)
+  * Raphael Cano - Robert Bosch GmbH
+  * Radhakrishna Giduthuri - Intel
+  * Andrew Graves - ETAS (Robert Bosch GmbH)
+  * Viktor Gyenes - AI Motive
+  * Kiriti Nagesh Gowda - AMD
+  * Stephen Ramm - ETAS (Robert Bosch GmbH)
+  * Jesse Villarreal - TI
+
+[[page_requirements_requirements]]
+= Requirements
+
+== Functions
+
+=== vxCreateObjectArrayFromROI
+
+`[*REQ-SIA01*]`[[REQ-SIA01]]
+
+Creates an object array or virtual object array of images from another object array of images given a rectangle. The original object array may be virtual or non-virtual.
+
+Function signature:
+```C
+
+vx_object_array vxCreateObjectArrayFromROI(vx_object_array image_array, const vx_rectangle_t* rect);
+
+```
+
+==== Parameters
+
+* [in] *image_array* the reference to the parent object array
+* [in] *rect* - The region of interest rectangle. Must contain points within the parent image pixel space.
+
+`[*REQ-SIA02*]`[[REQ-SIA02]]
+
+The input object array *image_array* must be a non-virtual or virtual object array of images with width, height and format all defined.
+
+`[*REQ-SIA03*]`[[REQ-SIA03]]
+
+The rectangle *rect* must be defined within the pixel space of the parent images.
+
+`[*REQ-SIA04*]`[[REQ-SIA04]]
+
+For VX_DF_IMAGE_U1-type images there are some restrictions for the rectangle that can be used to create a images using vxCreateObjectArrayFromROI. Namely, the rectangle needs to have its left edge aligned to a byte boundary in the parent image, i.e., _start_x in the vx_rectangle_t must be a multiple of 8 (including 0). This is because images of type VX_DF_IMAGE_U1 must start on a byte boundary and sub-images created by vxCreateObjectArrayFromROI points to data in the original images.
+
+==== Returns
+
+`[*REQ-SIA05*]`[[REQ-SIA05]]
+
+A reference to the array of sub-images; any possible errors preventing a successful creation may be checked using vxGetStatus().
+
+Possible causes of errors are:
+
+* Invalid input reference
+* Input reference is not to an object array
+* Input object array does not contain images
+* Input images do not have their width, height or format specified
+* Input object array images bounds are not defined, do not contain the region described by *rect* or are not supported for the image format
+* *rect* is NULL
+* Out of resources
+
+`[*REQ-SIA06*]`[[REQ-SIA06]]
+
+The new reference refers to data in the original array, so that updates to the new images update the parent images, and updates to the parent images in the region of interest update the sub-images.
+
+`[*REQ-SIA07*]`[[REQ-SIA07]]
+
+If the input object array is virtual, the new reference returned is to a virtual object array of sub-images.
+If the input object array is non-virtual, the new reference returned is to a non-virtual object array of sub-images.
+
+=== vxCreateObjectArrayFromChannel
+
+`[*REQ-SIA08*]`[[REQ-SIA08]]
+
+Creates an object array or virtual object array of images from a single plane channel of another object array of images. The original object array may be virtual or non-virtual.
+
+Function signature:
+```C
+
+vx_object_array vxCreateObjectArrayFromChannel(vx_object_array image_array, vx_enum channel);
+
+```
+
+==== Parameters
+
+* [in] *image_array* the reference to the parent object array
+* [in] *channel* - The vx_channel to use.
+
+`[*REQ-SIA09*]`[[REQ-SIA09]]
+
+The input object array *image_array* is a non-virtual or virtual object array of images with a defined format.
+
+`[*REQ-SIA10*]`[[REQ-SIA10]]
+
+The function supports channels that occupy an entire plane of multi-planar images in *image_array*. Image formats and channels shall be supported as described in the following table:
+
+.Image formats, supported channels and corresponding sub-image format
+[cols="1,1,1"]
+|===
+| Supported image format | Supported channel(s) | Sub-image format
+
+| NV12 | VX_CHANNEL_Y | VX_DF_IMAGE_U8
+| NV21 | VX_CHANNEL_Y | VX_DF_IMAGE_U8
+.3+| IYUV 
+| VX_CHANNEL_Y | VX_DF_IMAGE_U8
+| VX_CHANNEL_U | VX_DF_IMAGE_U8
+| VX_CHANNEL_V | VX_DF_IMAGE_U8
+.3+| YUV4 
+| VX_CHANNEL_Y | VX_DF_IMAGE_U8
+| VX_CHANNEL_U | VX_DF_IMAGE_U8
+| VX_CHANNEL_V | VX_DF_IMAGE_U8
+|===
+
+==== Returns
+
+`[*REQ-SIA11*]`[[REQ-SIA11]]
+
+A reference to the array of sub-images of format described in the previous table; any possible errors preventing a successful creation may be checked using vxGetStatus().
+
+Possible causes of errors are:
+
+* Invalid input reference
+* Input reference is not to an object array
+* Input object array does not contain images
+* Input images do not have their format specified
+* Input images are not in a supported format
+* *channel* is not a supported channel for the image format
+* Out of resources
+
+`[*REQ-SIA12*]`[[REQ-SIA12]]
+
+The new reference refers to data in the original array, so that updates to the new images update the parent images, and updates to the specified channel of the parent images update the sub-images.
+
+`[*REQ-SIA13*]`[[REQ-SIA13]]
+
+If the input object array is virtual, the new reference returned is to a virtual object array of sub-images.
+If the input object array is non-virtual, the new reference returned is to a non-virtual object array of sub-images.
+

@@ -15,8 +15,8 @@
 ##########################################################################
 # REQUIREMENTS TAG-ID GENERATOR FOR SPECIFICATIONS IN ASCIIDOCTOR
 #
-# Usage: python spec-tags.py [-help] [-digits 4|n] \
-#          check|update|list|remove|reset spec.adoc [output.adoc]
+# Usage: python spec-tags.py [-help] [-prefix id] [-ignore id] \\
+#          [-digits 4|n] check|update|list|remove|reset spec.adoc [output.adoc]
 #
 # Use -help option for full detailed help.
 #
@@ -26,7 +26,7 @@
 usage = """
 REQUIREMENTS TAG-ID GENERATOR FOR SPECIFICATIONS IN ASCIIDOCTOR
 
-Usage: python spec-tags.py [-help] \\
+Usage: python spec-tags.py [-help] [-prefix id] [-ignore id] \\
          [-digits 4|n] check|update|list|remove|reset spec.adoc [output.adoc]
 """
 
@@ -65,6 +65,10 @@ help = usage + """
 
 
 OPTIONS:
+  -prefix id     Requirement tag prefix (default None)
+
+  -ignore id     Requirement tag prefix to be ignored (default None)
+
   -digits n      Number of digits in generated requirement tags (default 4)
 
   -help          Print this message
@@ -99,7 +103,10 @@ def TagsAreValid(lines):
 ##
 # get command-line arguments
 #
-tagIdDigits = 4
+tagIdPrefix = ''
+tagIdPrefixIgnore = ''
+tagIdPrefixIgnoreSpecified = False
+tagIdDigits = None
 pos = 1
 while len(sys.argv) >= (pos+1) and sys.argv[pos][0] == '-':
     if sys.argv[pos] == '-digits' and len(sys.argv) >= (pos+2):
@@ -110,6 +117,13 @@ while len(sys.argv) >= (pos+1) and sys.argv[pos][0] == '-':
             print('ERROR: %s is not a invalid number: ' % (sys.argv[pos+1]))
             print(usage)
             exit(1)
+    elif sys.argv[pos] == '-prefix' and len(sys.argv) >= (pos+2):
+        tagIdPrefix = sys.argv[pos+1]
+        pos = pos+2
+    elif sys.argv[pos] == '-ignore' and len(sys.argv) >= (pos+2):
+        tagIdPrefixIgnoreSpecified = True
+        tagIdPrefixIgnore = sys.argv[pos+1]
+        pos = pos+2
     elif sys.argv[pos] == '-help':
         print(help)
         exit(1)
@@ -117,6 +131,11 @@ while len(sys.argv) >= (pos+1) and sys.argv[pos][0] == '-':
         print('ERROR: %s is not a valid option' % (sys.argv[pos]))
         print(usage)
         exit(1)
+if tagIdDigits is None:
+    if len(tagIdPrefix) > 0:
+        tagIdDigits = 2
+    else:
+        tagIdDigits = 4
 if len(sys.argv) < (pos+2) or len(sys.argv) > (pos+3):
     print(usage)
     exit(1)
@@ -150,14 +169,22 @@ newTagCount = 0
 tagIds = []
 tagIdsLine = []
 tagIdsCount = 0
+tagIdToPos = {}
 tagIdsUpdateNeeded = False
-foundError = False
+foundError, foundDuplicates = False, False
 posInText = 0
+tagIdPrefixLen = len(tagIdPrefix)
 for index, line in enumerate(lines):
-    if line[:8] == '//[*CNT-':
-        tagIdsCount = int(line[8:].split('*')[0])
-        lines[index] = ''
-        tagIdsUpdateNeeded = True
+    if line[:6] == '`[*REQ':
+        line = ' ' + line
+    if '|`[*REQ' in line:
+        line = '| `[*REQ'.join(line.split('|`[*REQ'))
+    if line[:8+tagIdPrefixLen] == f'//[*CNT-{tagIdPrefix}':
+        value = line[8+tagIdPrefixLen:].split('*')[0]
+        if value.isnumeric():
+            tagIdsCount = int(value)
+            lines[index] = ''
+            tagIdsUpdateNeeded = True
     taggaps = line.split(' `[*REQ')
     invgaps = ''.join(taggaps).split('[*REQ')
     itemList = line.split(' `[*REQ')
@@ -165,24 +192,28 @@ for index, line in enumerate(lines):
     for item in itemList[1:]:
         posInLine = posInLine + len(item)
         idLen = len(item.split('*]`')[0])
-        if item[:3] == '*]`':
+        if item[:3] == '*]`' or (tagIdPrefix and (item[:4+tagIdPrefixLen] == f'-{tagIdPrefix}*]`')):
             newTagCount = newTagCount + 1
-        elif len(item) >= 5 and item[:5] == '-#*]`':
+        elif len(item) >= (5+tagIdPrefixLen) and item[:5+tagIdPrefixLen] == '-#*]`':
             pass
-        elif item[0] == '-' and '*]`' in item:
-            try:
-                id = int(item[1:idLen])
+        elif item[:1+tagIdPrefixLen] == f'-{tagIdPrefix}' and '*]`' in item:
+            value = item[1+tagIdPrefixLen:idLen]
+            if value.isnumeric():
+                id = int(value)
                 if id in tagIds:
-                    print('ERROR: line %d: found duplicate tag: `[*REQ%s' % (index+1, item[:idLen]))
-                    foundError = True
+                    print('ERROR: line %d: found duplicate tag: `[*REQ%s*]' % (index+1, item[:idLen]))
+                    foundDuplicates = True
                 else:
+                    tagIdToPos[id] = len(tagIds)
                     tagIds.append(id)
                     tagIdsLine.append((index, posInText + posInLine - len(item)))
-            except:
-                print('ERROR: line %d: found invalid tag syntax: `[*REQ%s' % (index+1, item[:idLen]))
+            elif value[:len(tagIdPrefixIgnore)] != tagIdPrefixIgnore:
+                print('ERROR: line %d: found invalid tag syntax #1: `[*REQ%s (value=%s)' % (index+1, item[:idLen], value))
                 foundError = True
-        else:
-            print('ERROR: line %d: found invalid tag syntax: `[*REQ%s' % (index+1, item[:idLen]))
+        elif tagIdPrefixIgnore and item[:1+len(tagIdPrefixIgnore)] == f'-{tagIdPrefixIgnore}' and '*]`' in item:
+            pass
+        elif not (tagIdPrefixIgnoreSpecified and tagIdPrefixIgnore == ''):
+            print('ERROR: line %d: found invalid tag syntax #2: `[*REQ%s' % (index+1, item[:idLen]))
             foundError = True
     if len(invgaps) > 1:
         print('ERROR: line %d: found invalid tag syntax: missing space and/or `' % (index+1))
@@ -190,6 +221,8 @@ for index, line in enumerate(lines):
     posInText = posInText + len(line)
 if foundError:
     print('INFO:  valid tag syntax must be " `[*REQ*]`" or " `[*REQ-#*]`" without double-quotes')
+    exit(1)
+elif foundDuplicates:
     exit(1)
 if newTagCount > 0:
     print('OK: found %d tags WITHOUT IDs' % (newTagCount))
@@ -217,13 +250,14 @@ print('OK: total %d tag IDs detected with %d tag IDs in all version' % (len(tagI
 #
 updated = False
 text = ''.join(lines)
+reqMarker = f'[*REQ-{tagIdPrefix}*]' if len(tagIdPrefix) > 0 else '[*REQ*]'
 if cmd == 'update':
-    taggaps = text.split(' `[*REQ*]`')
+    taggaps = text.split(f'`{reqMarker}`')
     if len(taggaps) > 1:
         text = taggaps[0]
         for item in taggaps[1:]:
             lastID = lastID + 1
-            id = (' `[*REQ-%%0%dd*]`[[REQ-%%0%dd]]' % (tagIdDigits, tagIdDigits)) % (lastID, lastID)
+            id = (f'`[*REQ-{tagIdPrefix}%%0%dd*]`[[REQ-{tagIdPrefix}%%0%dd]]' % (tagIdDigits, tagIdDigits)) % (lastID, lastID)
             text = text + id + item
         updated = True
         tagIdsUpdateNeeded = True
@@ -241,7 +275,7 @@ elif cmd == 'list':
                     if '</h1>' in line or '</h2>' in line or '</h3>' in line:
                         heading = line.split('>')[-2][:-4]
                     elif '<code>[<strong>REQ-' in line:
-                        reqList = line.split('<code>[<strong>REQ-')
+                        reqList = line.split(f'<code>[<strong>REQ-{tagIdPrefix}')
                         for req in reqList[1:]:
                             try:
                                 id = int(req.split('</strong>]</code>')[0])
@@ -249,52 +283,52 @@ elif cmd == 'list':
                             except:
                                 pass
         tagIds.sort()
-        digitsLine = max(5, len(str(len(lines))))
+        digitsLine = max(1+tagIdPrefixLen+tagIdDigits, len(str(len(lines))))
         print(('  REQ-TAG# %%%ds %s' % (digitsLine, 'SECTION(html)' if fileNameHtml else '')) % ('LINE#'))
         for i in range(len(tagIds)):
             heading = ''
             if tagIds[i] in htmlReq:
                 heading = htmlReq[tagIds[i]]
-            print(('  REQ-%%0%dd %%%dd %%s' % (tagIdDigits, digitsLine)) % (tagIds[i], tagIdsLine[i][0]+1, heading))
+            print((f'  REQ-{tagIdPrefix}%%0%dd %%%dd %%s' % (tagIdDigits, digitsLine)) % (tagIds[i], tagIdsLine[tagIdToPos[tagIds[i]]][0]+1, heading))
 elif cmd == 'reset':
-    taggaps = text.split(' `[*REQ-')
+    taggaps = text.split(f'`[*REQ-{tagIdPrefix}')
     if len(taggaps) > 1:
         text = taggaps[0]
         for item in taggaps[1:]:
             itemEndSplit = item.split('*]`')
             if item[:4] == '#*]`':
-                text = text + ' `[*REQ-#*]`' + item[4:]
+                text = text + f'`[*REQ-{tagIdPrefix}#*]`' + item[4:]
             elif len(itemEndSplit) > 1:
                 rest = ''
                 for itemidx, itemref in enumerate(itemEndSplit):
-                    if itemref[:6] == '[[REQ-':
+                    if itemref[:6+tagIdPrefixLen] == f'[[REQ-{tagIdPrefix}':
                         itemEndSplit[itemidx] = ']]'.join(itemref.split(']]')[1:])
-                text = text + ' `[*REQ*]`' + '*]`'.join(itemEndSplit[1:])
+                text = text + f'`{reqMarker}`' + '*]`'.join(itemEndSplit[1:])
                 updated = True
             else:
-                print('ERROR: found invalid error tag: `[*REQ' + item[:1+tagIdDigits+3])
+                print('ERROR: found invalid error tag: `[*REQ' + item[:1+tagIdPrefixLen+tagIdDigits+3])
                 exit(1)
         if updated:
-            print('OK: removed IDs from %d tags' % (len(tagIds)))
+            print('OK: reset IDs from %d tags' % (len(tagIds)))
     tagIdsUpdateNeeded = False
     lastID = 0
 elif cmd == 'remove':
-    taggaps = text.split(' `[*REQ')
+    taggaps = text.split(f'`[*REQ-{tagIdPrefix}' if tagIdPrefix else '`[*REQ')
     if len(taggaps) > 1:
         text = taggaps[0]
         for item in taggaps[1:]:
             itemEndSplit = item.split('*]`')
             if item[:4] == '#*]`':
-                text = text + ' `[*REQ-#*]`' + item[4:]
+                text = text + f'`[*REQ-{tagIdPrefix}#*]`' + item[4:]
             elif len(itemEndSplit) > 1:
                 rest = ''
                 for itemidx, itemref in enumerate(itemEndSplit):
-                    if itemref[:6] == '[[REQ-':
+                    if itemref[:6+tagIdPrefixLen] == f'[[REQ-{tagIdPrefix}':
                         itemEndSplit[itemidx] = ']]'.join(itemref.split(']]')[1:])
                 text = text + '*]`'.join(itemEndSplit[1:])
                 updated = True
             else:
-                print('ERROR: found invalid error tag: `[*REQ' + item[:1+tagIdDigits+3])
+                print('ERROR: found invalid error tag: `[*REQ' + item[:1+tagIdPrefixLen+tagIdDigits+3])
                 exit(1)
         print('OK: removed %d tags' % (len(tagIds) + newTagCount))
         updated = True
@@ -305,7 +339,7 @@ elif cmd == 'remove':
 # add tagId count at the end
 #
 if tagIdsUpdateNeeded:
-    text = text + ('//[*CNT-%d*]' % (tagIdsCount)) + '\n'
+    text = text + (f'//[*CNT-{tagIdPrefix}%d*]' % (tagIdsCount)) + '\n'
 
 ##
 # write the output

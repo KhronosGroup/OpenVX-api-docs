@@ -232,3 +232,12 @@ For the SWAP and MOVE kernels, we do not demand that both parameters must have b
 ==== Usage
 
 Users should avoid using MOVE or COPY where objects are in different memory areas (implementation-dependent).
+
+== Kernel Names
+
+`[*REQ-SWP19*]`[[REQ-SWP19]]
+
+When using `vxGetKernelByName` the following are strings specifying the swap and move kernel extension kernel names:
+
+  * org.khronos.openvx.swap
+  * org.khronos.openvx.move

@@ -409,8 +409,9 @@ enum vx_type_e {
  * \ingroup group_basic_features
  */
 enum vx_status_e {
-    VX_STATUS_MIN                       = -(vx_int32)26,/*!< \brief Indicates the lower bound of status codes in VX. Used for bounds checks only. */
+    VX_STATUS_MIN                       = -(vx_int32)27,/*!< \brief Indicates the lower bound of status codes in VX. Used for bounds checks only. */
     /* add new codes here */
+    VX_ERROR_GRAPH_NOT_VERIFIED         = -(vx_int32)26,/*!< \brief Indicates that the graph has not yet been verified. */
     VX_ERROR_TIMEOUT                    = -(vx_int32)25,/*!< \brief Indicates that an operation did not complete within an expected time. */
     VX_ERROR_REFERENCE_NONZERO          = -(vx_int32)24,/*!< \brief Indicates that an operation did not complete due to a reference count being non-zero. */
     VX_ERROR_MULTIPLE_WRITERS           = -(vx_int32)23,/*!< \brief Indicates that the graph has more than one node outputting to the same data object. This is an invalid graph structure. */

@@ -98,7 +98,10 @@ server.
         <type category="define">#define <name>VX_IMAGE_RAW_META_HEIGHT_AFTER</name> (VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0xE)</type>
         <type category="define">#define <name>VX_DF_IMAGE_RAW</name> (VX_DF_IMAGE('R','A','W','0'))</type>
 
+        <type category="define">#define <name>VX_TIMEOUT_NO_WAIT</name> (0u)</type>
         <type category="define">#define <name>VX_TIMEOUT_WAIT_FOREVER</name> ((vx_uint32)0xFFFFFFFFU)</type>
+        <type category="define">#define <name>VX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES</name> ((vx_uint32)0xFFFFFFFFU)</type>
+        <type category="define">#define <name>VX_NODE_NUM_WITH_REPLICAS</name> (VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0xA)</type>
 
         <comment>Macro definitions from vx_khr_tiling.h</comment>
         <type category="define">#define <name>vxImageHeight</name>(ptile)         ((ptile))->image.height)</type>
@@ -246,6 +249,11 @@ server.
             const <type>vx_reference</type> parameters[],
             <type>vx_uint32</type> num,
             <type>vx_meta_format</type> metas[]);</type>
+    <type category="funcpointer">typedef <type>vx_status</type> (*<name>vx_kernel_command_f</name>)(
+            <type>vx_node</type> node,
+            <type>vx_uint32</type> node_cmd_id,
+            const <type>vx_reference</type> *ref,
+            <type>vx_uint32</type> num_refs);</type>
     <type category="funcpointer">typedef <type>vx_status</type> (*<name>vx_kernel_image_valid_rectangle_f</name>)(
             <type>vx_node</type> node,
             <type>vx_uint32</type> index,
@@ -625,6 +633,7 @@ server.
         <enum name="OPENVX_KHR_VARIANTS"                value="&quot;vx_khr_variants&quot;"/>
         <enum name="OPENVX_KHR_XML"                     value="&quot;vx_khr_xml&quot;"/>
         <enum name="OPENVX_KHR_IMPORT_KERNEL"           value="&quot;vx_khr_import_kernel&quot;"/>
+        <enum name="OPENVX_KHR_NODE_SEND_COMMAND"       value="&quot;vx_khr_node_send_command&quot;"/>
         <enum name="VX_ATTRIBUTE_ID_MASK"               value="(0x000000FF)"/>
         <enum name="VX_CL_MAX_PLANES"                   value="(4)"/>
         <enum name="VX_ENUM_IX_USE"                     value="0x18"/>
@@ -4362,6 +4371,20 @@ server.
             <param><type>vx_uint32</type> <name>parameter_index_a</name></param>
             <param><type>vx_uint32</type> <name>parameter_index_b</name></param>
         </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxAddCommandToKernel</name></proto>
+            <param><type>vx_kernel</type> <name>kernel</name></param>
+            <param><type>vx_kernel_command_f</type> <name>command_func_ptr</name></param>
+        </command>
+        <command>
+            <proto><type>vx_status</type> <name>vxNodeSendCommand</name></proto>
+            <param><type>vx_node</type> <name>node</name></param>
+            <param><type>vx_uint32</type> <name>replicate_nodex_idx</name></param>
+            <param><type>vx_uint32</type> <name>node_cmd_id</name></param>
+            <param><type>vx_reference</type> <name>ref[]</name></param>
+            <param><type>vx_uint32</type> <name>num_refs</name></param>
+            <param><type>vx_uint32</type> <name>timeout</name></param>
+        </command>
     </commands>
 
     <!-- For extensions, extension name=<name> attribute is mapped to name.h and _NAME_H_ (unless protect= attribute is specified) -->
@@ -5263,6 +5286,19 @@ server.
                 <command name="vxCreateRawImage"/>
                 <command name="vxCreateVirtualRawImage"/>
                 <command name="vxCopyImagePatchWithFlags"/>
+            </require>
+        </extension>
+        <extension name="vx_khr_send_node_command" protect="_OPENVX_NODE_SEND_COMMAND_H_" author="KHR" contact="???" supported="openvx">
+            <require>
+                <type name="VX/vx.h"/>
+                <enum name="OPENVX_KHR_NODE_SEND_COMMAND"/>
+                <type name="VX_TIMEOUT_NO_WAIT"/>
+                <type name="VX_TIMEOUT_WAIT_FOREVER"/>
+                <type name="VX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES"/>
+                <type name="VX_NODE_NUM_WITH_REPLICAS"/>
+                <type name="vx_kernel_command_f"/>
+                <command name="vxAddCommandToKernel"/>
+                <command name="vxNodeSendCommand"/>
             </require>
         </extension>
      </extensions>

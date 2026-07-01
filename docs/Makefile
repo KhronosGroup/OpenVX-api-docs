@@ -71,6 +71,7 @@ all:
 	make SPECBASE=vx_khr_user_data_object html $(TARGET) SPECREVISION='1.1' SPECSUFFIX=1_1
 	make SPECBASE=vx_khr_raw_image html $(TARGET) SPECREVISION='1.0' SPECSUFFIX=1_0
 	make SPECBASE=vx_khr_tensor_from_image html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
+	make SPECBASE=vx_khr_node_send_command html $(TARGET) SPECREVISION='1.0' SPECSUFFIX=1_0
 	make SPECBASE=vx_khr_sub_image_arrays html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
 	make SPECBASE=vx_khr_swap_move html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1
 	make SPECBASE=vx_khr_bidirectional_parameters html $(TARGET) SPECREVISION='1.3.1' SPECSUFFIX=1_3_1

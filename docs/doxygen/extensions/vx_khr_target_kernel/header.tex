@@ -1,0 +1,346 @@
+% Latex header for doxygen 1.14.0
+  % Handle batch mode
+  $latex_batchmode
+
+  % to overcome problems with too many open files
+  \let\mypdfximage\pdfximage\def\pdfximage{\immediate\mypdfximage}
+
+  \RequirePackage{iftex}
+  \ifLuaTeX
+    \directlua{pdf.setminorversion(7)}
+  \fi
+  \ifXeTeX
+    \special{pdf:minorversion 7}
+  \fi
+  \ifPDFTeX
+    \pdfminorversion=7
+  \fi
+
+  % Set document class depending on configuration
+%%BEGIN COMPACT_LATEX
+  \documentclass[twoside]{article}
+%%END COMPACT_LATEX
+%%BEGIN !COMPACT_LATEX
+  \documentclass[twoside]{book}
+%%END !COMPACT_LATEX
+
+  %% moved from doxygen.sty due to workaround for LaTex 2019 version and unmaintained tabu package
+  \usepackage{ifthen}
+  \ifx\requestedLaTeXdate\undefined
+    \usepackage{array}
+  \else
+    \usepackage{array}[=2016-10-06]
+  \fi
+  %%
+
+  % Packages required by doxygen
+  \makeatletter
+  \providecommand\IfFormatAtLeastTF{\@ifl@t@r\fmtversion}
+  % suppress package identification of infwarerr as it contains the word "warning"
+  \let\@@protected@wlog\protected@wlog
+  \def\protected@wlog#1{\wlog{package info suppressed}}
+  \RequirePackage{infwarerr}
+  \let\protected@wlog\@@protected@wlog
+  \makeatother
+  \IfFormatAtLeastTF{2016/01/01}{}{\usepackage{fixltx2e}} % for \textsubscript
+  \ifPDFTeX
+    \IfFormatAtLeastTF{2015/01/01}{\pdfsuppresswarningpagegroup=1}{}
+  \fi
+
+  \usepackage{doxygen}
+
+  $extralatexstylesheet
+
+  \usepackage{graphicx}
+  \usepackage{svg}
+  \iftutex
+    \usepackage{fontspec}
+    \defaultfontfeatures{Ligatures={TeX}}
+    \usepackage{unicode-math}
+  \else
+    \usepackage[utf8]{inputenc}
+  \fi
+  \usepackage{makeidx}
+  \PassOptionsToPackage{warn}{textcomp}
+  \usepackage{textcomp}
+  \usepackage[nointegrals]{wasysym}
+  \usepackage{ifxetex}
+
+  % NLS support packages
+  $languagesupport
+
+  % Define default fonts
+  % Font selection
+%%BEGIN LATEX_FONTENC
+  \iftutex
+  \else
+    \usepackage[$latexfontenc]{fontenc}
+  \fi
+%%END LATEX_FONTENC
+
+  % set main and monospaced font
+  $latexfont
+
+  \doxyallsectionsfont{%
+    \fontseries{bc}\selectfont%
+    \color{darkgray}%
+  }
+  \renewcommand{\DoxyLabelFont}{%
+    \fontseries{bc}\selectfont%
+    \color{darkgray}%
+  }
+  \newcommand{\+}{\discretionary{\mbox{\scriptsize$\hookleftarrow$}}{}{}}
+
+   % Arguments of doxygenemoji:
+   % 1) ':<text>:' form of the emoji, already LaTeX-escaped
+   % 2) file with the name of the emoji without the .png extension
+   % in case image exist use this otherwise use the ':<text>:' form
+   \newcommand{\doxygenemoji}[2]{%
+     \IfFileExists{$latexemojidirectory/#2.png}{\raisebox{-0.1em}{\includegraphics[height=0.9em]{$latexemojidirectory/#2.png}}}{#1}%
+   }
+
+  % Page & text layout
+  \usepackage{geometry}
+  \geometry{%
+    $papertype,%
+    top=2.5cm,%
+    bottom=2.5cm,%
+    left=2.5cm,%
+    right=2.5cm%
+  }
+  \usepackage{changepage}
+
+  % Allow a bit of overflow to go unnoticed by other means
+  \tolerance=750
+  \hfuzz=15pt
+  \hbadness=750
+  \setlength{\emergencystretch}{15pt}
+  \setlength{\parindent}{0cm}
+  \newcommand{\doxynormalparskip}{\setlength{\parskip}{3ex plus 2ex minus 2ex}}
+  \newcommand{\doxytocparskip}{\setlength{\parskip}{1ex plus 0ex minus 0ex}}
+  \doxynormalparskip
+  % Redefine paragraph/subparagraph environments, using sectsty fonts
+  \makeatletter
+  \renewcommand{\paragraph}{%
+    \@startsection{paragraph}{4}{0ex}{-1.0ex}{1.0ex}{%
+      \normalfont\normalsize\bfseries\SS@parafont%
+    }%
+  }
+  \renewcommand{\subparagraph}{%
+    \@startsection{subparagraph}{5}{0ex}{-1.0ex}{1.0ex}{%
+      \normalfont\normalsize\bfseries\SS@subparafont%
+    }%
+  }
+  \makeatother
+
+  \makeatletter
+  \newcommand\hrulefilll{\leavevmode\leaders\hrule\hskip 0pt plus 1filll\kern\z@}
+  \makeatother
+
+  % Headers & footers
+  \usepackage{fancyhdr}
+  \pagestyle{fancyplain}
+  \renewcommand{\footrulewidth}{0.4pt}
+
+  \fancypagestyle{fancyplain}{
+    \fancyhf{}
+    \fancyhead[LE, RO]{\bfseries\thepage}
+    \fancyhead[LO]{\bfseries\rightmark}
+    \fancyhead[RE]{\bfseries\leftmark}
+    \fancyfoot[LO, RE]{\bfseries\scriptsize }
+  }
+
+  \fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyfoot[LO, RE]{\bfseries\scriptsize }
+    \renewcommand{\headrulewidth}{0pt}
+  }
+
+  \pagestyle{fancyplain}
+
+
+%%BEGIN !COMPACT_LATEX
+  \renewcommand{\chaptermark}[1]{%
+    \markboth{#1}{}%
+  }
+%%END !COMPACT_LATEX
+  \renewcommand{\sectionmark}[1]{%
+    \markright{\thesection\ #1}%
+  }
+
+  % ToC, LoF, LoT, bibliography, and index
+  % Indices & bibliography
+  \usepackage[numbers]{natbib}
+  \usepackage[titles]{tocloft}
+  \setcounter{tocdepth}{3}
+  \setcounter{secnumdepth}{5}
+
+  % creating indexes
+  $makeindex
+
+  $extralatexpackages
+
+  $latexspecialformulachars
+
+%%BEGIN FORMULA_MACROFILE
+  \input{$formulamacrofile}
+%%END FORMULA_MACROFILE
+
+  % Hyperlinks
+%%BEGIN PDF_HYPERLINKS
+    % Hyperlinks (required, but should be loaded last)
+    \ifPDFTeX
+      \usepackage[pdftex,pagebackref=true]{hyperref}
+    \else
+      \ifXeTeX
+        \usepackage[xetex,pagebackref=true]{hyperref}
+      \else
+        \ifLuaTeX
+          \usepackage[luatex,pagebackref=true]{hyperref}
+        \else
+          \usepackage[ps2pdf,pagebackref=true]{hyperref}
+        \fi
+      \fi
+    \fi
+    \hypersetup{%
+      colorlinks=true,%
+      linkcolor=blue,%
+      citecolor=blue,%
+      unicode,%
+      pdftitle={$projectname},%
+      pdfsubject={$projectbrief}%
+    }
+
+%%END PDF_HYPERLINKS
+
+  % Custom commands used by the header
+  % Custom commands
+  \newcommand{\clearemptydoublepage}{%
+    \newpage{\pagestyle{empty}\cleardoublepage}%
+  }
+
+  % caption style definition
+  \usepackage{caption}
+  \captionsetup{labelsep=space,justification=centering,font={bf},singlelinecheck=off,skip=4pt,position=top}
+
+
+  % in page table of contents
+  \IfFormatAtLeastTF{2023/05/01}{\usepackage[deeplevels]{etoc}}{\usepackage[deeplevels]{etoc_doxygen}}
+  \etocsettocstyle{\doxytocparskip}{\doxynormalparskip}
+  \etocsetlevel{subsubsubsection}{4}
+  \etocsetlevel{subsubsubsubsection}{5}
+  \etocsetlevel{subsubsubsubsubsection}{6}
+  \etocsetlevel{subsubsubsubsubsubsection}{7}
+  \etocsetlevel{paragraph}{8}
+  \etocsetlevel{subparagraph}{9}
+
+  % prevent numbers overlap the titles in toc
+  \renewcommand{\numberline}[1]{#1~}
+
+% End of preamble, now comes the document contents
+%===== C O N T E N T S =====
+
+\begin{document}
+  \raggedbottom
+
+  $latexdocumentpre
+
+  % Titlepage & ToC
+%%BEGIN PDF_HYPERLINKS
+%%BEGIN USE_PDFLATEX
+    % To avoid duplicate page anchors due to reuse of same numbers for
+    % the index (be it as roman numbers)
+    \hypersetup{pageanchor=false,
+                bookmarksnumbered=true,
+                pdfencoding=unicode
+               }
+%%END USE_PDFLATEX
+%%END PDF_HYPERLINKS
+  \pagenumbering{alep}
+  \begin{titlepage}
+
+  \vspace*{2cm}
+  \includesvg[width=\textwidth]{Khronos_RGB}
+  \vspace*{8cm}
+
+  \begin{flushright}%
+  {\Huge $title}\\
+  \vspace*{0.5cm}
+  {\large The Khronos\textsuperscript{\textregistered} OpenVX Working Group, Editors: Raphael Cano, Jesse Villarreal, Lucas Weaver} \\
+
+%%BEGIN PROJECT_NUMBER
+%%  [1ex]\large $projectnumber \\
+%%END PROJECT_NUMBER
+%%BEGIN TIMESTAMP
+    \vspace*{0.5cm}
+    {\small Version 1.0, $datetime: $projectnumber}
+%%END TIMESTAMP
+  \end{flushright}
+  \end{titlepage}
+
+  \tableofcontents
+
+%%BEGIN !COMPACT_LATEX
+  \clearpage
+%%END !COMPACT_LATEX
+  \pagenumbering{roman}
+
+  \begin{copyrightpage}
+  \begin{center}%
+  \includesvg[width=0.5\textwidth]{OpenVX_RGB}
+  \end{center}
+\\\\
+Copyright \copyright 2013-2025 The Khronos Group Inc.
+\\\\
+This specification is protected by copyright laws and contains material
+proprietary to Khronos.
+Except as described by these terms, it or any components may not be
+reproduced, republished, distributed, transmitted, displayed, broadcast or
+otherwise exploited in any manner without the express prior written
+permission of Khronos.
+\\\\
+This specification has been created under the Khronos Intellectual Property
+Rights Policy, which is Attachment A of the Khronos Group Membership
+Agreement available at www.khronos.org/files/member\_agreement.pdf.
+Khronos Group grants a conditional copyright license to use and reproduce
+the unmodified specification for any purpose, without fee or royalty, EXCEPT
+no licenses to any patent, trademark or other intellectual property rights
+are granted under these terms.
+Parties desiring to implement the specification and make use of Khronos
+trademarks in relation to that implementation, and receive reciprocal patent
+license protection under the Khronos IP Policy must become Adopters and
+confirm the implementation as conformant under the process defined by
+Khronos for this specification; see https://www.khronos.org/adopters.
+\\\\
+Khronos makes no, and expressly disclaims any, representations or
+warranties, express or implied, regarding this specification, including,
+without limitation: merchantability, fitness for a particular purpose,
+non-infringement of any intellectual property, correctness, accuracy,
+completeness, timeliness, and reliability.
+Under no circumstances will Khronos, or any of its Promoters, Contributors
+or Members, or their respective partners, officers, directors, employees,
+agents or representatives be liable for any damages, whether direct,
+indirect, special or consequential damages for lost revenues, lost profits,
+or otherwise, arising from or in connection with these materials.
+\\\\
+Khronos is a registered trademark, and OpenVX is a trademark of The Khronos
+Group Inc.
+OpenCL is a trademark of Apple Inc., used under license by Khronos.
+All other product names, trademarks, and/or company names are used solely
+for identification and belong to their respective owners.
+  \end{copyrightpage}
+
+%%BEGIN !COMPACT_LATEX
+  \clearpage
+%%END !COMPACT_LATEX
+  \pagenumbering{arabic}
+
+%%BEGIN PDF_HYPERLINKS
+%%BEGIN USE_PDFLATEX
+  % re-enable anchors again
+  \hypersetup{pageanchor=true}
+%%END USE_PDFLATEX
+%%END PDF_HYPERLINKS
+
+%--- Begin generated contents ---
+

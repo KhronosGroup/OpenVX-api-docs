@@ -1,0 +1,412 @@
+/* custom.css - Corrected Colors to Match OpenVX Specification */
+
+/*
+   General Notes:
+   - This CSS aims to precisely mimic the color palette of the OpenVX Specification.
+   - It also adjusts spacing and font sizes to get closer to the sample.
+   - Doxygen's HTML structure is different from the OpenVX spec's, so
+     a perfect 1:1 replication is not possible with CSS alone, especially
+     for the highly interactive sidebar.
+   - You will need to inspect your Doxygen output's HTML to fine-tune
+     selectors if these don't perfectly match your Doxygen version.
+*/
+
+/* --- Global / Body Styles --- */
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 15px; /* Slightly smaller base font */
+    line-height: 1.6;
+    color: #222; /* Very dark gray for main text */
+    background-color: #f7f7f7; /* Light background for the overall page */
+}
+
+/* --- Layout Structure (Mimicking the two-column layout) --- */
+#side-nav {
+    position: fixed;
+    top: 0; /* Adjust based on header height */
+    left: 0;
+    width: 280px; /* Adjust as per OpenVX spec's sidebar width */
+    height: 100%;
+    overflow-y: auto;
+    background-color: #ffffff; /* White background for the sidebar */
+    border-right: 1px solid #ddd; /* Lighter border */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.03); /* Subtle shadow */
+    padding-top: 60px; /* Adjust to clear the top header */
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.contents {
+    margin-left: 280px; /* Offset for the fixed sidebar */
+    padding: 25px 45px; /* More generous padding for content */
+    background-color: #ffffff;
+    min-height: 100vh; /* Ensure content area takes full height */
+    box-sizing: border-box; /* Include padding in height calculation */
+    box-shadow: -1px 0 5px rgba(0,0,0,0.03); /* Subtle shadow on content side */
+}
+
+
+/* --- Header Area --- */
+#top {
+    background-color: #3f6eb7; /* Vibrant blue from OpenVX header */
+    color: white;
+    padding: 10px 25px;
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: center;    /* Center children horizontally */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+/* If you have a project logo */
+.projectlogo {
+    /* margin-right: 10px; */ /* Removed previous margin */
+    margin: 0 auto; /* This will center it if it's a block-level element */
+    width: 45px; /* Example size */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Ensure it behaves as a block for margin: auto to work */
+}
+
+.title {
+    font-size: 1.9em; /* Slightly larger project title */
+    font-weight: bold;
+    /* margin-left: 15px; */ /* Removed previous margin */
+    margin-top: 10px; /* Add some space between logo and title */
+    color: white;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    text-align: center; /* Ensure title text is centered */
+}
+
+
+/* Doxygen's search box */
+#MSearchBox {
+    /* margin-left: auto; */ /* Removed as we are centering */
+    margin-top: 10px; /* Add some space below the title/logo */
+    margin-right: 0; /* Remove right margin */
+    order: 1; /* Ensure search box appears below logo and title if needed */
+    width: 100%; /* Take full width to center its content */
+    display: flex;
+    justify-content: center; /* Center the search field within its box */
+}
+#MSearchField {
+    border: 1px solid #7a9cce; /* Lighter border for search input */
+    background-color: rgba(255, 255, 255, 0.15); /* Slightly transparent white */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    outline: none;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    width: 250px; /* Give it a defined width or max-width */
+    max-width: 80%; /* Prevent it from getting too wide on smaller screens */
+}
+#MSearchField:focus {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: #ffffff;
+}
+#MSearchField::placeholder {
+    color: #c0d0e6; /* Lighter placeholder text */
+}
+
+/* --- Navigation Tabs (usually under the header) --- */
+/* Hide Doxygen's default tabs if the treeview is used as primary navigation */
+.tabs {
+    display: none;
+}
+
+/* --- Treeview (Sidebar Navigation - if GENERATE_TREEVIEW is YES) --- */
+#nav-tree {
+    background-color: #ffffff;
+    padding: 15px 0;
+    box-sizing: border-box;
+    height: calc(100% - 60px); /* Fill remaining height below header */
+    overflow-y: auto;
+}
+
+#nav-tree ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#nav-tree li {
+    padding: 0;
+    margin: 0;
+}
+
+#nav-tree a {
+    display: block;
+    padding: 8px 18px; /* Slightly more padding */
+    text-decoration: none;
+    color: #444; /* Darker gray for links */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-left: 3px solid transparent; /* For active highlight */
+}
+
+#nav-tree a:hover {
+    background-color: #f0f0f0;
+    color: #007bff; /* Standard blue for hover */
+}
+
+/* Active item in treeview */
+#nav-tree .selected a,
+#nav-tree .current a {
+    background-color: #e6f0f7; /* Very light blue background for selected */
+    color: #3f6eb7; /* Matching the header blue for active text */
+    font-weight: bold;
+    border-left-color: #3f6eb7; /* Blue line on the left */
+}
+
+/* Treeview levels */
+.directory ul {
+    padding-left: 20px; /* Indent sub-levels */
+}
+
+/* Hide treeview expand/collapse icons to simplify (optional) */
+/*
+.icona, .iconb, .iconc, .icond, .icone, .iconf, .icong, .iconh, .iconi {
+    display: none;
+}
+*/
+/* If you keep icons, ensure they align well */
+.expando, .arrow {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* --- Content Area General Styling --- */
+.contents {
+    /* Already defined above for layout */
+}
+
+/* Headings within content */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Use same font for headings */
+    color: #222; /* Very dark gray, almost black */
+    margin-top: 2.2em; /* More space above headings */
+    margin-bottom: 0.8em;
+    padding-bottom: 8px; /* More padding below heading */
+    border-bottom: 1px solid #eee; /* Light separator */
+}
+
+h1 { font-size: 2.4em; border-bottom: 2px solid #3f6eb7; padding-bottom: 10px;} /* Stronger line for H1 */
+h2 { font-size: 2.0em; border-bottom: 1px solid #ddd; }
+h3 { font-size: 1.6em; }
+h4 { font-size: 1.3em; }
+h5, h6 { font-size: 1.1em; }
+
+p {
+    margin-bottom: 1.1em; /* Slightly more line spacing */
+}
+
+/* Links within content */
+a {
+    color: #3f6eb7; /* Blue link color matching header */
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+a:hover {
+    color: #2a4e8d; /* Darker blue on hover */
+    text-decoration: underline;
+}
+
+/* --- Code Styling --- */
+/* Inline code */
+tt, code {
+    font-family: 'Consolas', 'Courier New', monospace; /* Prefer Consolas if available */
+    background-color: #f0f0f0; /* Light gray background */
+    padding: 2px 6px; /* More padding */
+    border-radius: 4px;
+    font-size: 0.95em;
+    color: #c7254e; /* Dark red for inline code (common for code) */
+    white-space: nowrap; /* Prevent inline code from wrapping */
+}
+
+/* Code blocks (pre.fragment) */
+pre.fragment {
+    background-color: #fdfdfd; /* White background for code blocks */
+    color: #333; /* Dark text color */
+    border: 1px solid #eee; /* Very light border */
+    padding: 18px 22px; /* More padding */
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.98em;
+    line-height: 1.45;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Subtle shadow */
+    margin: 25px 0; /* More margin around code blocks */
+}
+
+/* Syntax highlighting (Doxygen's output) - Adjust as needed for specific keywords */
+.lineno {
+    color: #888; /* Lighter line numbers */
+    margin-right: 15px;
+    user-select: none;
+}
+
+.keyword { color: #007bff; } /* A blue for keywords */
+.keywordtype { color: #008080; } /* Teal for types */
+.keywordflow { color: #990099; } /* Purple for flow control */
+.stringliteral { color: #aa5500; } /* Orange for strings */
+.charliteral { color: #aa5500; }
+.comment { color: #777; } /* Gray for comments */
+.preprocessor { color: #888; }
+.defines { color: #007bff; }
+.number { color: #008080; } /* Teal for numbers */
+.normal { color: #333; } /* Default text in code blocks */
+
+
+/* --- Tables --- */
+table.doxtable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0; /* More margin around tables */
+    font-size: 0.9em; /* Slightly smaller table font */
+    box-shadow: 0 0 8px rgba(0,0,0,0.05);
+}
+
+table.doxtable th,
+table.doxtable td {
+    border: 1px solid #e8e8e8; /* Very light border */
+    padding: 12px 18px; /* More padding */
+    text-align: left;
+}
+
+table.doxtable th {
+    background-color: #f7f7f7; /* Light gray header */
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+    font-size: 0.95em;
+}
+
+table.doxtable tr:nth-child(even) {
+    background-color: #fcfcfc; /* Alternating row color */
+}
+
+/* --- Member Documentation Blocks --- */
+.memitem {
+    margin-bottom: 30px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background-color: #fdfdfd;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.memproto {
+    background-color: #fbfbfb; /* Very light background for prototype */
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    font-family: 'Consolas', monospace;
+    font-size: 0.98em;
+    color: #333;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.memproto a {
+    color: #3f6eb7;
+}
+
+.memdoc {
+    padding: 18px 22px; /* More padding */
+    background-color: #ffffff;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.paramname {
+    font-style: italic;
+    font-weight: bold;
+    color: #444;
+}
+
+.paramtype {
+    color: #666;
+}
+
+.paramkey {
+    font-weight: bold;
+    color: #222;
+}
+
+.params .paramitem {
+    margin-bottom: 6px;
+}
+
+/* --- Other Doxygen Specifics --- */
+
+/* Group headers (e.g., Public Members) */
+.groupheader {
+    background-color: #f0f0f0; /* Light gray for group headers */
+    border-bottom: 1px solid #ddd;
+    padding: 12px 18px;
+    margin-top: 35px;
+    margin-bottom: 18px;
+    font-weight: bold;
+    color: #333;
+    border-radius: 4px;
+    font-size: 1.2em;
+}
+
+.groupcontents {
+    margin-left: 25px;
+    margin-bottom: 25px;
+}
+
+/* Warning/Note/Pre-formatted boxes (like callouts in OpenVX spec) */
+.warning, .note, .pre {
+    border-left: 5px solid;
+    padding: 18px 22px;
+    margin: 30px 0;
+    border-radius: 5px;
+    background-color: #fcfcfc;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    line-height: 1.5;
+}
+
+/* Exact colors are harder to pick for these from the sample without inspecting */
+.warning {
+    border-color: #ffc107; /* Orange (standard warning) */
+    background-color: #fffacd;
+    color: #856404;
+}
+
+.note {
+    border-color: #17a2b8; /* Cyan (standard info/note) */
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.pre { /* A general "example" or pre-formatted box */
+    border-color: #6c757d; /* Gray */
+    background-color: #e2e6ea;
+    color: #383d41;
+}
+
+
+/* --- Footer --- */
+#ftn {
+    text-align: center;
+    padding: 25px;
+    margin-top: 50px;
+    border-top: 1px solid #eee;
+    color: #888;
+    font-size: 0.8em;
+    background-color: #fcfcfc;
+}
+
+/* Adjustments for print if needed */
+@media print {
+    #side-nav, #top, #MSearchBox {
+        display: none;
+    }
+    .contents
+}

@@ -594,6 +594,19 @@ enum vx_enum_e {
 /* IX extension
     VX_ENUM_IX_USE          = 0x1F, !< \brief How to use references in import and export. */
     VX_ENUM_SCALAR_OPERATION= 0X20  /*!< \brief Scalar operation list. */
+/* Pipelining extension
+    VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE     = 0x21,
+    VX_ENUM_EVENT_TYPE     = 0x22,
+    VX_ENUM_NODE_STATE_TYPE     = 0x23,
+*/
+/* Raw Image extension
+    VX_ENUM_IMAGE_RAW_BUFFER_ACCESS         (vx_enum)0x24
+    VX_ENUM_IMAGE_RAW_PIXEL_CONTAINER       (vx_enum)0x25
+    VX_ENUM_IMAGE_RAW_EXPOSURE_INTERLEAVING (vx_enum)0x26
+*/
+/* Target kernel extension
+    VX_ENUM_MEM_POOL     = 0x27
+*/
 	};
 
 /*! \brief A return code enumeration from a <tt>\ref vx_nodecomplete_f</tt> during execution.

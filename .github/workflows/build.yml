@@ -8,6 +8,11 @@ on:
       - openvx_1.3
       - openvx_1.2
   pull_request:
+    branches:
+      - openvx_1.3.2
+      - openvx_1.3.1
+      - openvx_1.3
+      - openvx_1.2
   workflow_dispatch:
 
 jobs:

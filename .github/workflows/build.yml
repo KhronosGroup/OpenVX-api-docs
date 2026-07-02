@@ -1,0 +1,56 @@
+name: Build OpenVX API Docs
+
+on:
+  push:
+    branches:
+      - openvx_1.3.2
+      - openvx_1.3.1
+      - openvx_1.3
+      - openvx_1.2
+  pull_request:
+    branches:
+      - openvx_1.3.2
+      - openvx_1.3.1
+      - openvx_1.3
+      - openvx_1.2
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build OpenVX API Docs
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          uname -a
+          cat /etc/lsb-release
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq wget unzip build-essential python3 git cmake bison flex libffi-dev zip fonts-lyx
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq libgmp-dev libxml2-dev libgdk-pixbuf2.0-dev libcairo2-dev libpango1.0-dev
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq gtk-doc-tools ghostscript ruby-dev default-jre libwebp-dev libzstd-dev
+          gem install asciidoctor-diagram -v 1.5.18
+          gem install asciidoctor-pdf --pre -v 1.6.2
+          gem install asciidoctor-mathematical -v 0.3.5
+          gem install coderay --pre -v 1.1.3
+          # DOXYGEN Deps
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq texlive-latex-extra texlive-font-utils inkscape
+
+      - name: Build docs
+        run: |
+          cd docs
+          make all
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openvx-api-docs-${{ github.ref_name }}
+          path: |
+            docs/out/*/*.pdf
+            docs/out/*/*/*.html
+          retention-days: 14

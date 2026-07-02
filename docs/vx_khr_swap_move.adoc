@@ -32,7 +32,7 @@ include::copyright-spec.txt[]
 toc::[]
 
 :leveloffset: 1
-= OpenVX 1.3.1: SWAP and MOVE: New kernels with bidirectional parameters
+= OpenVX 1.3.2: SWAP and MOVE: New kernels with bidirectional parameters
 [[sec_purpose]]
 == Purpose
 
@@ -231,7 +231,7 @@ For the SWAP and MOVE kernels, we do not demand that both parameters must have b
 
 ==== Usage
 
-Users should avoid using MOVE or COPY where objects are in different memory areas (implementation-dependent).
+Users should avoid using MOVE or COPY where objects are in different memory areas (implementation-defined).
 
 == Kernel Names
 

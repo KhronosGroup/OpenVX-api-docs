@@ -101,13 +101,13 @@ Loader.
 The OpenVX functions that are required for an implementation in ICD Loader
 source are:
 
-include::api/protos/vxFormatImagePatchAddress1d.txt[]
-include::api/protos/vxFormatImagePatchAddress2d.txt[]
-include::api/protos/vxCreateContext.txt[]
+  * `vxFormatImagePatchAddress1d()`
+  * `vxFormatImagePatchAddress2d()`
+  * `vxCreateContext()`
 
-The ICD Loader's `<<vxCreateContext>>` implementation is required to pick
+The ICD Loader's `vxCreateContext()` implementation is required to pick
 the default platform and to call the vendor specific implementation of
-`vxCreateContextFromPlatform`.
+`vxCreateContextFromPlatform()`.
 
 The ICD Loader's `vxHint` implementation is required to check the OpenVX
 version of the vendor implementation and handle function signature changes

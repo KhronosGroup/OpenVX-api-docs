@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Khronos Group. This work is licensed under a
+// Copyright (c) 2016-2026 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
@@ -26,9 +26,11 @@ include::copyright-spec.txt[]
 
 Contributors::
  - Viktor Gyenes, AIMotive
+ - Kiriti Nagesh Gowda - AMD
  - Christian Colliander, Axis Communications AB
  - Frank Brill, Cadence Design Systems
  - Radhakrishna Giduthuri, Intel
+ - Raphael Cano - Robert Bosch GmbH
  - Jesse Villarreal, Texas Instruments
 
 [[sec_overview]]
@@ -50,7 +52,7 @@ conformance tests for at least one conformance feature set.  Other feature sets 
 optional, organizational, or informational.
 
 _Optional_ feature sets have conformance tests that can be optionally enabled to test that this
-group of functions is correctly implemented.  In order to claim that an implemention supports an
+group of functions is correctly implemented.  In order to claim that an implementation supports an
 optional feature set, the conformance tests for this optional feature set must be enabled and
 passed.  This must be done _in addition to_ testing for one or more conformance feature sets;
 implementing an optional feature set without also implementing a conformance feature set is not
@@ -59,8 +61,8 @@ sufficient to claim adoption of OpenVX.
 Some feature sets are _organizational_ or _informational_.  Organizational feature sets are used to
 group convenient functions that can be easily referenced by a name for inclusion in other feature
 sets.  An example of an organizational feature set is the "base" feature set described below, which
-is a collection of basic framework functions that can included in other feature sets.  Informational
-features sets are groups of features that the OpenVX group identifies as being a useful subset of
+is a collection of basic framework functions that can be included in other feature sets.  Informational
+feature sets are groups of features that the OpenVX group identifies as being a useful subset of
 the OpenVX specification that can be used in a particular situation.  An example of an informational
 feature set is the "deployment" feature set described below, which can be useful in embedded or
 safety-critical environments.  Implementation of organizational and/or informational feature sets
@@ -68,14 +70,14 @@ _only_ is *not* sufficient to claim adoption of OpenVX.
 
 This document defines *three* Conformance Feature Set options:
 
-. Vision (OpenVX 1.1-equivalent vision functions)
+. Vision (core vision conformance feature set for OpenVX 1.3.2, primarily based on the OpenVX 1.1 vision baseline)
 . Neural Network (OpenVX 1.2-equivalent neural-network functions, plus the Neural Network extension and the tensor object)
 . NNEF (kernel import plus the tensor object)
 
 *Two* Optional Feature Sets are defined:
 
 . U1 (binary image support)
-. Enhanced Vision (vision functions introduced in OpenVX 1.2)
+. Enhanced Vision (additional vision functions introduced in OpenVX 1.2 and later)
 
 *One* Organizational Feature Set is defined:
 
@@ -85,13 +87,12 @@ This document defines *three* Conformance Feature Set options:
 
 * Deployment Feature Set (for Safety Critical usage)
 
-Details of these feature sets are described below.  These feature sets below are based on OpenVX 1.1
-or higher, and reference some APIs and symbols that may be found in that API, at
-https://www.khronos.org/registry/OpenVX/specs/1.1/html/index.html.  They also incorporate material
-in the OpenVX 1.1.1 Export and Import extension at
-https://www.khronos.org/registry/OpenVX/extensions/vx_khr_ix/1.1.1/vx_khr_ix_1_1_1.html,
-and the neural network extension at
-https://www.khronos.org/registry/OpenVX/extensions/vx_khr_nn/1.2.1/vx_khr_nn_1_2_1.html.
+Details of these feature sets are described below.  This document accompanies the OpenVX 1.3.2
+specification.  These feature sets were originally based on OpenVX 1.1 or higher, and reference
+some APIs and symbols that may be found in the main OpenVX specification at
+https://www.khronos.org/registry/OpenVX/.  They also incorporate material
+in the Export and Import extension (vx_khr_ix),
+and the neural network extension (vx_khr_nn).
 We will start with the Base Feature Set, upon which most of the others are built.
 
 [[sec_base]]
@@ -131,7 +132,7 @@ OpenVX specification:
 | `vx_delay`
 |====
 
-The Base Feature Set also requires support for User Kernels as decribed in the main OpenVX
+The Base Feature Set also requires support for User Kernels as described in the main OpenVX
 specification in its entirety, including all functions, macros, typedefs, and enumerations
 described in the User Kernel section of the main specification.
 
@@ -141,8 +142,9 @@ described in the User Kernel section of the main specification.
 [[sec_vision_purpose]]
 === Purpose
 
-To provide a basic set of vision processing functions.  This set of functions is roughly equivalent
-to the set of functions available in version 1.1 of the OpenVX specification.  In addition to the
+To provide a basic set of vision processing functions.  This set of functions is primarily based on
+the set of functions available in version 1.1 of the OpenVX specification, with selected later core
+additions such as WeightedAverage included in the OpenVX 1.3.2 feature-set definitions. In addition to the
 framework objects included in the Base Feature Set, the Vision Conformance Feature Set includes a
 set of data objects that the Vision functions operate upon and produce.
 
@@ -250,16 +252,12 @@ and the tensor data object.  The neural-network functions are listed here for co
 [options="header"]
 |====
 3+| Neural Network Conformance required functions
-| vxActivationLayer | vxConvolutionLayer | vxDeconvolutionLayer
-| vxFullyConnectedLayer | vxLocalResponseNormalizationLayer | vxPoolingLayer
-| vxROIPoolingLayer | vxSoftmaxLayer
-| vxTensorMultiplyNode
-| vxTensorAddNode
-| vxTensorSubtractNode
-| vxTensorTableLookupNode
-| vxTensorTransposeNode
-| vxTensorConvertDepthNode
-| vxTensorMatrixMultiplyNode
+| `vxActivationLayer` | `vxConvolutionLayer` | `vxDeconvolutionLayer`
+| `vxFullyConnectedLayer` | `vxLocalResponseNormalizationLayer` | `vxPoolingLayer`
+| `vxROIPoolingLayer` | `vxSoftmaxLayer` |
+| `vxTensorAddNode` | `vxTensorConvertDepthNode` | `vxTensorMatrixMultiplyNode`
+| `vxTensorMultiplyNode` | `vxTensorSubtractNode` | `vxTensorTableLookupNode`
+| `vxTensorTransposeNode` | |
 |====
 
 [[sec_nnef]]
@@ -284,17 +282,17 @@ The name of this feature set is *vx_khr_nnef_import*.
 
 The NNEF Import Conformance Feature Set includes all the functions and objects in the Base feature
 set, support of the Kernel import extension *vx_khr_import_kernel*, which contains the
-`vxImportKernelFromURL` function, plus the following data objects and vision functions.
+`vxImportKernelFromURL` function, plus the following data object requirements.
 
 ==== Data Object Requirements
 
-The Neural Network Conformance Feature Set includes the following data objects in their entirety,
+The NNEF Import Conformance Feature Set includes the following data objects in their entirety,
 including all functions, macros, typedefs, and enumerations described in their respective sections
 in the main OpenVX specification:
 
 [options="header"]
 |====
-| Neural Network Conformance required data objects
+| NNEF Import Conformance required data objects
 | `vx_tensor`
 |====
 
@@ -415,8 +413,8 @@ all extents of `dilation` are 1
 In the case where the imported neural network model defines a custom operation, namely an operation
 with known interfaces but unknown functionality, the implementation of such a custom operation must
 be provided as an OpenVX user kernel. This user kernel must be registered in the OpenVX context
-prior to the calling the `vxImportKernelFromURL` function.  The registered user kernel must be
-consistent with the custom kernel declared in the NNEF model in term of:
+prior to calling the `vxImportKernelFromURL` function.  The registered user kernel must be
+consistent with the custom kernel declared in the NNEF model in terms of:
 
 * Kernel name
 * Number of inputs and outputs
@@ -435,11 +433,11 @@ custom operation and the OpenVX user kernel that implements it:
 ** Primitive types
 *** NNEF integer : vx_scalar of type VX_TYPE_INT32
 *** NNEF scalar : vx_scalar of type VX_TYPE_FLOAT32
-*** NNEF logical : : vx_scalar of type VX_TYPE_BOOL
+*** NNEF logical : vx_scalar of type VX_TYPE_BOOL
 *** NNEF string : not required to be supported
 ** Compound type
 *** NNEF array: vx_array of the corresponding element type
-** Multi-dimentional types
+** Multidimensional types
 *** NNEF tensor: vx_tensor
 
 [[sec_binary]]
@@ -481,14 +479,14 @@ then the implementor can claim support for this enhanced vision feature set.
 
 ==== Data Object Requirements
 
-Since this feature set is dependent on the Vision Conformance Feature Set, all the data object from
+Since this feature set is dependent on the Vision Conformance Feature Set, all the data objects from
 that feature set must be supported.  In addition, the Enhanced Vision Feature Set includes the
 following data objects in their entirety, including all functions, macros, typedefs, and
 enumerations described in their respective sections in the main OpenVX specification:
 
 [options="header"]
 |====
-| Neural Network Conformance required data objects
+| Enhanced Vision Conformance required data objects
 | `vx_tensor`
 |====
 
@@ -520,15 +518,15 @@ that runs on an embedded target device with limited resources.  A developer may 
 features to create and export a graph, and then for deployment this graph is imported by a program
 that only uses features in the Deployment Feature Set.
 
-A safety-critical implementation of OpenVX must include a Development Feature Set that passes the 
+A safety-critical implementation of OpenVX must include a Development Feature Set that passes the
 conformance test suite for one or more of the Conformance feature sets described above. It must also
 implement and pass the conformance tests for the Import/Export extension.  There are
-no special additional tests for the Deployment Feature Set or for Safety-Critical implementations 
+no special additional tests for the Deployment Feature Set or for Safety-Critical implementations
 generally.
 
 The safety-critical environment requires that graphs must execute in a deterministic,
 reproducible way. It is up to the implementation to guarantee this behavior in some way.
-The implementation-dependent behaviors must be defined and documented by the implementation.
+The implementation-defined behaviors must be defined and documented by the implementation.
 
 [[sub_sc_features]]
 === Requirements
@@ -560,8 +558,12 @@ section of the specifications are listed in this table.
 |                  | `vxDirective` | Yes
 |                  | `vxGetStatus` | Yes
 |                  | `vxRegisterUserStruct` |
+|                  | `vxRegisterUserStructWithName` |
+|                  | `vxGetUserStructNameByEnum` |
+|                  | `vxGetUserStructEnumByName` |
 |                  | `vxAllocateUserKernelId` |
 |                  | `vxAllocateUserKernelLibraryId` |
+|                  | `vxSetImmediateModeTarget` |
 | IMAGE            | `vxCreateImage` | Yes
 |                  | `vxCreateImageFromROI` | Yes
 |                  | `vxCreateUniformImage` | Yes
@@ -701,6 +703,7 @@ section of the specifications are listed in this table.
 |                  | `vxQueryObjectArray` | Yes
 | META FORMAT      | `vxSetMetaFormatAttribute` |
 |                  | `vxSetMetaFormatFromReference` |
+|                  | `vxQueryMetaFormatAttribute` |
 | TENSOR           | `vxCreateTensor` | Yes
 |                  | `vxCreateImageObjectArrayFromTensor` | Yes
 |                  | `vxCreateTensorFromView` | Yes

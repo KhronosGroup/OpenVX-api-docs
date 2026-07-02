@@ -25,8 +25,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
-#ifndef _APP_H_
-#define _APP_H_
+#ifndef APP_H
+#define APP_H
 
 #ifdef  __cplusplus
 extern "C" {

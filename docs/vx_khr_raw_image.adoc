@@ -323,7 +323,7 @@ include::api/defines/VX_IMAGE_RAW_EXPOSURE_INTERLEAVING.txt[]
 === VX_IMAGE_RAW_FORMAT
 indexterm:[Raw Image API, VX_IMAGE_RAW_FORMAT]
 // Brief text:
-The format of the the raw image. Read-only. Use a pointer to a `<<vx_image_raw_format_t>>` array.
+The format of the raw image. Read-only. Use a pointer to a `<<vx_image_raw_format_t>>` array.
 include::api/defines/VX_IMAGE_RAW_FORMAT.txt[]
 
 // end::refpage:VX_IMAGE_RAW_FORMAT[]

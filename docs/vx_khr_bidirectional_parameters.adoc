@@ -32,13 +32,13 @@ include::copyright-spec.txt[]
 toc::[]
 
 :leveloffset: 1
-= Extension to support bidirectional parameters in OpenVX V1.3.1
+= Extension to support bidirectional parameters in OpenVX V1.3.2
 
 
 [[sec_purpose]]
 == Purpose
 
-Bidirectional parameters were originally specified in OpenVX but then were removed due to difficulties and lack of clarity in specifying the scheduling of nodes. This extension is against OpenVX V1.3.1 and seeks to add them back, with a revision of the rules concerning their use, and of the graph formalism.
+Bidirectional parameters were originally specified in OpenVX but then were removed due to difficulties and lack of clarity in specifying the scheduling of nodes. This extension is against OpenVX V1.3.2 and seeks to add them back, with a revision of the rules concerning their use, and of the graph formalism.
 
 In this document requirements are marked thus: `[REQ-BPnn]`, where "nn" indicates numbering
 
@@ -127,7 +127,7 @@ This example serves to illustrate the reasoning for the execution order requirem
 
 `[*REQ-BP02*]`[[REQ-BP02]]
 
-c.f. `[REQ-1892]` of OpenVX V1.3.1 The third parameter (direction) to the API vxAddParameterToKernel(kernel, index, direction, data_type, state) can be in general VX_BIDIRECTIONAL, VX_INPUT, or VX_OUTPUT.
+c.f. `[REQ-1892]` of OpenVX V1.3.2 The third parameter (direction) to the API vxAddParameterToKernel(kernel, index, direction, data_type, state) can be in general VX_BIDIRECTIONAL, VX_INPUT, or VX_OUTPUT.
 
 == Connection of objects to parameters
 
@@ -137,7 +137,7 @@ image::images/one-writer-one-modifier.svg[align="center"]
 
 * `[*REQ-BP04*]`[[REQ-BP04]] A virtual object may be attached to at most one bidirectional parameter of a node in a graph only if it is also attached to an output parameter of a second node and to an input parameter of a third. It may also be connected to any number of other input parameters.
   Reasoning:
-  ** As it is a virtual object, it needs to be initialised by a graph node as the data is not accessible outside the graph, therefore is needs to be connected to an output
+  ** As it is a virtual object, it needs to be initialized by a graph node as the data is not accessible outside the graph, therefore is needs to be connected to an output
   ** As it is a virtual object, the (modified) data is not accessible outside the graph, so to be of any use it must be connected to the input of a graph node.
 
 image::images/virtual-bid.svg[align="center"]
@@ -189,7 +189,7 @@ image::images/graph-parameters.svg[align="center"]
 
 == Replicated Nodes
 
-`[*REQ-BP12*]`[[REQ-BP12]] c.f `[REQ-0697]` of OpenVX V1.3.1:
+`[*REQ-BP12*]`[[REQ-BP12]] c.f `[REQ-0697]` of OpenVX V1.3.2:
 Describing parameter three of vxReplicateNode() an array of vx_bool with a value of vx_true_e for the parameters that should be iterated over (should be a reference to a vx_pyramid or a vx_object_array), vx_false_e for the parameters that should be the same across replicated nodes and for optional parameters that are not used. Should be vx_true_e for all output **_and bidirectional_** parameters.
 
 = Optional standard nodes

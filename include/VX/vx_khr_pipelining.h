@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2025 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef _OPENVX_PIPELINING_H_
-#define _OPENVX_PIPELINING_H_
+#ifndef OPENVX_PIPELINING_H
+#define OPENVX_PIPELINING_H
 
 /*!
  * \file
@@ -91,7 +91,7 @@ enum vx_graph_attribute_pipelining_e {
      * \note Setting the timeout attribute <tt>\ref VX_GRAPH_TIMEOUT</tt> does not set any limit upon the
      * duration of graph execution, it merely prevents the above-mentioned functions from delaying more
      * than the time given. There are no other requirements upon what the framework should do; it is up
-     * to the application to recognise the timeout and take appropriate action.
+     * to the application to recognize the timeout and take appropriate action.
      */
     VX_GRAPH_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x6,
 
@@ -102,12 +102,12 @@ enum vx_graph_attribute_pipelining_e {
      *
      * \note Setting timeout attributes does not in any way change the occurrence of events, it merely prevents the
      * above-mentioned functions from delaying more than the time given. There are no other requirements upon what
-     * the framework should do; it is up to the application to recognise the timeout and take appropriate action.
+     * the framework should do; it is up to the application to recognize the timeout and take appropriate action.
      */
     VX_GRAPH_EVENT_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x7,
 
     /*! \brief Set or return the graph pipeline depth; the depth used in the graph is known
-     * after graph verification. Read-write. Us a <tt>vx_uint32</tt> parameter.
+     * after graph verification. Read-write. Use a <tt>vx_uint32</tt> parameter.
      *
      * Note
      *   The framework will calculate the maximum depth of pipeline that is sensible for any given graph.
@@ -115,7 +115,7 @@ enum vx_graph_attribute_pipelining_e {
      *   accordingly, for example to know that result dequeuing is possible after queuing a certain number of inputs.
      *   An additional attribute allows this data to be obtained from a verified graph.
      *
-     *   The attribute is made read-write, so that an application may modify pipeline behaviour. Example use cases
+     *   The attribute is made read-write, so that an application may modify pipeline behavior. Example use cases
      *   are to save memory by restricting pipeline depth, or to effectively turn off pipelining by setting the depth
      *   to 1 for debugging purposes.
      *
@@ -148,7 +148,7 @@ enum vx_reference_attribute_pipelining_e {
  */
 typedef struct _vx_graph_parameter_queue_params_t {
 
-    uint32_t graph_parameter_index;
+    vx_uint32 graph_parameter_index;
     /*!< \brief Index of graph parameter to which these properties apply */
 
     vx_uint32 refs_list_size;
@@ -215,7 +215,7 @@ typedef struct _vx_graph_parameter_config_t {
  *   An implementation is expected to execute the graph as much as possible until a enqueued reference
  *   is not available at which time it will stall the graph until the reference becomes available.
  *   This allows application to schedule a graph even when all parameters references are
- *   not yet available, i.e do a 'late' enqueue. However, exact behaviour is implementation specific.
+ *   not yet available, i.e do a 'late' enqueue. However, exact behavior is implementation specific.
  *
  * When graph schedule mode is <tt>\ref VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL</tt>:
  * - Application needs to explicitly call <tt>\ref vxScheduleGraph</tt>
@@ -261,7 +261,7 @@ typedef struct _vx_graph_parameter_config_t {
  *    The first reference given in the list must be attached to at least one node parameter in the graph
  *    A reference may not appear as the first reference in more than one list
  *    The first reference in a list may not be NULL
- *    If a NULL reference is otherwise specified in the list, the results are implementation-dependent
+ *    If a NULL reference is otherwise specified in the list, the results are implementation-defined
  *    References in the list should be checked for compatibility so that the graphs are guaranteed to run (for example, all references may need to have the same metadata).
  *    Note that implementations may allow references of different types if connected nodes (and nodes subsequently connected to those nodes) allow a generic VX_TYPE_REFERENCE as the type.
  *    Where VX_BIDIRECTIONAL parameters are used, the direction of the graph parameter may not be the same as the direction of the parameter given on the last node to write data,
@@ -336,9 +336,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetGraphParameterRefsList(
  * \param [in] graph - the graph whose parameter reference list is to be extended
  * \param [in] graph_parameter_index - index of the affected graph parameter. Must be less than the number of parameters in this graph.
  * \param [in] number_to_add - the number of new references to be added. Must be greater than zero.
- * \param [in] number_to_add - the number of new references to be added. Must be greater than zero.
  * \param [in] new_references - array holding the new references, must be same length as "number_to_add".
- * There may be an implementation-dependent limit on the total number of references per graph parameter.
+ * There may be an implementation-defined limit on the total number of references per graph parameter.
  *
  * \return A vx_status_e enumeration.
  * \retval VX_SUCCESS - No errors.
@@ -382,7 +381,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddReferencesToGraphParameterList(
  *
  * User MUST use `<<vxGraphParameterDequeueDoneRef>>` to get back the processed or consumed references.
  * The references that are enqueued MUST be the references listed by calling vxSetGraphScheduleConfig before graph verification or
- * subsequently added by using vxAddReferencesToGraphParameterList. If a reference outside this list is provided then behaviour is undefined.
+ * subsequently added by using vxAddReferencesToGraphParameterList. If a reference outside this list is provided then behavior is implementation-defined.
  *
  * \param [in] graph Graph reference
  * \param [in] graph_parameter_index Graph parameter index
@@ -412,7 +411,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterEnqueueReadyRef(vx_graph grap
  * <b> IMPORTANT </b> : This API will block until at least one reference is dequeued.
  *
  * In case of a graph parameter which is input to a graph, this function provides
- * a 'consumed' buffer to the application so that new input data can filled
+ * a 'consumed' buffer to the application so that new input data can be filled
  * and later enqueued to the graph.
  * In case of a graph parameter which is not input to a graph, this function provides
  * a reference filled with new data based on graph execution. User can then use this
@@ -492,7 +491,7 @@ enum vx_context_attribute_event_e {
  * The implementation shall initially set this attribute to VX_TIMEOUT_WAIT_FOREVER.
  * \note Setting timeout attributes does not in any way change the occurrence of events, it merely prevents the 
  * above-mentioned functions from delaying more than the time given. There are no other requirements upon what
- * the framework should do; it is up to the application to recognise the timeout and take appropriate action.
+ * the framework should do; it is up to the application to recognize the timeout and take appropriate action.
  */
     VX_CONTEXT_EVENT_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0x10,
 };
@@ -599,7 +598,7 @@ typedef struct _vx_event_node_error {
     /*!< \brief error condition of node */
 } vx_event_node_error;
 
-/*! \brief Parameter structure returned with event of type VX_EVENT_USER_EVENT
+/*! \brief Parameter structure returned with event of type \ref VX_EVENT_USER
  *
  * \ingroup group_event
  */
@@ -665,7 +664,7 @@ typedef struct _vx_event {
  * behavior is not defined by OpenVX.
  *
  * If <tt> \ref vxWaitEvent </tt> is called simultaneously from multiple thread/task contexts
- * then its behaviour is not defined by OpenVX.
+ * then its behavior is not defined by OpenVX.
  *
  * \param context [in] OpenVX context
  * \param event [out] Data structure which holds information about a received event
@@ -863,7 +862,7 @@ enum vx_node_state_e {
  * \ingroup group_streaming
  */
 enum vx_node_attribute_streaming_e {
-    /*! \brief Queries the state of the node. Read-only. See <tt>\ref vx_graph_state_e</tt> enum. */
+    /*! \brief Queries the state of the node. Read-only. See <tt>\ref vx_node_state_e</tt> enum. */
     VX_NODE_STATE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x9,
 };
 
@@ -978,7 +977,7 @@ typedef struct _vx_kernel_parameter_config_t {
     vx_uint32         index;        /*!< \brief index of the parameter, starting at zero */
     vx_enum           type;         /*!< \brief an object type, such as VX_TYPE_IMAGE */
     vx_enum           direction;    /*!< \brief VX_INPUT, VX_OUTPUT or VX_BIDIRECTIONAL */
-    vx_enum           state;        /*!< \brief X_PARAMETER_STATE_REQUIRED or VX_PARAMETER_STATE_OPTIONAL */
+    vx_enum           state;        /*!< \brief VX_PARAMETER_STATE_REQUIRED or VX_PARAMETER_STATE_OPTIONAL */
     vx_meta_format    meta;         /*!< \brief More information about the parameter, if not NULL, this will need releasing */
 } vx_kernel_parameter_config_t;
 
@@ -992,7 +991,7 @@ typedef struct _vx_kernel_parameter_config_t {
  * When querying the meta format object the application should only query those attributes appropriate for the object type; c.f.,
  * vxQueryMetaFormatAttribute(), and The Kernel Import Extension to OpenVX 1.3.
  * An application should check for non-null meta format objects and release them even if it does not support dynamic graph creation.
- * The function is intended to return data after a kernel has been finalised; if the function is called before a kernel is finalised, the results are not defined.
+ * The function is intended to return data after a kernel has been finalized; if the function is called before a kernel is finalized, the results are not defined.
  * 
  * \param [in] kernel The kernel to query
  * \param [in] num_params The number of parameters required by the kernel, as returned by querying the kernel for the attribute VX_KERNEL_PARAMETERS.
@@ -1001,7 +1000,7 @@ typedef struct _vx_kernel_parameter_config_t {
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors; any other value indicates failure.
- * \retval VX_ERROR_INVALID_REFERENCE The kernel was invalid or not finalised 
+ * \retval VX_ERROR_INVALID_REFERENCE The kernel was invalid or not finalized 
  * \retval VX_ERROR_INVALID_PARAMETERS The number of parameters is incorrect, or a NULL pointer was passed for parameter_config
  *
  */

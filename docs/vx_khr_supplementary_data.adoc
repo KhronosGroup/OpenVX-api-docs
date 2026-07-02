@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2024 Khronos Group. This work is licensed under a
+// Copyright (c) 2023-2026 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
@@ -147,7 +147,7 @@ vx_size source_bytes = 2 * sizeof(my_user_data[0]); /* number of bytes in user_d
 vx_user_data_object supp = vxGetSupplementaryUserDataObject(input, "my_user_data_t");
 vx_status status = vxExtendSupplementaryUserDataObject(output, supp, &my_user_data, source_bytes, sizeof(my_user_data));
 
-/* You could optimise stack usage if there was no reason to have the entire my_user_data array: */
+/* You could optimize stack usage if there was no reason to have the entire my_user_data array: */
 struct {int a, b, c} just_one_entry;
 vx_user_data_object supp = vxGetSupplementaryUserDataObject(input, "my_user_data_t");
 /* Fill the first two entries from the input, and the third from a local copy */
@@ -161,12 +161,12 @@ By *Child Objects* we mean images and tensors created as a view of other images 
 [options="header"]
 |====
 | Function | Type of parent | Type of child | Documentation of function 
-| vxCreateImageFromROI | vx_image | vx_image | OpenVX 1.3.1
-| vxCreateImageFromChannel | vx_image | vx_image | OpenVX 1.3.1
-| [[ArrayFromTensor]]vxCreateImageObjectArrayFromTensor | vx_tensor | vx_image | OpenVX 1.3.1
-| vxCreateTensorFromView | vx_tensor | vx_tensor | OpenVX 1.3.1
-| vxCreateObjectArrayFromROI | vx_image | vx_image | [[sub_image]]vx_khr_sub_image_arrays
-| vxCreateObjectArrayFromChannel | vx_image | vx_image | vx_khr_sub_image_arrays
+| vxCreateImageFromROI | vx_image | vx_image | OpenVX 1.3.2
+| vxCreateImageFromChannel | vx_image | vx_image | OpenVX 1.3.2
+| [[ArrayFromTensor]]vxCreateImageObjectArrayFromTensor | vx_tensor | vx_image | OpenVX 1.3.2
+| vxCreateTensorFromView | vx_tensor | vx_tensor | OpenVX 1.3.2
+| vxCreateObjectArrayFromROI | vx_image | vx_image | [[sub_image]]vx_khr_sub_image_object_array
+| vxCreateObjectArrayFromChannel | vx_image | vx_image | vx_khr_sub_image_object_array
 | vxCreateTensorFromROI | vx_tensor | vx_image | vx_khr_tensor_from_image
 | vxCreateTensorFromChannel | vx_tensor | vx_image | vx_khr_tensor_from_image
 | vxCreateTensorObjectArrayFromROI | vx_tensor | vx_image | [[tensor_from_image]]vx_khr_tensor_from_image
@@ -174,21 +174,21 @@ By *Child Objects* we mean images and tensors created as a view of other images 
 | vxCreateTensorObjectArrayFromView | vx_tensor | vx_tensor | vx_khr_tensor_from_image 
 |====
 
-Child objects may be used as any sort of parameter to kernels, subject to the rules laid out in section 2.8.6 of the OpenVX Specification V1.3.1. For example, it may be useful to use different non-overlapping ROIs of a single parent image as outputs to different kernels. In the case where a child object is used solely as input to a kernel, it makes sense that it does not have its own supplementary data, but uses that of the parent. However, in the cases where it is an output object, then there could be an issue with overwriting the parent's supplementary data. For this reason, we have a special action for child objects; when retrieving supplementary data, the data from the parent will be used in the case where no supplementary data has been specifically set on the child data object (_c.f.,_ <<inherit,inheritance>>). For output child objects, however, the programmer can specifically give them their own supplementary data.
+Child objects may be used as any sort of parameter to kernels, subject to the rules laid out in section 2.8.6 of the OpenVX Specification V1.3.2. For example, it may be useful to use different non-overlapping ROIs of a single parent image as outputs to different kernels. In the case where a child object is used solely as input to a kernel, it makes sense that it does not have its own supplementary data, but uses that of the parent. However, in the cases where it is an output object, then there could be an issue with overwriting the parent's supplementary data. For this reason, we have a special action for child objects; when retrieving supplementary data, the data from the parent will be used in the case where no supplementary data has been specifically set on the child data object (_c.f.,_ <<inherit,inheritance>>). For output child objects, however, the programmer can specifically give them their own supplementary data.
 
-It is then up to the programmer to collate information from different child objects and the parent object, where child objects have been modified, but in the more usual situation where child objects are used solely as input to kernels, there is no extra work to do and the number of supplementary data objects is minimised.
+It is then up to the programmer to collate information from different child objects and the parent object, where child objects have been modified, but in the more usual situation where child objects are used solely as input to kernels, there is no extra work to do and the number of supplementary data objects is minimized.
 
 [NOTE]
 .Object Arrays
 ====
-An object array (the container) may also have supplementary data, distinct from the data of the elements of the array. Object arrays themselves can never be <<child_object,child objects>>, since currently there is no way to create a child object array. However, the elements of an object array may be children of elements of another object array, created using `<<ArrayFromTensor,vxCreateImageObjectArrayFromTensor>>` or using functions from the extensions _<<sub_image,vx_khr_sub_image_arrays>>_ or _<<from_image,vx_khr_tensor_from_image>>_. See also <<exemplars,objects created from exemplars>>.
+An object array (the container) may also have supplementary data, distinct from the data of the elements of the array. Object arrays themselves can never be <<child_object,child objects>>, since currently there is no way to create a child object array. However, the elements of an object array may be children of elements of another object array, created using `<<ArrayFromTensor,vxCreateImageObjectArrayFromTensor>>` or using functions from the extensions _<<sub_image,vx_khr_sub_image_object_array>>_ or _<<from_image,vx_khr_tensor_from_image>>_. See also <<exemplars,objects created from exemplars>>.
 ====
 
 = Functions
 [[vxSet]]
 == vxSetSupplementaryUserDataObject
 
-See also `<<vxExtend, vxExtendSupplementaryUserDataObject>>`, which is a generalisation of this function.
+See also `<<vxExtend, vxExtendSupplementaryUserDataObject>>`, which is a generalization of this function.
 
 `[*REQ-SD01*]`[[REQ-SD01]]
 Create or set supplementary user data object for a destination reference using another object as the source.
@@ -216,7 +216,7 @@ If *destination* is not a valid *vx_reference*, or *source* is not a valid *vx_u
 If there is no supplementary data associated with the *destination* object and the object is currently connected to a verified graph, or listed as a possible connection to a verified graph (via `vxSetGraphScheduleConfig` or other method), the function shall fail and return the status *VX_FAILURE*.
 
 `[*REQ-SD04*]`[[REQ-SD04]]
-If no supplementary data is associated with the *destination* object, and the *destination* object is not associated with any verified graph, then a new supplementary data object shall be created using the *source* as an exemplar, and its data shall be initialised from the *source* object.
+If no supplementary data is associated with the *destination* object, and the *destination* object is not associated with any verified graph, then a new supplementary data object shall be created using the *source* as an exemplar, and its data shall be initialized from the *source* object.
 
 `[*REQ-SD05*]`[[REQ-SD05]]
 If a supplementary data object already exists in the *destination*, and both the typename and size agree with that of the *source*, then data shall be copied from *source* to the destination supplementary data object.
@@ -274,7 +274,7 @@ If simple propagation is required, then for static data call the get and set fun
 
 Possible return values may include:
 |====
-| *VX_SUCCESS*                 | The supplementary data of *destination* is successfully initialised
+| *VX_SUCCESS*                 | The supplementary data of *destination* is successfully initialized
 | *VX_ERROR_INVALID_REFERENCE* | The *source* or *destination* reference is not valid
 | *VX_ERROR_INVALID_TYPE*      | The *source* data type does not match the type of the supplementary data of the *destination*
 | *VX_ERROR_NOT_SUPPORTED*     | The parameter combination is not supported
@@ -329,7 +329,7 @@ If the supplementary data of a child object is returned outside a kernel process
 ==== Kernel Input Parameters
 
 `[*REQ-SD17*]`[[REQ-SD17]]
-If the function is called from within a kernel processing function and *ref* is passed as an input parameter to the kernel function, the the reference retrieved for the supplementary data shall be a <<read_only,read-only>> vx_user_data_object for the duration of the kernel processing function.
+If the function is called from within a kernel processing function and *ref* is passed as an input parameter to the kernel function, the reference retrieved for the supplementary data shall be a <<read_only,read-only>> vx_user_data_object for the duration of the kernel processing function.
 
 ==== Virtual Objects
 
@@ -339,7 +339,7 @@ The supplementary data of virtual objects is inaccessible except inside a kernel
 [NOTE]
 .Memory allocation
 ====
-The user should be aware that when a supplementary data object is added to a reference, there will be dynamic allocation of data. For this reason it is not allowed for objects after a graph has been verified, and  therefore `<<vxSet,vxSetSupplementaryUserDataObject>>` must be called in the validator to initialise virtual objects.
+The user should be aware that when a supplementary data object is added to a reference, there will be dynamic allocation of data. For this reason it is not allowed for objects after a graph has been verified, and  therefore `<<vxSet,vxSetSupplementaryUserDataObject>>` must be called in the validator to initialize virtual objects.
 ====
 
 === Returns
@@ -372,7 +372,7 @@ The supplementary data is an object in its own right; it will be destroyed when 
 `[*REQ-SD21*]`[[REQ-SD21]]
 Create or set supplementary user data object for a destination reference using another object as the source, possibly extending it with data from a local buffer.
 
-The reason for including this function is to minimise the number of separate buffer map operations required when copying and extending supplementary data.
+The reason for including this function is to minimize the number of separate buffer map operations required when copying and extending supplementary data.
 
 _c.f.,_ `<<vxSet,vxSetSupplementaryUserDataObject>>`.
 
@@ -486,7 +486,7 @@ If an unsupported type is passed for *destination*, the function shall fail and 
 
 Possible return values may include:
 |====
-| *VX_SUCCESS*                 | The supplementary data of *destination* is successfully initialised
+| *VX_SUCCESS*                 | The supplementary data of *destination* is successfully initialized
 | *VX_ERROR_INVALID_REFERENCE* | The *source* or *destination* reference is not valid
 | *VX_ERROR_INVALID_TYPE*      | The *source* data type does not match the type of the supplementary data of the *destination*
 | *VX_ERROR_INVALID_VALUE*     | The value of *num_bytes* is greater than the value of the *VX_USER_DATA_OBJECT_SIZE* attribute
@@ -510,7 +510,7 @@ For swap and move, however, none of the parameters are input parameters and chil
 = Objects created from exemplars, objects created automatically
 [[exemplars]]
 `[*REQ-SD36*]`[[REQ-SD36]]
-When objects are created from exemplars (for example elements of object arrays and delays), any supplementary data in the exemplars shall be cloned into the newly created objects. For example, if an object array of images is created from an exemplar with supplementary data with a type name of "user_data_one_t" then all the images in the object array shall be given supplementary data of this type, and the supplementary data shall be initialised from the supplementary data of the exemplar.
+When objects are created from exemplars (for example elements of object arrays and delays), any supplementary data in the exemplars shall be cloned into the newly created objects. For example, if an object array of images is created from an exemplar with supplementary data with a type name of "user_data_one_t" then all the images in the object array shall be given supplementary data of this type, and the supplementary data shall be initialized from the supplementary data of the exemplar.
 
 Sometimes objects may be created automatically by the framework, for example if pipelining or batch processing is used, where node and edge objects may be duplicated to allow concurrent processing. In such cases the edge objects shall be created with supplementary data cloned from the originals. In other words the framework must provide objects with supplementary data as expected by the kernels.
 

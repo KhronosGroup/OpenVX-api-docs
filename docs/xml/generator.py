@@ -409,6 +409,22 @@ class OutputGenerator:
                 self.logMsg('diag', 'Aligning parameter', elem.text, 'to column', self.genOpts.alignFuncParam)
                 # Align at specified column, if possible
                 paramdecl = paramdecl.rstrip()
+                # Move trailing pointer stars (and optional const qualifier)
+                # from type to parameter name: 'type *name' style (C convention).
+                # Handles 'type*', 'type**', and 'type* const' patterns.
+                const_suffix = ''
+                if paramdecl.endswith(' const'):
+                    const_suffix = 'const '
+                    paramdecl = paramdecl[:-6].rstrip()
+                stars = ''
+                while paramdecl.endswith('*'):
+                    stars += '*'
+                    paramdecl = paramdecl[:-1]
+                paramdecl = paramdecl.rstrip()
+                if stars:
+                    text = stars + const_suffix + text
+                elif const_suffix:
+                    paramdecl += ' const'
                 oldLen = len(paramdecl)
                 # This works around a problem where very long type names -
                 # longer than the alignment column - would run into the tail

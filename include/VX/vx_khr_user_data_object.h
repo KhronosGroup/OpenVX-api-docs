@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2024 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef _OPENVX_USER_DATA_OBJECT_H_
-#define _OPENVX_USER_DATA_OBJECT_H_
+#ifndef OPENVX_USER_DATA_OBJECT_H
+#define OPENVX_USER_DATA_OBJECT_H
 
 /*!
  * \file
@@ -213,7 +213,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_ERROR_OPTIMIZED_AWAY This is a reference to a virtual user data object that cannot be accessed by the application.
  * \retval VX_ERROR_INVALID_REFERENCE The user_data_object reference is not actually a user data object reference.
- * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
+ * \retval VX_ERROR_INVALID_PARAMETERS Another parameter is incorrect.
  * \ingroup group_user_data_object
  * \post <tt>\ref vxUnmapUserDataObject </tt> with same (*map_id) value.
  */

@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <VX/vx_khr_tiling.h>
 #include <VX/vx_helper.h>
-#define _VX_TILING_EXT_INTERNAL_
+#define VX_TILING_EXT_INTERNAL
 #include "vx_tiling_ext.h"
 
 /*! \file

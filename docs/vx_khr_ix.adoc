@@ -46,7 +46,7 @@ The name of this extension is *vx_khr_ix*.
 [[sec_usecases]]
 == Use Case
 
-  * Embedded systems using fixed graphs, to minimise the amount of code
+  * Embedded systems using fixed graphs, to minimize the amount of code
     required.
   * Safety-critical systems where the OpenVX library does not have a node
     API.
@@ -205,11 +205,7 @@ the companies that they represented at the time:
   * *2.7.2* References additionally may be obtained using a name given to an
     object before export.
   * *2.7.3* Before export, objects may be named for retrieval by name using
-    the existing API
-+
---
-include::api/protos/vxSetReferenceName.txt[]
---
+    the existing `vxSetReferenceName()` API.
   * *2.7.4* Export will fail if duplicate names are found for listed
     references.
   * *2.7.5* Import will fail if duplicate names are found in the import
@@ -354,7 +350,7 @@ implementation will automatically create them.
 .Note
 ====
 The `<<VX_IX_USE_APPLICATION_CREATE,VX_IX_USE_APPLICATION_CREATE>>` value must be given for
-images created from handles, or the the export operation will fail.
+images created from handles, or the export operation will fail.
 ====
 
 The values in _uses_ are applicable only for data objects and are ignored
@@ -695,7 +691,7 @@ export.
 Only references for objects created by the application, where the
 corresponding _uses_ entry is `<<VX_IX_USE_APPLICATION_CREATE,VX_IX_USE_APPLICATION_CREATE>>` should be
 filled in by the application; all other entries will be supplied by the
-framework and may be initialised by the application to NULL.
+framework and may be initialized by the application to NULL.
 The _uses_ array must have the identical length and content as given at the
 time of export, and the value of _numrefs_ must also match; these measures
 increase confidence that the import contains the correct data.
@@ -712,7 +708,7 @@ new parameter is of the correct type to run with the graph, which cannot be
 re-verified.
 If the reference supplied is not suitable, an error will be returned, but
 there may be circumstances where changing graph parameters for unsuitable
-ones is not detected and could lead to implementation-dependent behaviour;
+ones is not detected and could lead to implementation-defined behavior;
 one such circumstance is when the new parameters are images corresponding to
 overlapping regions of interest.
 The user should avoid these circumstances.

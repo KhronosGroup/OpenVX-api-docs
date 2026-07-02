@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 The Khronos Group Inc.
+ * Copyright (c) 2023-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef _OPENVX_SUPPLEMENTARY_DATA_H_
-#define _OPENVX_SUPPLEMENTARY_DATA_H_
+#ifndef OPENVX_SUPPLEMENTARY_DATA_H
+#define OPENVX_SUPPLEMENTARY_DATA_H
 
 #include <VX/vx_khr_user_data_object.h>
 #ifdef  __cplusplus
@@ -45,7 +45,7 @@ extern "C" {
  * The number of bytes copied is given by the valid size of the source and the valid size of the destination is set to this value.
  * If it does not match, the function returns the status VX_ERROR_INVALID_TYPE.
 */
-VX_API_ENTRY vx_status vxSetSupplementaryUserDataObject(vx_reference destination, const vx_user_data_object source);
+VX_API_ENTRY vx_status VX_API_CALL vxSetSupplementaryUserDataObject(vx_reference destination, const vx_user_data_object source);
 
 /*!
  * \brief Set supplementary and extend supplementary data object for a reference using another object and local data as the source
@@ -76,7 +76,7 @@ VX_API_ENTRY vx_status vxSetSupplementaryUserDataObject(vx_reference destination
  * \retval VX_FAILURE                  Indicates a generic error code, used when no other describes the error
  * 
 */
-VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destination, const vx_user_data_object source, const void *user_data, vx_uint32 source_bytes, vx_uint32 user_bytes);
+VX_API_ENTRY vx_status VX_API_CALL vxExtendSupplementaryUserDataObject(vx_reference destination, const vx_user_data_object source, const void *user_data, vx_uint32 source_bytes, vx_uint32 user_bytes);
 
 /*!
  * \brief Return the supplementary user data object associated with a given reference, if it exists.
@@ -94,7 +94,7 @@ VX_API_ENTRY vx_status vxExtendSupplementaryUserDataObject(vx_reference destinat
  *  VX_FAILURE                 Indicates a generic error code, used when no other describes the error
  *  VX_SUCCESS                 Reference is valid
  */
-VX_API_ENTRY vx_user_data_object vxGetSupplementaryUserDataObject(vx_reference ref, const vx_char * type_name, vx_status *status);
+VX_API_ENTRY vx_user_data_object VX_API_CALL vxGetSupplementaryUserDataObject(vx_reference ref, const vx_char * type_name, vx_status *status);
 
 #ifdef  __cplusplus
 }

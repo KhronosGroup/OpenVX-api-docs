@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2022 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef _OPENVX_IMAGE_RAW_H_
-#define _OPENVX_IMAGE_RAW_H_
+#ifndef OPENVX_IMAGE_RAW_H
+#define OPENVX_IMAGE_RAW_H
 
 /*!
  * \file
@@ -203,7 +203,6 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualRawImage(vx_graph graph,
  * \arg <tt>\ref VX_WRITE_ONLY</tt> means that data is copied into the image object from the application memory
  * \param [in] user_mem_type A <tt>\ref vx_memory_type_e</tt> enumeration that specifies
  * the memory type of the memory referenced by the user_addr.
- * \param [in] flags An integer that allows passing options to the copy operation.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors; any other value indicates failure.
  * \retval VX_ERROR_OPTIMIZED_AWAY This is a reference to a virtual image that cannot be

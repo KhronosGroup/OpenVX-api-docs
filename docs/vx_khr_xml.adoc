@@ -102,10 +102,8 @@ The Khronos Extension for OpenVX XML Import and Export Support.
 
   * `<<vxExportToXML>>`
   * `<<vxGetImportReferenceByIndex>>`
-  * `<<vxGetImportReferenceByName>>`
   * `<<vxImportFromXML>>`
   * `<<vxQueryImport>>`
-  * `<<vxReleaseImport>>`
 
 // end::group_xml:summary[]
 
@@ -253,43 +251,6 @@ context.
 *Precondition:* `<<vxImportFromXML>>`
 // end::refpage:vxGetImportReferenceByIndex[]
 
-// tag::refpage:vxGetImportReferenceByName[]
-// [desc='',type='protos']
-==== vxGetImportReferenceByName
-
-// Brief text:
-Used to retrieve a reference by name from the import when the name is known
-beforehand.
-If multiple references have the same name, then _any_ one of them may be
-returned.
-
-include::api/protos/vxGetImportReferenceByName.txt[]
-
-
-// Detailed text:
-*Parameters*
-
-  * `[in]` _import_ - The reference to the import object.
-  * `[in]` _name_ - The reference string name.
-
-*Returns:* `vx_reference`
-
-*Return Values*
-
-  * 0 - Invalid import object or name does not match a reference in the
-    import object.
-  * * - The reference matching the requested name.
-
-[NOTE]
-.Note
-====
-Use `vxReleaseReference` to release the reference before releasing the
-context.
-====
-
-*Precondition:* `<<vxImportFromXML>>`
-// end::refpage:vxGetImportReferenceByName[]
-
 // tag::refpage:vxImportFromXML[]
 // [desc='',type='protos']
 ==== vxImportFromXML
@@ -313,13 +274,13 @@ include::api/protos/vxImportFromXML.txt[]
 The reference indices in the import object corresponds with the reference
 numbers in the XML file.
 It is assumed that the program has some means to know which references to
-use from imported list (either by name: `<<vxGetImportReferenceByName>>`, or
-by index from looking at the XML file (debug use case):
-`<<vxGetImportReferenceByIndex>>`).
-Alternativly, the program can use `<<vxGetImportReferenceByIndex>>` in a
+use from imported list (either by name using `vxGetImportReferenceByName()`,
+or by index from looking at the XML file (debug use case):
+`vxGetImportReferenceByIndex()`).
+Alternativly, the program can use `vxGetImportReferenceByIndex()` in a
 loop and query each one to understand what was imported.
 After all references of interest have been retrieved, this import obects
-should be released using `<<vxReleaseImport>>`.
+should be released using `vxReleaseImport()`.
 ====
 
 *Returns:* `<<vx_import>>` object containing references to the imported
@@ -351,39 +312,5 @@ include::api/protos/vxQueryImport.txt[]
 
 *Precondition:* `<<vxImportFromXML>>`
 // end::refpage:vxQueryImport[]
-
-// tag::refpage:vxReleaseImport[]
-// [desc='',type='protos']
-==== vxReleaseImport
-
-// Brief text:
-Releases a reference to an import object.
-Also internally releases its references to its imported objects.
-These imported objects may not be garbage collected until their total
-reference counts are zero.
-
-include::api/protos/vxReleaseImport.txt[]
-
-
-// Detailed text:
-*Parameters*
-
-  * `[in]` _import_ - The pointer to the import object to release.
-
-*Returns:* A `vx_status_e` enumeration.
-
-*Return Values*
-
-  * `<<VX_SUCCESS,VX_SUCCESS>>` - No errors.
-  * `<<VX_ERROR_INVALID_REFERENCE,VX_ERROR_INVALID_REFERENCE>>` - If import is not a `<<vx_import>>`.
-
-[NOTE]
-.Note
-====
-After returning from this function the reference will be zeroed.
-====
-
-*Precondition:* `<<vxImportFromXML>>`
-// end::refpage:vxReleaseImport[]
 
 // end::group_xml:details[]

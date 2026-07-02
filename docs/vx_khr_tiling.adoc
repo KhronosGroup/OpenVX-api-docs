@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Khronos Group. This work is licensed under a
+// Copyright (c) 2018-2026 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
@@ -565,8 +565,6 @@ These informal requirements include:
 [[module_documentation]]
 = Module Documentation
 
-// @@@ TBD @@@
-
 [[group_tiling]]
 == Extension: User Tiling API
 
@@ -978,7 +976,7 @@ include::api/enums/vx_border_tiling_e.txt[]
   * [[VX_BORDER_MODE_SELF]] `VX_BORDER_MODE_SELF` - This value indicates
     that the author of the tiling kernel wrote code to handle border
     conditions into the kernel itself.
-    If this mode is set, it can not be overriden by a call to the
+    If this mode is set, it can not be overridden by a call to the
     vxSetNodeAttribute with VX_NODE_BORDER.
 // end::refpage:vx_border_tiling_e[]
 

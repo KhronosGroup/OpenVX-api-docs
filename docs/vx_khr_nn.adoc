@@ -187,7 +187,7 @@ A separate "`import/export`" extension defines a `vxImportBinary` function
 that can be implemented more efficiently.
 Implementations of `vxImportBinary` could read a weight file or perhaps an
 entire graph description directly without the need for an intermediate copy.
-The format of this binary will be implementation-dependent.
+The format of this binary will be implementation-defined.
 OpenVX implementations that support both the Neural Network extension and
 the binary import/export extension can use this more efficient method to set
 the Deep Neural Networks weights/biasses.
@@ -631,7 +631,7 @@ include::api/protos/vxConvolutionLayer.txt[]
 This function implement Convolutional Network Convolution layer.
 For fixed-point data types, a fixed point calculation is performed with
 round and saturate according to the number of accumulator bits.
-The number of the accumulator bits are implementation defined, and should be
+The number of the accumulator bits are implementation-defined, and should be
 at least 16.
 
 round: rounding according the `vx_round_policy_e` enumeration.
@@ -744,7 +744,7 @@ up-sampling the inputs with zeros insertions between the inputs, and
 convolving the Deconvolution kernels on the up-sampled result.
 For fixed-point data types, a fixed point calculation is performed with
 round and saturate according to the number of accumulator bits.
-The number of the accumulator bits are implementation defined, and should be
+The number of the accumulator bits are implementation-defined, and should be
 at least 16.
 
 round: rounding according the `vx_round_policy_e` enumeration.
@@ -785,7 +785,7 @@ between the [eq]#upscale~x~# and [eq]#upscale~y~# different possible output
 sizes.
 [eq]#upscale~x~# and [eq]#upscale~y~# are calculated by the relation between
 input and output.
-[eq]#a~x~# and [eq]#a~y~# must be positive and smaller then [eq]#upscale~x~#
+[eq]#a~x~# and [eq]#a~y~# must be positive and smaller than [eq]#upscale~x~#
 and [eq]#upscale~y~# respectively.
 Since the padding parameter is on the output, the effective input padding
 is:
@@ -849,7 +849,7 @@ include::api/protos/vxFullyConnectedLayer.txt[]
 This function implement Fully connected Convolutional Network layers.
 For fixed-point data types, a fixed point calculation is performed with
 round and saturate according to the number of accumulator bits.
-The number of the accumulator bits are implementation defined, and should be
+The number of the accumulator bits are implementation-defined, and should be
 at least 16.
 
 round: rounding according the `vx_round_policy_e` enumeration.
@@ -923,7 +923,7 @@ Each input value is divided by
 latexmath:[(bias + \frac{\alpha}{n} \sum_i x^2_i)^\beta]
 
 where [eq]#n# is the number of elements to normalize across.
-and the sum is taken over a rectangle region centred at that value (zero
+and the sum is taken over a rectangle region centered at that value (zero
 padding is added where necessary).
 
 *Parameters*
@@ -972,7 +972,7 @@ Therefore, we use here the term x for the width dimension and y for the
 height dimension.
 
 Pooling operation is a function operation over a rectangle size and then a
-nearest neighbour down scale.
+nearest neighbor down scale.
 Here we use pooling_size_x and pooling_size_y to specify the rectangle size
 on which the operation is performed.
 

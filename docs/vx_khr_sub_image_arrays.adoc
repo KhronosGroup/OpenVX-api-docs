@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Khronos Group. This work is licensed under a
+// Copyright (c) 2023-2026 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
@@ -35,6 +35,10 @@ toc::[]
 =  Extension to support object arrays of sub-images
 [[sec_purpose]]
 == Purpose
+
+NOTE: This extension is documented with the canonical name `vx_khr_sub_image_object_array` to match
+the public header `VX/vx_khr_sub_image_object_array.h`. Older documents may refer to
+`vx_khr_sub_image_arrays`.
 
 Node replication is a useful mechanism whereby several images may be processed the same way, in parallel. To accomplish this, nodes are connected with data objects that are the first elements in object arrays, and the nodes then replicated. Often it is convenient to perform some graph operations on sub-images, such as regions of interest or single channels from a multi-channel image, and this is accomplished by creating the necessary sub-image and connecting this to one or more nodes. However, since it is not possible currently to create object arrays that are sub-images, it is not possible to replicate these nodes.
 

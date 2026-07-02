@@ -81,7 +81,7 @@ used so that the import program can reference a reference by name.
 *Schema type:* openvx.type
 
 The 'openvx' tag encapsulates the entire OpenVX element.
-The 'references' attribute informs the parser as to the the number of OpenVX
+The 'references' attribute informs the parser as to the number of OpenVX
 references that are contained in the xml file.
 Each data and graph object that corresponds to an OpenVX object will have a
 unique reference number in the xml file.

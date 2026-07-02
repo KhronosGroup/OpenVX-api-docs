@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 The Khronos Group Inc.
+ * Copyright (c) 2025-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 
 
-#ifndef VX_TARGET_KERNEL_H_
-#define VX_TARGET_KERNEL_H_
+#ifndef VX_KHR_TARGET_KERNEL_H
+#define VX_KHR_TARGET_KERNEL_H
 
 #include <VX/vx.h>
 

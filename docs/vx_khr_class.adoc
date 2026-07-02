@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Khronos Group. This work is licensed under a
+// Copyright (c) 2018-2026 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
@@ -110,6 +110,7 @@ formats.
 
 *Enumerations*
 
+  * `<<vx_kernel_class_ext_e>>`
   * `<<vx_classifier_model_format_e>>`
   * `<<vx_classifier_type_e>>`
 
@@ -140,6 +141,21 @@ include::api/basetypes/vx_classifier_model.txt[]
 
 === Enumerations
 
+// tag::refpage:vx_kernel_class_ext_e[]
+// [desc='',type='enums']
+==== vx_kernel_class_ext_e
+
+// Brief text:
+The enumeration lists all classifier extension kernels.
+
+include::api/enums/vx_kernel_class_ext_e.txt[]
+
+*Enumerator*
+
+  * [[VX_KERNEL_SCAN_CLASSIFIER]] `VX_KERNEL_SCAN_CLASSIFIER` - The
+    Classifier Extension scan kernel.
+// end::refpage:vx_kernel_class_ext_e[]
+
 // tag::refpage:vx_classifier_model_format_e[]
 // [desc='',type='enums']
 ==== vx_classifier_model_format_e
@@ -156,8 +172,8 @@ include::api/enums/vx_classifier_model_format_e.txt[]
 
   * [[VX_CLASSIFIER_MODEL_UNDEFINED]] `VX_CLASSIFIER_MODEL_UNDEFINED` -
     Undefined binary format.
-    Using this enumeration will result in an implementation defined
-    behaviour.
+    Using this enumeration will result in an implementation-defined
+    behavior.
 // end::refpage:vx_classifier_model_format_e[]
 
 // tag::refpage:vx_classifier_type_e[]
@@ -171,7 +187,7 @@ include::api/enums/vx_classifier_type_e.txt[]
 
 *Enumerator*
 
-  * [[VX_TYPE_CLASSIFER_MODEL]] `VX_TYPE_CLASSIFER_MODEL` - A
+  * [[VX_TYPE_CLASSIFIER_MODEL]] `VX_TYPE_CLASSIFIER_MODEL` - A
     `<<vx_classifier_model>>` type.
 // end::refpage:vx_classifier_type_e[]
 

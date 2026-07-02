@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2025 The Khronos Group Inc.
+ * Copyright (c) 2012-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef _OPENVX_NODE_SEND_COMMAND_H_
-#define _OPENVX_NODE_SEND_COMMAND_H_
+#ifndef OPENVX_NODE_SEND_COMMAND_H
+#define OPENVX_NODE_SEND_COMMAND_H
 
 /*!
  * \file
@@ -29,6 +29,15 @@
 #ifdef  __cplusplus
 extern "C" {
 #endif
+
+/*! \brief Node send command enumeration extension to the <tt>\ref vx_node_attribute_e</tt> enumeration type.
+ * \ingroup group_node_send_command
+ */
+/*!
+ * \brief Attribute which queries if a node has been optimized away, is not
+ *        replicated, or the number of instances that exist if it is replicated
+ */
+#define VX_NODE_NUM_WITH_REPLICAS (VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0xA)
 
 /*!
  * \brief Constant to indicate that a timeout parameter to an

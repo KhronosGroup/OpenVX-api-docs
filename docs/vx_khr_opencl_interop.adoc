@@ -356,9 +356,9 @@ This OpenCL context and global _coordination command queue_ can be queried using
 
 If the OpenVX context is created using `<<vxCreateContext>>` or
 `<<vxCreateContextFromCL>>` with `opencl_context` as NULL,
-the OpenCL context used by OpenVX is implementation dependent.
+the OpenCL context used by OpenVX is implementation-defined.
 If the `opencl_command_queue` is NULL,
-the global _coordination command queue_ used by OpenVX is implementation dependent.
+the global _coordination command queue_ used by OpenVX is implementation-defined.
 
 The global _coordination command queue_ must be created using the OpenCL context used by OpenVX.
 

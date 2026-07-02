@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2025 Khronos Group. This work is licensed under a
+// Copyright (c) 2017-2026 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
@@ -616,7 +616,7 @@ In cases where there are several graph parameters in a pipelined graph, to incre
 
 There are two other methods available for doing this: 
 
-1. Wait for an event and process it. Because this is for any event, it includes user events, graph parameter events, etc. on all graphs. Therefore it is necessary to create a broker process to dispatch tasks for event processing, and this architecture may not always be suitable and could require an additional signalling mechanism.
+1. Wait for an event and process it. Because this is for any event, it includes user events, graph parameter events, etc. on all graphs. Therefore it is necessary to create a broker process to dispatch tasks for event processing, and this architecture may not always be suitable and could require an additional signaling mechanism.
 2. Poll for each parameter in turn; this is not efficient as it either burns cpu time, or if a sleep mechanism is used, results in a lack of responsivity.
 
 Graph events are intended to improve efficiency when handling pipelined graphs with multiple parameters.
@@ -798,7 +798,7 @@ include::api/enums/vx_graph_attribute_pipelining_e.txt[]
 [NOTE]
 .Note
 ====
-Setting the timeout attribute `<<VX_GRAPH_TIMEOUT>>` does not set any limit upon the duration of graph execution, it merely prevents the above-mentioned functions from delaying more than the time given. There are no other requirements upon what the framework should do; it is up to the application to recognise the timeout and take appropriate action.
+Setting the timeout attribute `<<VX_GRAPH_TIMEOUT>>` does not set any limit upon the duration of graph execution, it merely prevents the above-mentioned functions from delaying more than the time given. There are no other requirements upon what the framework should do; it is up to the application to recognize the timeout and take appropriate action.
 ====
   * [[VX_GRAPH_EVENT_TIMEOUT]]
    `<<VX_GRAPH_EVENT_TIMEOUT>>` - Sets or returns the timeout value, in milliseconds, for the function: `vxWaitGraphEvent`. Read-write. Use a `vx_uint32` parameter, or the implementation-defined `<<VX_TIMEOUT_WAIT_FOREVER>>`. The implementation shall initially set this attribute to `<<VX_TIMEOUT_WAIT_FOREVER>>`. `[*REQ-PI143*]`[[REQ-PI143]]
@@ -806,10 +806,10 @@ Setting the timeout attribute `<<VX_GRAPH_TIMEOUT>>` does not set any limit upon
 [NOTE]
 .Note
 ====
-Setting the timeout attribute `<<VX_GRAPH_EVENT_TIMEOUT>>` does not set any limit upon the duration of graph execution, it merely prevents the above-mentioned function from delaying more than the time given. There are no other requirements upon what the framework should do; it is up to the application to recognise the timeout and take appropriate action.
+Setting the timeout attribute `<<VX_GRAPH_EVENT_TIMEOUT>>` does not set any limit upon the duration of graph execution, it merely prevents the above-mentioned function from delaying more than the time given. There are no other requirements upon what the framework should do; it is up to the application to recognize the timeout and take appropriate action.
 ====
   * [[VX_GRAPH_PIPELINE_DEPTH]]
-   `<<VX_GRAPH_PIPELINE_DEPTH>>` - Set or return the graph pipeline depth; the depth used in the graph is known after graph verification. Read-write. Us a `vx_uint32` parameter. `[*REQ-PI018*]`[[REQ-PI018]]
+   `<<VX_GRAPH_PIPELINE_DEPTH>>` - Set or return the graph pipeline depth; the depth used in the graph is known after graph verification. Read-write. Use a `vx_uint32` parameter. `[*REQ-PI018*]`[[REQ-PI018]]
 
 [NOTE]
 .Note
@@ -817,7 +817,7 @@ Setting the timeout attribute `<<VX_GRAPH_EVENT_TIMEOUT>>` does not set any limi
 `[*REQ-PI019*]`[[REQ-PI019]]
 The framework will calculate the maximum depth of pipeline that is sensible for any given graph. It would be useful for the user to be able to obtain this data in a programmatic way and modify execution accordingly, for example to know that result dequeuing is possible after queuing a certain number of inputs. An additional attribute allows this data to be obtained from a verified graph.
 
-The attribute is made read-write, so that an application may modify pipeline behaviour. Example use cases are to save memory by restricting pipeline depth, or to effectively turn off pipelining by setting the depth to 1 for debugging purposes.
+The attribute is made read-write, so that an application may modify pipeline behavior. Example use cases are to save memory by restricting pipeline depth, or to effectively turn off pipelining by setting the depth to 1 for debugging purposes.
 
 `[*REQ-PI020*]`[[REQ-PI020]]
  If the attribute is set to a non-zero value before graph verification, the application-supplied value will be used, otherwise the value will be calculated by the framework.
@@ -897,7 +897,7 @@ When graph schedule mode is `<<VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,VX_GRAPH_SCHEDU
     which time it will stall the graph until the reference becomes
     available. This allows application to schedule a graph even when all
     parameters references are not yet available, i.e do a "`late`" enqueue.
-    However, exact behaviour is implementation specific.
+    However, exact behavior is implementation specific.
 
 When graph schedule mode is `<<VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL,VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL>>`:
 
@@ -964,7 +964,7 @@ Additionally, this function is responsible for adding parameters to the graph, i
 1. The first reference given in the list must be attached to at least one node parameter in the graph `[*REQ-PI033*]`[[REQ-PI033]]
 2. A reference may not appear as the first reference in more than one list `[*REQ-PI034*]`[[REQ-PI034]]
 3. The first reference in a list may not be NULL `[*REQ-PI035*]`[[REQ-PI035]]
-4. If a NULL reference is otherwise specified in the list, the results are implementation-dependent
+4. If a NULL reference is otherwise specified in the list, the results are implementation-defined
 
 `[*REQ-PI036*]`[[REQ-PI036]]
 References in the list should be checked for compatibility so that the graphs are guaranteed to run (for example, all references may need to have the same metadata). Note that implementations may allow references of different types if connected nodes (and nodes subsequently connected to those nodes) allow a generic `VX_TYPE_REFERENCE` as the type.
@@ -1138,7 +1138,7 @@ This functionality allows more references to be added to those already defined b
  * `[in]` graph - the graph whose parameter reference list is to be extended `[*REQ-PI067*]`[[REQ-PI067]]
  * `[in]` graph_parameter_index - index of the affected graph parameter. Must be less than the number of parameters in this graph. `[*REQ-PI068*]`[[REQ-PI068]]
  * `[in]` number_to_add - the number of new references to be added. Must be greater than zero. `[*REQ-PI069*]`[[REQ-PI069]]
- * `[in]` new_references - array holding the new references, must be same length as "number_to_add". There may be an implementation-dependent limit on the total number of references per graph parameter. `[*REQ-PI070*]`[[REQ-PI070]]
+ * `[in]` new_references - array holding the new references, must be same length as "number_to_add". There may be an implementation-defined limit on the total number of references per graph parameter. `[*REQ-PI070*]`[[REQ-PI070]]
 
 *Returns:* A `vx_status_e` enumeration.
 
@@ -1190,7 +1190,7 @@ User MUST use `<<vxGraphParameterDequeueDoneRef>>` to get back the processed or 
 The references that are enqueued MUST be the references listed by calling
 `<<vxSetGraphScheduleConfig>>` before graph verification or subsequently added by using
  `<<vxAddReferencesToGraphParameterList>>`. If a reference outside this list is provided
-then behaviour is undefined.
+then behavior is undefined.
 
 *Parameters*
 
@@ -1467,7 +1467,7 @@ node whose completion causes a new execution of the graph to be triggered.  `[*R
 the graph is not pipelined by the implementation, then the trigger_node
 parameter is ignored and the graph will be re-triggered upon each graph
 completion. The trigger_node parameter is optional, so if it is set to NULL,
-then the trigger node is implementation dependent.
+then the trigger node is implementation-defined.
 
 *Parameters*
 
@@ -1748,7 +1748,7 @@ include::api/enums/vx_context_attribute_event_e.txt[]
 [NOTE]
 .Note
 ====
-Setting timeout attributes does not in any way change the occurrence of events, it merely prevents the above-mentioned functions from delaying more than the time given. There are no other requirements upon what the framework should do; it is up to the application to recognise the timeout and take appropriate action.
+Setting timeout attributes does not in any way change the occurrence of events, it merely prevents the above-mentioned functions from delaying more than the time given. There are no other requirements upon what the framework should do; it is up to the application to recognize the timeout and take appropriate action.
 ====
 
 
@@ -1862,7 +1862,7 @@ If `vxReleaseContext` is called while an application is blocked on
 `<<vxWaitEvent>>`, the behavior is not defined by OpenVX.
 
 If `<<vxWaitEvent>>` is called simultaneously from multiple thread/task
-contexts then its behaviour is not defined by OpenVX.
+contexts then its behavior is not defined by OpenVX.
 
 *Parameters*
 
@@ -2035,9 +2035,9 @@ After `<<vxDisableGraphEvents>>` is called, if _vxWaitGraphEvent(.., .., vx_fals
 [NOTE]
 ====
 .Notes
-If `vxReleaseContext` or `vxReleaseGraph(&graph)` is called while an application is blocked on _vxWaitGraphEvent(Graph,...)_, the behaviour is not defined.
+If `vxReleaseContext` or `vxReleaseGraph(&graph)` is called while an application is blocked on _vxWaitGraphEvent(Graph,...)_, the behavior is not defined.
 
-If _vxWaitGraphEvent(Graph,...)_ is called simultaneously from different threads with the same first parameter, then the behaviour is not defined.
+If _vxWaitGraphEvent(Graph,...)_ is called simultaneously from different threads with the same first parameter, then the behavior is not defined.
 
 ====
 
@@ -2295,20 +2295,20 @@ This API is provided to give information in a more convenient way than is possib
   * `[in]` _num_params_ -  the number of parameters required by the kernel, as returned by querying the kernel for the attribute  VX_KERNEL_PARAMETERS. If the value is incorrect, the function will return VX_ERROR_INVALID_PARAMETERS. `[*REQ-PI225*]`[[REQ-PI225]]
   * `[out]` _parameter_config_ -  an array with the correct number of entries to store the returned data for all the parameters. `[*REQ-PI226*]`[[REQ-PI226]]
 
-The function is intended to return data after a kernel has been finalised; if the function is called before a kernel is finalised, the results are not defined.
+The function is intended to return data after a kernel has been finalized; if the function is called before a kernel is finalized, the results are not defined.
 
 *Returns:* A `vx_status_e` enumeration.
 
 *Return Values*
 
  * `VX_SUCCESS` - No errors. `[*REQ-PI227*]`[[REQ-PI227]]
- * `VX_ERROR_INVALID_REFERENCE` The kernel was invalid or not finalised `[*REQ-PI228*]`[[REQ-PI228]]
+ * `VX_ERROR_INVALID_REFERENCE` The kernel was invalid or not finalized `[*REQ-PI228*]`[[REQ-PI228]]
  * `VX_ERROR_INVALID_PARAMETERS` The number of parameters is incorrect, or a NULL pointer was passed for _parameter_config_. `[*REQ-PI229*]`[[REQ-PI229]]
 
 
 The meta format object (member _meta_ of `<<vx_kernel_parameter_config_t>>`) may be returned so that graphs may be created using appropriate objects for imported kernels. If a meta format object is returned (i.e., _meta_ is not NULL), it must be released using `vxReleaseReference(vxCastRefFromMetaFormatP(&meta))`, as there is no specific `vxReleaseMetaFormat()` function.
 
-An implementation is not required to return a meta format object for all or indeed any of the kernel parameters but if it does so it could allow an application to create graphs that can use different imported kernels in a dynamic fashion. When querying the meta format object the application should only query those attributes appropriate for the object type; _c.f._, `vxQueryMetaFormatAttribute()`, and The Kernel Import Extension to OpenVX 1.3.
+An implementation is not required to return a meta format object for all or indeed any of the kernel parameters but if it does so it could allow an application to create graphs that can use different imported kernels in a dynamic fashion. When querying the meta format object the application should only query those attributes appropriate for the object type; _c.f._, `vxQueryMetaFormatAttribute()`, and The Kernel Import Extension to OpenVX 1.3.2.
 
 An application should check for non-null meta format objects and release them even if it does not support dynamic graph creation.
 
@@ -2328,15 +2328,15 @@ The intention is that eventually `vxSetGraphParameterByIndex` may be deprecated.
 
 === Deprecation of `vxAddParameterToGraph`
 `[*REQ-PI233*]`[[REQ-PI233]]
-This API is deprecated in favour of `<<vxSetGraphScheduleConfig>>` and a new function `<<vxAddReferencesToGraphParameterList>>`. If it is used, it will behave as before, but any graph parameter assignments will be scrapped if `<<vxSetGraphScheduleConfig>>` is subsequently called.
+This API is deprecated in favor of `<<vxSetGraphScheduleConfig>>` and a new function `<<vxAddReferencesToGraphParameterList>>`. If it is used, it will behave as before, but any graph parameter assignments will be scrapped if `<<vxSetGraphScheduleConfig>>` is subsequently called.
 
 === Deprecation of `vxGetGraphParameterByIndex`
 `[*REQ-PI234*]`[[REQ-PI234]]
-The parameter object returned by `vxGetGraphParameterByIndex` is insufficiently specified. The assumption has been that it is the same object as originally set using `vxAddParameterToGraph`, an API that we would like to deprecate. However, the utility of returning a parameter object in this way is also questionable, and we would like to deprecate the function in favour of a more useful interface to obtain more thorough information about all the graph parameters, i.e., `<<vxGetGraphParameterConfig>>`.
+The parameter object returned by `vxGetGraphParameterByIndex` is insufficiently specified. The assumption has been that it is the same object as originally set using `vxAddParameterToGraph`, an API that we would like to deprecate. However, the utility of returning a parameter object in this way is also questionable, and we would like to deprecate the function in favor of a more useful interface to obtain more thorough information about all the graph parameters, i.e., `<<vxGetGraphParameterConfig>>`.
 
 == Deprecation of the parameter object
 `[*REQ-PI235*]`[[REQ-PI235]]
-The `vx_parameter` object may be deprecated if the the above changes are made. The following APIs and definitions may be removed if backwards-compatibility is not required:
+The `vx_parameter` object may be deprecated if the above changes are made. The following APIs and definitions may be removed if backwards-compatibility is not required:
 
 [.options="header"]
 |====
@@ -2380,7 +2380,7 @@ The following table summarises the different extensions and whether requirements
 | vx_khr_raw_image | No requirements
 | vx_khr_safe_casts | No requirements
 | vx_khr_s16 | No requirements
-| vx_khr_sub_image_arrays | No requirements
+| vx_khr_sub_image_object_array | No requirements
 | vx_khr_swap_move | No requirements
 | vx_khr_tensor_from_image | No requirements
 | vx_khr_tiling | No requirements
@@ -2396,7 +2396,7 @@ The rules for deciding the direction of graph parameters and additional rule for
 == The Buffer Aliasing Extension
 
 `[*REQ-PI237*]`[[REQ-PI237]]
-If the buffer aliasing function is supported, and a kernel has given the hint that it supports in-place processing, and the framework is able to support an aliased buffer on a leaf node, the the direction of a graph parameter assigned to such an aliased reference will be given as `VX_BIDIRECTIONAL` when reported by the new function `<<vxGetGraphParameterConfig>>`.
+If the buffer aliasing function is supported, and a kernel has given the hint that it supports in-place processing, and the framework is able to support an aliased buffer on a leaf node, the direction of a graph parameter assigned to such an aliased reference will be given as `VX_BIDIRECTIONAL` when reported by the new function `<<vxGetGraphParameterConfig>>`.
 
 == Export and import extension
 
@@ -2408,7 +2408,7 @@ In order to reduce the size of the list of references for explicit export, it is
 
 == The feature sets description
 
-The feature sets document should be revised to include pipelining, batching and streaming. In particular the safety-critical feature set should specify which functionalities are allowed in the deployment feature set and which are restricted to the development set. The following is a list of those APIs that should be restricted to the the development set:
+The feature sets document should be revised to include pipelining, batching and streaming. In particular the safety-critical feature set should specify which functionalities are allowed in the deployment feature set and which are restricted to the development set. The following is a list of those APIs that should be restricted to the development set:
 
 * `<<vxSetGraphScheduleConfig>>`
 * `<<vxEnableGraphStreaming>>`

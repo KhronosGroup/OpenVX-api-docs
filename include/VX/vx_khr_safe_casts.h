@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 The Khronos Group Inc.
+ * Copyright (c) 2023-2026 The Khronos Group Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef _OPENVX_SAFE_CASTS_H_
-#define _OPENVX_SAFE_CASTS_H_
+#ifndef OPENVX_SAFE_CASTS_H
+#define OPENVX_SAFE_CASTS_H
 #define OPENVX_KHR_SAFE_CASTS  "vx_khr_safe_casts"
 
 #include <VX/vx.h>
@@ -25,23 +25,23 @@ extern "C" {
 #endif
 #define __MAKE_SAFE_DOWNCASTS__(typename, Name)\
 /*! \brief safely get a new vx_reference for the given vx_##typename variable*/\
-VX_API_ENTRY vx_reference vxGetRefFrom##Name(const vx_##typename *typename);\
+VX_API_ENTRY vx_reference VX_API_CALL vxGetRefFrom##Name(const vx_##typename *typename);\
 \
 /*! \brief safe cast a vx##typename to a generic vx_reference*/\
-VX_API_ENTRY vx_reference vxCastRefFrom##Name(vx_##typename typename);\
+VX_API_ENTRY vx_reference VX_API_CALL vxCastRefFrom##Name(vx_##typename typename);\
 \
 /*! \brief safe cast a pointer to vx##typename to a pointer to vx_reference */\
-VX_API_ENTRY vx_reference *vxCastRefFrom##Name##P(vx_##typename *p_##typename);\
+VX_API_ENTRY vx_reference * VX_API_CALL vxCastRefFrom##Name##P(vx_##typename *p_##typename);\
 \
 /*! \brief safe cast a const pointer to vx##typename to a const pointer to vx_reference */\
-VX_API_ENTRY const vx_reference *vxCastRefFrom##Name##ConstP(const vx_##typename *p_##typename);
+VX_API_ENTRY const vx_reference * VX_API_CALL vxCastRefFrom##Name##ConstP(const vx_##typename *p_##typename);
 
 #define __MAKE_SAFE_CASTS__(typename, Name) \
 /*! \brief safely get a new vx_##typename or an error object from a vx_reference*/\
-VX_API_ENTRY vx_##typename vxGetRefAs##Name(const vx_reference *ref, vx_status *status); \
+VX_API_ENTRY vx_##typename VX_API_CALL vxGetRefAs##Name(const vx_reference *ref, vx_status *status); \
 \
 /*! \brief safely upcast a vx_reference to a vx_##typename or an error object */\
-VX_API_ENTRY vx_##typename vxCastRefAs##Name(vx_reference ref, vx_status *status);\
+VX_API_ENTRY vx_##typename VX_API_CALL vxCastRefAs##Name(vx_reference ref, vx_status *status);\
 \
 __MAKE_SAFE_DOWNCASTS__(typename, Name)
 

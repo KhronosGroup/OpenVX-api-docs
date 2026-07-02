@@ -20,7 +20,7 @@ time:
 * Raphael Cano - Robert Bosch GmbH
 * Jesse Villarreal - TI
 * Isaac Wong - Ambarella International LP
-* Viktor Gyenes - AI Motive
+* Viktor Gyenes - aiMotive
 
 ## Background
 
@@ -157,7 +157,7 @@ since kernel implementations do not interact with the graph or other abstract ob
 The actual contents of [vx_target_kernel_instance](#vx_target_kernel_instance) and
 [vx_object_desc](#vx_object_desc), and the mechanism by which the writers of the user target kernels
 can access required information (such as image width/height, buffer addresses, etc) are not
-specified in this extension.  These details are implementation dependent.  The rationale for this
+specified in this extension.  These details are implementation-defined.  The rationale for this
 are as follows:
 
 - The priority for this extension is a lightweight implementation on targets to optimize for memory

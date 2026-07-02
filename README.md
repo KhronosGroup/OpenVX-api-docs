@@ -26,7 +26,8 @@ api-docs/
 │   ├── doxygen/                   # Doxygen build for header documentation
 │   ├── Makefile                   # Spec build makefile
 │   └── README.adoc                # Detailed build instructions
-├── .gitlab-ci.yml               # CI/CD pipeline configuration
+├── .github/workflows/          # GitHub Actions CI/CD workflows
+├── .gitlab-ci.yml               # GitLab CI/CD pipeline configuration
 ├── Makefile                     # Top-level makefile (Doxygen)
 ├── LICENSE                      # Apache 2.0 License
 └── CODE_OF_CONDUCT.md
@@ -34,7 +35,7 @@ api-docs/
 
 ## Prerequisites
 
-The build runs on **Ubuntu 22.04** (used in CI). The following packages and tools are required:
+The build runs on **Ubuntu 24.04** (used in CI). All package names below are valid on 24.04; the toolchain ships Python 3.12 and Ruby 3.2. The following packages and tools are required:
 
 ### System Packages
 
@@ -52,6 +53,8 @@ sudo apt-get install -y texlive-latex-extra texlive-font-utils inkscape
 ```
 
 ### Ruby Gems
+
+Pinned to exact versions; verified to install and build on Ubuntu 24.04's Ruby 3.2.
 
 ```bash
 gem install asciidoctor-diagram -v 1.5.18
@@ -164,10 +167,18 @@ python docs/config/check-missing-apis.py -v
 
 ## CI/CD
 
-The GitLab CI pipeline (`.gitlab-ci.yml`) runs on Ubuntu 22.04 and:
-1. Installs all system dependencies and Ruby gems
-2. Runs `make all` from the `docs/` directory
-3. Archives PDF and HTML outputs as artifacts (retained for 2 weeks)
+Both pipelines run on Ubuntu 24.04 and perform the same steps:
+1. Install all system dependencies and Ruby gems
+2. Run `make all` from the `docs/` directory
+3. Archive PDF and HTML outputs as artifacts (retained for 2 weeks)
+
+### GitHub Actions
+
+The workflow (`.github/workflows/build.yml`) builds inside an `ubuntu:24.04` container. It runs on pushes to the `openvx_1.3.2`, `openvx_1.3.1`, `openvx_1.3`, and `openvx_1.2` branches, on pull requests, and via manual dispatch. Build outputs are uploaded with `actions/upload-artifact`.
+
+### GitLab CI
+
+The pipeline (`.gitlab-ci.yml`) builds with the `ubuntu:24.04` image and publishes the PDF and HTML outputs as pipeline artifacts.
 
 ## License
 

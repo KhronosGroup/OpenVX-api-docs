@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <registry>
     <comment>
-Copyright (c) 2012-2023 The Khronos Group Inc.
+Copyright (c) 2012-2026 The Khronos Group Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -75,16 +75,16 @@ server.
 #define <name>vxFormatArrayPointer</name>(ptr, index, stride) \
     (&amp;(((vx_uint8*)(ptr))[(index) * (stride)]))</type>
 
-        <type category="define">#define <name>VX_ATTRIBUTE_BASE</name>(vendor,object) (((vendor) &lt;&lt; 20) | (object &lt;&lt; 8))</type>
-        <type category="define">#define <name>VX_DF_IMAGE</name>(a,b,c,d) ((a) | (b &lt;&lt; 8) | (c &lt;&lt; 16) | (d &lt;&lt; 24))</type>
-        <type category="define">#define <name>VX_ENUM_BASE</name>(vendor,id) (((vendor) &lt;&lt; 20) | (id &lt;&lt; 12))</type>
+        <type category="define">#define <name>VX_ATTRIBUTE_BASE</name>(vendor,object) ((vx_int32)(((vx_uint32)(vendor) &lt;&lt; 20) | ((vx_uint32)(object) &lt;&lt; 8)))</type>
+        <type category="define">#define <name>VX_DF_IMAGE</name>(a,b,c,d) ((vx_uint32)(vx_uint8)(a) | ((vx_uint32)(vx_uint8)(b) &lt;&lt; 8U) | ((vx_uint32)(vx_uint8)(c) &lt;&lt; 16U) | ((vx_uint32)(vx_uint8)(d) &lt;&lt; 24U))</type>
+        <type category="define">#define <name>VX_ENUM_BASE</name>(vendor,id) ((vx_int32)(((vx_uint32)(vendor) &lt;&lt; 20) | ((vx_uint32)(id) &lt;&lt; 12)))</type>
         <type category="define">#define <name>VX_ENUM_TYPE</name>(e) (((vx_uint32)(e) &amp; VX_ENUM_TYPE_MASK) >> 12)</type>
-        <type category="define">#define <name>VX_KERNEL_BASE</name>(vendor,lib) (((vendor) &lt;&lt; 20) | (lib &lt;&lt; 12))</type>
+        <type category="define">#define <name>VX_KERNEL_BASE</name>(vendor,lib) ((vx_int32)(((vx_uint32)(vendor) &lt;&lt; 20) | ((vx_uint32)(lib) &lt;&lt; 12)))</type>
         <type category="define">#define <name>VX_LIBRARY</name>(e) (((vx_uint32)(e) &amp; VX_LIBRARY_MASK) >> 12)</type>
         <type category="define">#define <name>VX_TYPE</name>(e) (((vx_uint32)(e) &amp; VX_TYPE_MASK) >> 8)</type>
         <type category="define">#define <name>VX_VENDOR</name>(e) (((vx_uint32)(e) &amp; VX_VENDOR_MASK) >> 20)</type>
-        <type category="define">#define <name>VX_VERSION_MAJOR</name>(x) (((x) &amp; 0xFF) &lt;&lt; 8)</type>
-        <type category="define">#define <name>VX_VERSION_MINOR</name>(x) (((x) &amp; 0xFF) &lt;&lt; 0)</type>
+        <type category="define">#define <name>VX_VERSION_MAJOR</name>(x) ((vx_uint32)((vx_uint32)(x) &amp; 0xFFU) &lt;&lt; 8)</type>
+        <type category="define">#define <name>VX_VERSION_MINOR</name>(x) ((vx_uint32)((vx_uint32)(x) &amp; 0xFFU) &lt;&lt; 0)</type>
         <type category="define">#define <name>dimof</name>(x) (sizeof(x)/sizeof(x[0]))</type>
         <type category="define">#define <name>VX_TYPE_USER_DATA_OBJECT</name> 0x816</type>
         <type category="define">#define <name>VX_IMAGE_RAW_MAX_EXPOSURES</name> (3)</type>
@@ -128,7 +128,7 @@ server.
 
         <comment>Macro definitions from vx_khr_opencl.h</comment>
         <comment>vxImagePixel collides with the definition from vx_khr_tiling.h!</comment>
-        <type category="define">#define <name>vxImagePixel</name>(type, ptr, x, y, sx, sy) \
+        <type category="define" name="vxImagePixel_opencl">#define <name>vxImagePixel</name>(type, ptr, x, y, sx, sy) \
 (*(type *)(&amp;((uchar *)ptr)[((y) * sy) + ((x) * sx)]))</type>
         <type category="define">#define <name>vxArrayItem</name>(type, ptr, index, stride) \
 (*(type *)(&amp;((uchar *)ptr)[index*stride]))</type>
@@ -147,6 +147,7 @@ server.
         <type category="define">#define <name>vxDecFrequency2</name>(ptr, value, offset, range, num_bins) \
 ((offset &lt;= value) &amp;&amp; (value &lt;= (range+offset)) ? --ptr[(value-offset)*num_bins/range] : 0)</type>
 
+        <type category="basetype">typedef <type>uint32_t</type>  <name>vx_bitfield</name>;</type>
         <type category="basetype">typedef <type>char</type>      <name>vx_char</name>;</type>
         <type category="basetype">typedef <type>uint8_t</type>   <name>vx_uint8</name>;</type>
         <type category="basetype">typedef <type>uint16_t</type>  <name>vx_uint16</name>;</type>
@@ -156,8 +157,7 @@ server.
         <type category="basetype">typedef <type>int16_t</type>   <name>vx_int16</name>;</type>
         <type category="basetype">typedef <type>int32_t</type>   <name>vx_int32</name>;</type>
         <type category="basetype">typedef <type>int64_t</type>   <name>vx_int64</name>;</type>
-        <type category="basetype">typedef <type>uint32_t</type>  <name>vx_bitfield</name>;</type>
-        <type category="basetype" comment="EXPERIMENTAL_PLATFORM_SUPPORTS_16_FLOAT">typedef <type>hfloat</type>    <name>vx_float16</name>;</type>
+        <type category="basetype" comment="EXPERIMENTAL_PLATFORM_SUPPORTS_16_FLOAT">typedef <type>uint16_t</type>  <name>vx_float16</name>;</type>
         <type category="basetype">typedef <type>float</type>     <name>vx_float32</name>;</type>
         <type category="basetype">typedef <type>double</type>    <name>vx_float64</name>;</type>
         <type category="basetype">typedef <type>int32_t</type>   <name>vx_enum</name>;</type>
@@ -191,7 +191,7 @@ server.
         <type category="basetype">typedef struct _vx_remap *<name>vx_remap</name>;</type>
         <type category="basetype">typedef struct _vx_array *<name>vx_array</name>;</type>
         <type category="basetype">typedef struct _vx_object_array *<name>vx_object_array</name>;</type>
-        <type category="basetype">typedef struct _vx_tensor_t *<name>vx_tensor</name>;</type>
+        <type category="basetype">typedef struct _vx_tensor *<name>vx_tensor</name>;</type>
         <type category="basetype">typedef struct _vx_meta_format *<name>vx_meta_format</name>;</type>
         <type category="basetype">typedef struct _vx_user_data_object *<name>vx_user_data_object</name>;</type>
 
@@ -212,6 +212,8 @@ server.
         <type requires="VX/vx_types.h" name="uint64_t"/>
         <type requires="VX/vx_types.h" name="uintptr_t"/>
         <type requires="VX/vx_types.h" name="size_t"/>
+        <type name="cl_context"/>
+        <type name="cl_command_queue"/>
 
             <comment>Function pointer types</comment>
     <type category="funcpointer">typedef <type>vx_status</type> (*<name>vx_kernel_input_validate_f</name>)(<type>vx_node</type> node, <type>vx_uint32</type> index);</type>
@@ -219,12 +221,7 @@ server.
             <type>vx_node</type> node,
             <type>vx_uint32</type> index,
             <type>vx_meta_format</type> meta);</type>
-            <comment>#ifdef __cplusplus</comment>
-    <type category="funcpointer" name="vx_tiling_kernel_f">typedef void (*vx_tiling_kernel_f)(
-            <type>void</type>* parameters[],
-            <type>void</type>* tile_memory,
-            <type>vx_size</type> tile_memory_size);</type>
-        <comment>#else __cplusplus</comment>
+            <comment>#ifdef __cplusplus / #else __cplusplus</comment>
     <type category="funcpointer" name="vx_tiling_kernel_f">typedef void (*vx_tiling_kernel_f)(
             <type>void</type>* parameters[],
             <type>void</type>* tile_memory,
@@ -282,7 +279,7 @@ server.
             <member><type>vx_char</type> <name>name</name>[<enum>VX_MAX_KERNEL_NAME</enum>]</member>
             <member><type>vx_kernel_f</type> <name>function</name></member>
             <member><type>vx_param_description_t</type>* <name>parameters</name></member>
-            <member><type>vx_uint32</type> <name>num</name>Params</member>
+            <member><type>vx_uint32</type> <name>numParams</name></member>
             <member><type>vx_kernel_validate_f</type> <name>validate</name></member>
             <member><type>void</type>* <name>input_validate</name></member>
             <member><type>void</type>* <name>output_validate</name></member>
@@ -423,6 +420,7 @@ server.
         </type>
         <type category="union" name="vx_pixel_value_t">
             <member><type>vx_uint8</type> <name>RGB</name>[3]</member>
+            <member><type>vx_uint8</type> <name>RGBA</name>[4]</member>
             <member><type>vx_uint8</type> <name>RGBX</name>[4]</member>
             <member><type>vx_uint8</type> <name>YUV</name>[3]</member>
             <member><type>vx_bool</type> <name>U1</name></member>
@@ -555,6 +553,7 @@ server.
         <type name="vx_kernel_attribute_tiling_e" category="enum"/>
         <type name="vx_kernel_debug_ext_e" category="enum"/>
         <type name="vx_kernel_e" category="enum"/>
+        <type name="vx_kernel_class_ext_e" category="enum"/>
         <type name="vx_kernel_extras_ext_e" category="enum"/>
         <type name="vx_kernel_nn_ext_e" category="enum"/>
         <type name="vx_lbp_format_e" category="enum"/>
@@ -636,7 +635,7 @@ server.
         <enum name="OPENVX_KHR_NODE_SEND_COMMAND"       value="&quot;vx_khr_node_send_command&quot;"/>
         <enum name="VX_ATTRIBUTE_ID_MASK"               value="(0x000000FF)"/>
         <enum name="VX_CL_MAX_PLANES"                   value="(4)"/>
-        <enum name="VX_ENUM_IX_USE"                     value="0x18"/>
+        <enum name="VX_ENUM_IX_USE"                     value="0x1F"/>
         <enum name="VX_ENUM_MASK"                       value="(0x00000FFF)"/>
         <enum name="VX_ENUM_TYPE_MASK"                  value="(0x000FF000)"/>
         <enum name="VX_IMAGEPATCH_ADDR_INIT"            value="{0u, 0u, 0, 0, 0u, 0u, 0u, 0u, 0u}"/>
@@ -658,7 +657,7 @@ server.
         <enum name="VX_MAX_TARGET_NAME"                 value="(64)"/>
         <enum name="VX_MAX_TILING_PLANES"               value="(4)"/>
         <enum name="VX_MAX_VARIANT_NAME"                value="(64)"/>
-        <enum name="VX_PERF_INIT"                       value="{0ul, 0ul, 0ul, 0ul, 0ul, 0ul}"/>
+        <enum name="VX_PERF_INIT"                       value="{0ul, 0ul, 0ul, 0ul, 0ul, 0ul, 0ul, 0ul}"/>
         <enum name="VX_SCALE_PYRAMID_HALF"              value="(0.5f)"/>
         <enum name="VX_SCALE_PYRAMID_ORB"               value="((vx_float32)0.8408964f)"/>
         <enum name="VX_SCALE_UNITY"                     value="(1024u)"/>
@@ -674,6 +673,7 @@ server.
         <enum name="VX_VERSION_1_1"                     value="(VX_VERSION_MAJOR(1) | VX_VERSION_MINOR(1))"/>
         <enum name="VX_VERSION_1_2"                     value="(VX_VERSION_MAJOR(1) | VX_VERSION_MINOR(2))"/>
         <enum name="VX_VERSION_1_3"                     value="(VX_VERSION_MAJOR(1) | VX_VERSION_MINOR(3))"/>
+        <enum name="VX_VERSION_PATCH"                   value="(2)"/>
     </enums>
     <enums name="vx_ext_target_type_e" type="enum">
         <enum name="VX_TYPE_TARGET" value="0x816"/>
@@ -751,10 +751,13 @@ server.
         <enum name="VX_KERNEL_HOG_CELLS" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x3B"/>
         <enum name="VX_KERNEL_BILATERAL_FILTER" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x3C"/>
         <enum name="VX_KERNEL_SELECT" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x3D"/>
-        <enum name="VX_KERNEL_MAX_1_2" value="VX_KERNEL_SELECT + 1" comment="insert new kernels here"/>
         <enum name="VX_KERNEL_MAX" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x3E"/>
         <enum name="VX_KERNEL_MIN" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x3F"/>
+        <enum name="VX_KERNEL_MAX_1_2" value="VX_KERNEL_MIN + 1" comment="kernel added in OpenVX 1.3"/>
         <enum name="VX_KERNEL_WEIGHTED_AVERAGE" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x40"/>
+        <enum name="VX_KERNEL_MAX_1_3" value="VX_KERNEL_WEIGHTED_AVERAGE + 1" comment="insert new kernels here"/>
+        <enum name="VX_KERNEL_SWAP" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x41" comment="KHR Swap extension kernel"/>
+        <enum name="VX_KERNEL_MOVE" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_BASE) + 0x42" comment="KHR Move extension kernel"/>
     </enums>
     <enums name="vx_class_enum_e" type="enum">
         <enum name="VX_ENUM_CLASSIFIER_MODEL" value="0x1E"/>
@@ -769,11 +772,9 @@ server.
         <enum name="VX_INTERPOLATION_BICUBIC" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_INTERPOLATION) + 0x3"/>
         <enum name="VX_INTERPOLATION_MIPMAP" value="VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_INTERPOLATION) + 0x4"/>
     </enums>
-        <!-- defined in VX/vx_khr_class.h, subset of full definition below
-    <enums name="vx_kernel_nn_ext_e" type="enum">
+    <enums name="vx_kernel_class_ext_e" type="enum">
         <enum name="VX_KERNEL_SCAN_CLASSIFIER" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_CLASS_EXTENSION) + 0x0"/>
     </enums>
-        -->
     <enums name="vx_kernel_nn_ext_e" type="enum">
         <enum name="VX_KERNEL_CONVOLUTION_LAYER" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_NN_EXTENSION) + 0x0"/>
         <enum name="VX_KERNEL_FULLY_CONNECTED_LAYER" value="VX_KERNEL_BASE(VX_ID_KHRONOS, VX_LIBRARY_KHR_NN_EXTENSION) + 0x1"/>
@@ -958,11 +959,11 @@ server.
         <enum name="VX_TYPE_TENSOR"          value="0x815"/>
         <comment> Reserved for UserDataObject extension </comment>
         <comment> VX_TYPE_USER_DATA_OBJECT-> 0x816, </comment>
-            <comment> \todo add new object types here </comment>
     </enums>
     <enums name="vx_status_e" type="enum">
         <comment> add new error codes here </comment>
-        <enum name="VX_STATUS_MIN"                       value="-26"/>
+        <enum name="VX_STATUS_MIN"                       value="-27"/>
+        <enum name="VX_ERROR_GRAPH_NOT_VERIFIED"         value="-26"/>
         <enum name="VX_ERROR_TIMEOUT"                    value="-25"/>
         <enum name="VX_ERROR_REFERENCE_NONZERO"          value="-24"/>
         <enum name="VX_ERROR_MULTIPLE_WRITERS"           value="-23"/>
@@ -988,7 +989,7 @@ server.
         <enum name="VX_ERROR_NOT_SUPPORTED"              value="-3"/>
         <enum name="VX_ERROR_NOT_IMPLEMENTED"            value="-2"/>
         <enum name="VX_FAILURE"                          value="-1"/>
-        <enum name="VX_SUCCESS"                          value=" 0"/>
+        <enum name="VX_SUCCESS"                          value="0"/>
     </enums>
     <enums name="vx_enum_e" type="enum">
         <enum name="VX_ENUM_DIRECTION"       value="0x00"/>
@@ -1079,7 +1080,8 @@ server.
     <enums name="vx_df_image_e" type="enum">
         <enum name="VX_DF_IMAGE_VIRT" value="VX_DF_IMAGE('V','I','R','T')"/>
         <enum name="VX_DF_IMAGE_RGB"  value="VX_DF_IMAGE('R','G','B','2')"/>
-        <enum name="VX_DF_IMAGE_RGBX" value="VX_DF_IMAGE('R','G','B','A')"/>
+        <enum name="VX_DF_IMAGE_RGBA" value="VX_DF_IMAGE('R','G','B','A')"/>
+        <enum name="VX_DF_IMAGE_RGBX" value="VX_DF_IMAGE('R','G','B','X')"/>
         <enum name="VX_DF_IMAGE_NV12" value="VX_DF_IMAGE('N','V','1','2')"/>
         <enum name="VX_DF_IMAGE_NV21" value="VX_DF_IMAGE('N','V','2','1')"/>
         <enum name="VX_DF_IMAGE_UYVY" value="VX_DF_IMAGE('U','Y','V','Y')"/>
@@ -1650,7 +1652,7 @@ server.
         <command>
             <proto><type>vx_status</type> <name>vxUnmapImagePatch</name></proto>
             <param><type>vx_image</type> <name>image</name></param>
-            <param><type>vx_map_id</type> <name>map_id</name></param>
+            <param>const <type>vx_map_id</type> <name>map_id</name></param>
         </command>
         <command>
             <proto><type>vx_image</type> <name>vxCreateImageFromChannel</name></proto>
@@ -2023,7 +2025,7 @@ server.
         <command>
             <proto><type>vx_status</type> <name>vxUnmapLUT</name></proto>
             <param><type>vx_lut</type> <name>lut</name></param>
-            <param><type>vx_map_id</type> <name>map_id</name></param>
+            <param>const <type>vx_map_id</type> <name>map_id</name></param>
         </command>
         <command>
             <proto><type>vx_distribution</type> <name>vxCreateDistribution</name></proto>
@@ -2069,7 +2071,7 @@ server.
         <command>
             <proto><type>vx_status</type> <name>vxUnmapDistribution</name></proto>
             <param><type>vx_distribution</type> <name>distribution</name></param>
-            <param><type>vx_map_id</type> <name>map_id</name></param>
+            <param>const <type>vx_map_id</type> <name>map_id</name></param>
         </command>
         <command>
             <proto><type>vx_threshold</type> <name>vxCreateThresholdForImage</name></proto>
@@ -2279,7 +2281,7 @@ server.
         <command>
             <proto><type>vx_status</type> <name>vxUnmapRemapPatch</name></proto>
             <param><type>vx_remap</type> <name>remap</name></param>
-            <param><type>vx_map_id</type> <name>map_id</name></param>
+            <param>const <type>vx_map_id</type> <name>map_id</name></param>
         </command>
         <command>
             <proto><type>vx_status</type> <name>vxCopyRemapPatch</name></proto>
@@ -2358,7 +2360,7 @@ server.
         <command>
             <proto><type>vx_status</type> <name>vxUnmapArrayRange</name></proto>
             <param><type>vx_array</type> <name>array</name></param>
-            <param><type>vx_map_id</type> <name>map_id</name></param>
+            <param>const <type>vx_map_id</type> <name>map_id</name></param>
         </command>
         <command>
             <proto><type>vx_user_data_object</type> <name>vxCreateUserDataObject</name></proto>
@@ -2739,8 +2741,8 @@ server.
         </command>
         <command>
             <proto><type>vx_context</type> <name>vxCreateContextFromCL</name></proto>
-            <param>cl_context<type></type> <name>opencl_context</name></param>
-            <param>cl_command_queue<type></type> <name>opencl_command_queue</name></param>
+            <param><type>cl_context</type> <name>opencl_context</name></param>
+            <param><type>cl_command_queue</type> <name>opencl_command_queue</name></param>
         </command>
         <command>
             <proto>NOAPI <type>vx_status</type> <name>vxIcdGetPlatforms</name></proto>
@@ -3549,10 +3551,10 @@ server.
         <command>
             <proto><type>vx_node</type> <name>vxLBPNode</name></proto>
             <param><type>vx_graph</type> <name>graph</name></param>
-            <param><type>vx_image</type> <name>src</name></param>
+            <param><type>vx_image</type> <name>in</name></param>
             <param><type>vx_enum</type> <name>format</name></param>
             <param><type>vx_int8</type> <name>kernel_size</name></param>
-            <param><type>vx_image</type> <name>output</name></param>
+            <param><type>vx_image</type> <name>out</name></param>
         </command>
         <command>
             <proto><type>vx_node</type> <name>vxHOGFeaturesNode</name></proto>
@@ -4389,7 +4391,7 @@ server.
 
     <!-- For extensions, extension name=<name> attribute is mapped to name.h and _NAME_H_ (unless protect= attribute is specified) -->
 
-    <feature api="openvx" number="1.2" name="_OPENVX_API_H_" header="vx_api.h" comment="API functions">
+    <feature api="openvx" number="1.3" name="_OPENVX_API_H_" header="vx_api.h" comment="API functions">
         <require>
             <type name="vxFormatArrayPointer"/>
                 <!-- vxArrayItem from vx_api.h not included here due to presence in vx_khr_opencl.h with an incompatible definition -->
@@ -4546,6 +4548,7 @@ server.
             <command name="vxReleaseObjectArray"/>
             <command name="vxQueryObjectArray"/>
             <command name="vxSetMetaFormatAttribute"/>
+            <command name="vxQueryMetaFormatAttribute"/>
             <command name="vxSetMetaFormatFromReference"/>
             <command name="vxCreateTensor"/>
             <command name="vxCreateTensorFromHandle"/>
@@ -4561,7 +4564,7 @@ server.
         </require>
     </feature>
 
-    <feature api="openvx" number="1.2" name="_OPENVX_H_" header="vx.h" comment="API macros">
+    <feature api="openvx" number="1.3" name="_OPENVX_H_" header="vx.h" comment="API macros">
         <require>
             <type name="VX/vx_vendors.h"/>
             <type name="VX/vx_types.h"/>
@@ -4579,11 +4582,12 @@ server.
             <enum name="VX_VERSION_1_1"/>
             <enum name="VX_VERSION_1_2"/>
             <enum name="VX_VERSION_1_3"/>
+            <enum name="VX_VERSION_PATCH"/>
             <enum name="VX_VERSION"/>
         </require>
     </feature>
 
-    <feature api="openvx" number="1.2" name="_OPENVX_TYPES_H_" header="vx_types.h" comment="API types">
+    <feature api="openvx" number="1.3" name="_OPENVX_TYPES_H_" header="vx_types.h" comment="API types">
         <require>
             <type name="stdint.h"/>
             <type name="stddef.h"/>
@@ -4726,7 +4730,7 @@ server.
         </require>
     </feature>
 
-    <feature api="openvx" number="1.2" name="_OPENVX_UTILITY_H_" header="vxu.h" comment="API utility functions">
+    <feature api="openvx" number="1.3" name="_OPENVX_UTILITY_H_" header="vxu.h" comment="API utility functions">
         <require>
             <command name="vxuColorConvert"/>
             <command name="vxuChannelExtract"/>
@@ -4790,13 +4794,13 @@ server.
         </require>
     </feature>
 
-    <feature api="openvx" number="1.2" name="_OPENVX_VENDORS_H_" header="vx_vendors.h" comment="API vendor registry">
+    <feature api="openvx" number="1.3" name="_OPENVX_VENDORS_H_" header="vx_vendors.h" comment="API vendor registry">
         <require>
             <type name="vx_vendor_id_e"/>
         </require>
     </feature>
 
-    <feature api="openvx" number="1.2" name="_VX_HELPER_H_" header="vx_helper.h" comment="API helper functions">
+    <feature api="openvx" number="1.3" name="_VX_HELPER_H_" header="vx_helper.h" comment="API helper functions">
         <require>
             <enum name="VX_TAU"/>
             <enum name="VX_MAX_LOG_NUM_ENTRIES"/>
@@ -4824,7 +4828,7 @@ server.
         </require>
     </feature>
 
-    <feature api="openvx" number="1.2" name="_OPENVX_IMPORT_H_" header="vx_import.h" comment="API import functions">
+    <feature api="openvx" number="1.3" name="_OPENVX_IMPORT_H_" header="vx_import.h" comment="API import functions">
         <require>
             <enum name="VX_ENUM_IX_USE"/>
             <enum name="VX_IX_USE_APPLICATION_CREATE"/>
@@ -4838,7 +4842,7 @@ server.
         </require>
     </feature>
 
-    <feature api="openvx" number="1.2" name="_OPENVX_KERNELS_H_" header="vx_kernels.h" comment="API kernels">
+    <feature api="openvx" number="1.3" name="_OPENVX_KERNELS_H_" header="vx_kernels.h" comment="API kernels">
         <require>
             <type name="vx_library_e"/>
             <type name="vx_kernel_e"/>
@@ -4868,7 +4872,7 @@ server.
                 <type name="VX/vx.h"/>
                 <enum name="OPENVX_KHR_CLASS"/>
                 <enum name="VX_LIBRARY_KHR_CLASS_EXTENSION"/>
-                <type name="vx_kernel_nn_ext_e"/>
+                <type name="vx_kernel_class_ext_e"/>
                 <type name="vx_class_enum_e"/>
                 <type name="vx_classifier_model"/>
                 <type name="vx_classifier_model_format_e"/>
@@ -4964,7 +4968,7 @@ server.
                 <enum name="OPENVX_KHR_OPENCL"/>
                 <command name="vxAddOpenCLAsSourceKernel"/>
                 <command name="vxAddOpenCLAsBinaryKernel"/>
-                <type name="vxImagePixel"/>
+                <type name="vxImagePixel_opencl"/>
                 <type name="vxArrayItem"/>
                 <type name="vxMatrixElement"/>
                 <type name="vxConvolveElement"/>
@@ -5234,7 +5238,6 @@ server.
                 <type name="VX/vx.h"/>
                 <enum name="OPENVX_KHR_IMPORT_KERNEL"/>
                 <command name="vxImportKernelFromURL"/>
-                <command name="vxQueryMetaFormatAttribute"/>
             </require>
         </extension>
         <extension name="vx_khr_buffer_aliasing" protect="_OPENVX_BUFFER_ALIASING_H_" author="KHR" contact="???" supported="openvx">

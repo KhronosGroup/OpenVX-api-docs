@@ -16,8 +16,8 @@
  */
 
 #pragma once
-#ifndef _OPENVX_EXT_XYZ_H_
-#define _OPENVX_EXT_XYZ_H_
+#ifndef OPENVX_EXT_XYZ_H
+#define OPENVX_EXT_XYZ_H
 
 /*!
  * \file

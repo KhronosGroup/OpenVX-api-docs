@@ -5,10 +5,10 @@
 [NOTE]
 .Note
 ====
-This is based on the Vulkan README, and has not been fully updated for
-OpenVX-specific changes to the build process. The most useful parts are the
-<<intro, Introduction>>, <<building, Building The Spec>>, and notes on
-installing <<depends, Software Dependencies>>.
+This README describes the OpenVX specification build process.
+The most useful parts are the <<intro, Introduction>>,
+<<building, Building The Spec>>, and notes on installing
+<<depends, Software Dependencies>>.
 ====
 
 [[intro]]
@@ -22,7 +22,7 @@ specification and reference pages building properly.
 == Building The Spec
 
 Once you have all the right tools installed (see <<depends,Software
-Dependencies>> below), go to `...path-to-git-repo/docs/specification` .
+Dependencies>> below), go to `...path-to-git-repo/api-docs/docs` .
 
     $ make
 
@@ -34,8 +34,8 @@ The checked-in file `../../../out/1.0/index.html` links to all these
 targets, or they can individually be found as follows:
 
   * API spec:
-  ** `html` - Single-file HTML5 in `$(OUTDIR)/html/vkspec.html`
-  ** `pdf` - PDF in `$(OUTDIR)/pdf/vkspec.pdf`
+  ** `html` - Single-file HTML5 in `$(OUTDIR)/$(SPECDIRNAME)/$(SPECDIRNAME).html`
+  ** `pdf` - PDF in `$(OUTDIR)/$(SPECDIRNAME).pdf`
 //  * "`OpenVX Documentation and Extensions`" guide:
 //  ** `styleguide` - Single-file HTML5 in `$(OUTDIR)/styleguide.html`
 //  * Diff spec:
@@ -88,7 +88,7 @@ For further details, use `% python config/spec-tags.py -help`.
 
 All the extensions (complete or otherwise) in the tree were converted to
 asciidoc markup and can be built. The source for the API specification is in
-'OpenVX_Specification.txt' while each extension is in 'vx_extension_name.txt'. Build an
+`OpenVX_Specification.adoc` while each extension is in `vx_extension_name.adoc`. Build an
 extension by passing SPECBASE=vx_extension_name to make, e.g.
 
     make SPECBASE=vx_khr_nn html
@@ -127,7 +127,7 @@ A helper script, makeAllSpecs, can be called as
 === Alternate and Test Builds
 
 If you are just testing asciidoc formatting, macros, stylesheets, etc., you
-may want to edit `OpenVX_Specification.txt` to just include your test code.
+may want to edit `OpenVX_Specification.adoc` to just include your test code.
 The asciidoctor HTML build is very fast, even for the whole Specification,
 but PDF builds take several minutes.
 
@@ -155,7 +155,7 @@ cd images ; make
 //
 //  There are a several Makefile targets which look for inconsistencies and
 //  missing material between the specification and ref pages, and the canonical
-//  description of the API in `vk.xml` :
+//  description of the API in `vx.xml` :
 //
 //    * `checkinc`
 //    * `checklinks`
@@ -176,7 +176,7 @@ cd images ; make
 //
 //  The `checklinks` target validates the various internal tagged links in the
 //  man pages and spec (e.g. the `fname:vkFuncBlah`, `sname:VkStructBlah`, etc.)
-//  against the canonical description of the API in `vk.xml`.
+//  against the canonical description of the API in `vx.xml`.
 //  It generates two output files, `manErrs.txt` and `specErrs.txt`, which
 //  report problematic tags and the filenames/lines on which those tags were
 //  found.
@@ -274,8 +274,8 @@ LaTeX math markup delimiters are now inserted by the asciidoctor toolchain.
 
 LaTeX math is passed through unmodified to all HTML output forms, which is
 subsequently rendered with the KaTeX engine when the html is loaded.
-A local copy of the KaTeX release is kept in `doc/specs/vulkan/katex` and
-copied to the HTML output directory during spec generation.
+A local copy of the KaTeX release is kept in `katex/` and copied to the HTML
+output directory during spec generation.
 Math is processed into SVGs via asciidoctor-mathematical for PDF output.
 
 The following caveats apply:
@@ -308,7 +308,7 @@ In general the anchor should immediately precede the chapter or section
 title and should use the form '+++[[chapter-section-label]]+++'.
 For example,
 
-For example, from the Vulkan specification we have:
+For example:
 
 ----
 [[synchronization-primitives]]
@@ -332,7 +332,7 @@ files (`.txt` files in the directories `api/basetypes`, `api/enums`,
 function, struct, etc. being defined. Therefore you can say something like:
 
 ----
-Fences are used with the +++<<vkQueueSubmit>>+++ command...
+See the +++<<vxCreateContext>>+++ command for a generated API anchor.
 ----
 
 
@@ -378,7 +378,7 @@ parts you don't use) completely before trying to install.
   * https://github.com/asciidoctor/asciidoctor-mathematical#dependencies[Dependencies
     for asciidoctor-mathematical] (There are a lot of these!)
   * KaTeX distribution (version 0.7.0 from https://github.com/Khan/KaTeX .
-    This is cached under `doc/specs/vulkan/katex/`, and need not be
+    This is cached under `katex/`, and need not be
     installed from github.
   * asciidoctor-diagram (https://asciidoctor.org/docs/asciidoctor-diagram/,
     version: 1.5.11)
@@ -467,7 +467,7 @@ recent version.
      PATH additions based on a bash environment.
   * Most of the tools on Bash for Windows are quite happy with Windows line
     endings (CR LF), but bash scripts expect Unix line endings (LF).
-    The file `.gitattributes` at the top of the vulkan tree in the 1.0
+    The file `.gitattributes` at the top of the repository
     branch forces such scripts to be checked out with the proper line
     endings on non-Linux platforms.
     If you add new scripts whose names don't end in `.sh`, they should be

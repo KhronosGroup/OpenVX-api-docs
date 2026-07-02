@@ -47,6 +47,7 @@ s| Header File s| Details
 | `VX/vx_khr_nn.h` | OpenVX KHR Neural Network Extension
 | `VX/vx_khr_pipelining.h` | OpenVX KHR Pipelining Extension
 | `VX/vx_khr_ix.h` | OpenVX KHR Export And Import Extension
+| `VX/vx_import.h` | OpenVX Import types and functions (shared by Export/Import and XML extensions)
 | `VX/vx_khr_user_data_object.h` | OpenVX KHR User Data Object Extension
 |===
 
@@ -61,7 +62,13 @@ s| Header File s| Details
 | `VX/vx_khr_buffer_aliasing.h` | OpenVX KHR Buffer Aliasing Extension
 | `VX/vx_khr_class.h` | OpenVX KHR Classifier Extension
 | `VX/vx_khr_icd.h` | OpenVX KHR Installable Client Driver Extension
+| `VX/vx_khr_node_send_command.h` | OpenVX KHR Node Send Command Extension
 | `VX/vx_khr_opencl_interop.h` | OpenVX KHR OpenCL Interop Extension
+| `VX/vx_khr_safe_casts.h` | OpenVX KHR Safe Casts Extension
+| `VX/vx_khr_sub_image_object_array.h` | OpenVX KHR Sub-Image Object Array Extension
+| `VX/vx_khr_supplementary_data.h` | OpenVX KHR Supplementary Data Extension
+| `VX/vx_khr_target_kernel.h` | OpenVX KHR Target Kernel Extension
+| `VX/vx_khr_tensor_from_image.h` | OpenVX KHR Tensor From Image Extension
 | `VX/vx_khr_tiling.h` | OpenVX KHR Tiling Extension
 | `VX/vx_khr_xml.h` | OpenVX KHR XML Extension
 |===
